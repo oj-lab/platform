@@ -10,7 +10,8 @@ type DatabaseSettings struct {
 	User     string
 	Password string
 	Host     string
-	Name     string
+	Port     string
+	DbName   string
 }
 
 func GetDatabaseSettings(source interface{}) DatabaseSettings {
@@ -23,4 +24,8 @@ func GetDatabaseSettings(source interface{}) DatabaseSettings {
 	}
 	log.Print(databaseSettings)
 	return databaseSettings
+}
+
+func GetDatabaseDSN(settings DatabaseSettings) string {
+	return "user=" + settings.User + " password=" + settings.Password + " dbname=" + settings.DbName + " host=" + settings.Host + " port=" + settings.Port + " sslmode=disable TimeZone=Asia/Shanghai"
 }

@@ -1,10 +1,12 @@
 package tests
 
 import (
-	sharedtools "github.com/OJ-lab/oj-lab-services/shared-tools"
+	sharedTools "github.com/OJ-lab/oj-lab-services/shared-tools"
+	"log"
 	"testing"
 )
 
 func TestIniBasicUsage(t *testing.T) {
-	sharedtools.GetDatabaseSettings("../config/default.ini")
+	databaseSettings := sharedTools.GetDatabaseSettings("../../config/example.ini")
+	log.Print(sharedTools.GetDatabaseDSN(databaseSettings))
 }
