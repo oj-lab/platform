@@ -1,17 +1,17 @@
 package main
 
 import (
-	sharedTools "github.com/OJ-lab/oj-lab-services/shared-tools"
 	"github.com/OJ-lab/oj-lab-services/user-service/model"
+	"github.com/OJ-lab/oj-lab-services/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"os"
 )
 
 func main() {
-	dataBaseSettings := sharedTools.GetDatabaseSettings(os.Args[1])
+	dataBaseSettings := utils.GetDatabaseSettings(os.Args[1])
 	db, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  sharedTools.GetDatabaseDSN(dataBaseSettings),
+		DSN:                  utils.GetDatabaseDSN(dataBaseSettings),
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
 	}), &gorm.Config{})
 	if err != nil {
