@@ -1,2 +1,2 @@
 build:
-	go build -o bin/user-migrate.exe user-service/migration/migrate.go
+	go build -o bin/migrate_user.exe migration/migrate_user.go

@@ -14,16 +14,16 @@ type DatabaseSettings struct {
 	DbName   string
 }
 
-func GetDatabaseSettings(source interface{}) DatabaseSettings {
+func GetDatabaseSettings(source interface{}) (DatabaseSettings, error) {
 	var cfg *ini.File
 	cfg, _ = ini.Load(source)
 	var databaseSettings DatabaseSettings
 	err := cfg.Section("database").MapTo(&databaseSettings)
 	if err != nil {
-		return DatabaseSettings{}
+		return DatabaseSettings{}, err
 	}
 	log.Printf("load databaseSettings=%s", databaseSettings)
-	return databaseSettings
+	return databaseSettings, nil
 }
 
 func GetDatabaseDSN(settings DatabaseSettings) string {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/OJ-lab/oj-lab-services/user-service/model"
+	"github.com/OJ-lab/oj-lab-services/model"
 	"github.com/OJ-lab/oj-lab-services/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -15,7 +15,10 @@ func main() {
 	} else {
 		configPath = "config/default.ini"
 	}
-	dataBaseSettings := utils.GetDatabaseSettings(configPath)
+	dataBaseSettings, err := utils.GetDatabaseSettings(configPath)
+	if err != nil {
+		panic("failed to get database settings")
+	}
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN:                  utils.GetDatabaseDSN(dataBaseSettings),
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage

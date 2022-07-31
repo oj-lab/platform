@@ -7,6 +7,6 @@ import (
 )
 
 func TestIniBasicUsage(t *testing.T) {
-	databaseSettings := utils.GetDatabaseSettings("../../config/example.ini")
+	databaseSettings, _ := utils.GetDatabaseSettings("../../config/example.ini")
 	log.Print(utils.GetDatabaseDSN(databaseSettings))
 }

@@ -15,3 +15,9 @@ type User struct {
 	UpdateAt       time.Time `gorm:"autoUpdateTime"`
 	DeleteAt       time.Time
 }
+
+func CountUser() (int64, error) {
+	var count int64
+	err := db.Model(&User{}).Count(&count).Error
+	return count, err
+}
