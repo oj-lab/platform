@@ -22,7 +22,7 @@ func GetDatabaseSettings(source interface{}) DatabaseSettings {
 	if err != nil {
 		return DatabaseSettings{}
 	}
-	log.Print(databaseSettings)
+	log.Printf("load databaseSettings=%s", databaseSettings)
 	return databaseSettings
 }
 
