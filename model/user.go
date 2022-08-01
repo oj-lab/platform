@@ -15,7 +15,6 @@ type User struct {
 	Mobile         *string   `gorm:"unique"`
 	CreateAt       time.Time `gorm:"autoCreateTime"`
 	UpdateAt       time.Time `gorm:"autoUpdateTime"`
-	DeleteAt       *time.Time
 }
 
 type UserInfo struct {
