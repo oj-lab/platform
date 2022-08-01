@@ -19,6 +19,22 @@ type JWTSettings struct {
 	Duration string
 }
 
+type ServiceSettings struct {
+	AuthOn bool
+}
+
+func GetServiceSettings(source interface{}) (ServiceSettings, error) {
+	var cfg *ini.File
+	cfg, _ = ini.Load(source)
+	var serviceSettings ServiceSettings
+	err := cfg.Section("service").MapTo(&serviceSettings)
+	if err != nil {
+		return ServiceSettings{}, err
+	}
+	log.Println("load serviceSettings")
+	return serviceSettings, nil
+}
+
 func GetJWTSettings(source interface{}) (JWTSettings, error) {
 	var cfg *ini.File
 	cfg, _ = ini.Load(source)
@@ -39,7 +55,7 @@ func GetDatabaseSettings(source interface{}) (DatabaseSettings, error) {
 	if err != nil {
 		return DatabaseSettings{}, err
 	}
-	log.Printf("load databaseSettings=%s", databaseSettings)
+	log.Println("load databaseSettings")
 	return databaseSettings, nil
 }
 

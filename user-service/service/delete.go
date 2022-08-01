@@ -7,17 +7,24 @@ import (
 )
 
 func DeleteUser(c *gin.Context) {
-	tokenString := c.GetHeader("Authorization")
-	selfAccount, role, err := utils.ParseTokenString(tokenString)
 	account := c.Param("account")
-	if selfAccount != account && model.String2Role(role) != model.RoleAdmin {
-		c.JSON(401, gin.H{
-			"status": "method not allowed",
-		})
-		return
+
+	if serviceSettings.AuthOn {
+		tokenString := c.GetHeader("Authorization")
+		selfAccount, role, err := utils.ParseTokenString(tokenString)
+		if err != nil {
+			utils.ApplyError(c, err)
+			return
+		}
+		if selfAccount != account && model.String2Role(role) != model.RoleAdmin {
+			c.JSON(401, gin.H{
+				"status": "method not allowed",
+			})
+			return
+		}
 	}
 
-	err = model.DeleteUser(account)
+	err := model.DeleteUser(account)
 	if err != nil {
 		utils.ApplyError(c, err)
 		return
