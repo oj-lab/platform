@@ -103,9 +103,13 @@ func ComparePassword(account string, password string) (bool, error) {
 	return argon2id.ComparePasswordAndHash(password, user.HashedPassword)
 }
 
-func GetUserInfo(account string, email *string, mobile *string) (*UserInfo, error) {
+func GetUserInfo(maybeAccount *string, maybeEmail *string, maybeMobile *string) (*UserInfo, error) {
+	account := ""
+	if maybeAccount != nil {
+		account = *maybeAccount
+	}
 	var user User
-	err := db.Where(map[string]interface{}{"account": account, "email": email, "mobile": mobile}).First(&user).Error
+	err := db.Where(&User{Account: account, Email: maybeEmail, Mobile: maybeMobile}).First(&user).Error
 	if err != nil {
 		return nil, err
 	}

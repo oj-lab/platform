@@ -63,7 +63,17 @@ func TestUpdateUser(t *testing.T) {
 func TestGetUserInfo(t *testing.T) {
 	SetupTestDatabase()
 	_ = model.CreateUser("common", "password", model.RoleUser)
-	userInfo, err := model.GetUserInfo("common", nil, nil)
+	mobile := "12312312345"
+	_ = model.UpdateUser("common", nil, nil, nil, nil, &mobile)
+	userInfo, err := model.GetUserInfo(nil, nil, &mobile)
+	if err != nil {
+		panic(err)
+	}
+	if userInfo.Account != "common" {
+		panic("wrong account")
+	}
+	account := "common"
+	userInfo, err = model.GetUserInfo(&account, nil, nil)
 	if err != nil {
 		panic(err)
 	}
