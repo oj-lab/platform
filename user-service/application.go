@@ -19,7 +19,12 @@ func main() {
 	if err != nil {
 		panic("failed to get database settings")
 	}
+	jwtSettings, err := utils.GetJWTSettings(configPath)
+	if err != nil {
+		panic("failed to get jwt settings")
+	}
 	model.OpenConnection(dataBaseSettings)
+	utils.SetupJWTSettings(jwtSettings)
 
 	r := gin.Default()
 	router.SetupUserRouter(r)

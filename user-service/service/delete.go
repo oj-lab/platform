@@ -6,12 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Register(c *gin.Context) {
-	account := c.PostForm("account")
-	password := c.PostForm("password")
-	roleString := c.PostForm("role")
-	role := model.String2Role(roleString)
-	err := model.CreateUser(account, password, role)
+func DeleteUser(c *gin.Context) {
+	account := c.Param("account")
+	err := model.DeleteUser(account)
 	if err != nil {
 		utils.ApplyError(c, err)
 		return

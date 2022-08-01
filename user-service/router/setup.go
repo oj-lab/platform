@@ -7,9 +7,16 @@ import (
 )
 
 func SetupUserRouter(r *gin.Engine) {
-	r.GET("/health", func(c *gin.Context) {
-		c.String(http.StatusOK, "Hello, this is user service")
-	})
+	g := r.Group("/user")
+	{
+		g.GET("/health", func(c *gin.Context) {
+			c.String(http.StatusOK, "Hello, this is user service")
+		})
 
-	r.POST("/login", service.Login)
+		g.POST("/:account/login", service.Login)
+		g.POST("/register", service.Register)
+		g.POST("/:account/delete", service.DeleteUser)
+		g.GET("", service.FindUserInfos)
+		g.GET("/:account", service.GetUserInfo)
+	}
 }
