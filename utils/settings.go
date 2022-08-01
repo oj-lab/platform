@@ -14,6 +14,23 @@ type DatabaseSettings struct {
 	DbName   string
 }
 
+type JWTSettings struct {
+	Secret   string
+	Duration string
+}
+
+func GetJWTSettings(source interface{}) (JWTSettings, error) {
+	var cfg *ini.File
+	cfg, _ = ini.Load(source)
+	var jwtSettings JWTSettings
+	err := cfg.Section("jwt").MapTo(&jwtSettings)
+	if err != nil {
+		return JWTSettings{}, err
+	}
+	log.Println("load jwtSettings")
+	return jwtSettings, nil
+}
+
 func GetDatabaseSettings(source interface{}) (DatabaseSettings, error) {
 	var cfg *ini.File
 	cfg, _ = ini.Load(source)
