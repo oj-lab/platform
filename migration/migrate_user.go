@@ -13,7 +13,7 @@ func main() {
 	if len(os.Args) > 1 {
 		configPath = os.Args[1]
 	} else {
-		configPath = "config/default.ini"
+		configPath = "config/test.ini"
 	}
 	dataBaseSettings, err := utils.GetDatabaseSettings(configPath)
 	if err != nil {
