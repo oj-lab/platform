@@ -37,7 +37,13 @@ func FindUserInfos(c *gin.Context) {
 		utils.ApplyError(c, err)
 		return
 	}
+	total, err := model.CountUser(account)
+	if err != nil {
+		utils.ApplyError(c, err)
+		return
+	}
 	c.JSON(200, gin.H{
 		"userInfos": userInfos,
+		"total":     total,
 	})
 }
