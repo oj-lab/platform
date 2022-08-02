@@ -35,9 +35,10 @@ func main() {
 	service.SetupServiceSetting(serviceSettings)
 
 	r := gin.Default()
+	gin.SetMode(serviceSettings.Mode)
 	router.SetupUserRouter(r)
 
-	err = r.Run()
+	err = r.Run(serviceSettings.Port)
 	if err != nil {
 		panic(err)
 	} // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
