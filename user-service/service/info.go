@@ -7,6 +7,27 @@ import (
 	"strconv"
 )
 
+func GetCurrentUser(c *gin.Context) {
+	token, err := c.Cookie("jwt")
+	if err != nil {
+		utils.ApplyError(c, err)
+		return
+	}
+	account, _, err := utils.ParseTokenString(token)
+	if err != nil {
+		utils.ApplyError(c, err)
+		return
+	}
+	userInfo, err := model.GetUserInfo(&account, nil, nil)
+	if err != nil {
+		utils.ApplyError(c, err)
+		return
+	}
+	c.JSON(200, gin.H{
+		"userInfo": userInfo,
+	})
+}
+
 func GetUserInfo(c *gin.Context) {
 	account := c.Param("account")
 	userInfo, err := model.GetUserInfo(&account, nil, nil)

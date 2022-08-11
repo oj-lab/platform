@@ -4,6 +4,7 @@ import (
 	"github.com/OJ-lab/oj-lab-services/model"
 	"github.com/OJ-lab/oj-lab-services/utils"
 	"github.com/gin-gonic/gin"
+	"time"
 )
 
 func Login(c *gin.Context) {
@@ -25,8 +26,14 @@ func Login(c *gin.Context) {
 			utils.ApplyError(c, err)
 			return
 		}
+		duration, err := time.ParseDuration(serviceSettings.CookieAge)
+		if err != nil {
+			utils.ApplyError(c, err)
+			return
+		}
+		c.SetCookie("jwt", token, int(duration.Seconds()), "", "", false, true)
 		c.JSON(200, gin.H{
-			"token": token,
+			"status": "success",
 		})
 	} else {
 		c.JSON(403, gin.H{

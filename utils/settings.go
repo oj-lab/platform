@@ -20,9 +20,10 @@ type JWTSettings struct {
 }
 
 type ServiceSettings struct {
-	AuthOn bool
-	Port   string
-	Mode   string
+	AuthOn    bool
+	Port      string
+	Mode      string
+	CookieAge string
 }
 
 func GetServiceSettings(source interface{}) (ServiceSettings, error) {
