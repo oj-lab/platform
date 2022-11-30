@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "golang.go",
+        "ms-azuretools.vscode-docker",
+        "ckolkman.vscode-postgres"
+    ],
+}
