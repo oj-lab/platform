@@ -10,8 +10,16 @@ services:
     ports:
       - 5432:5432
 
-  redis:
-    image: redis:latest
+  redis-cluster:
+    image: grokzen/redis-cluster:latest
     restart: always
+    environment:
+      - IP=0.0.0.0
     ports:
-      - "6379:6379"
+      - 7000-7005:7000-7005
+
+  # redis:
+  #   image: redis:latest
+  #   restart: always
+  #   ports:
+  #     - "6379:6379"
