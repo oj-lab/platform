@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/OJ-lab/oj-lab-services/model"
+	"github.com/OJ-lab/oj-lab-services/user-service/business"
 	"github.com/OJ-lab/oj-lab-services/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +12,7 @@ func DeleteUser(c *gin.Context) {
 
 	if serviceSettings.AuthOn {
 		tokenString := c.GetHeader("Authorization")
-		selfAccount, role, err := utils.ParseTokenString(tokenString)
+		selfAccount, role, err := business.ParseTokenString(tokenString)
 		if err != nil {
 			utils.ApplyError(c, err)
 			return
@@ -24,7 +25,7 @@ func DeleteUser(c *gin.Context) {
 		}
 	}
 
-	err := model.DeleteUser(account)
+	err := business.DeleteUser(account)
 	if err != nil {
 		utils.ApplyError(c, err)
 		return

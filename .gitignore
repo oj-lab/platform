@@ -15,4 +15,4 @@
 # vendor/
 
 *.ini
-!config/example.ini
+!config/ini/example.ini

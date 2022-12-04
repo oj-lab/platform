@@ -1,8 +1,9 @@
-package utils
+package config
 
 import (
-	"gopkg.in/ini.v1"
 	"log"
+
+	"gopkg.in/ini.v1"
 )
 
 type DatabaseSettings struct {
@@ -60,8 +61,4 @@ func GetDatabaseSettings(source interface{}) (DatabaseSettings, error) {
 	}
 	log.Println("load databaseSettings")
 	return databaseSettings, nil
-}
-
-func GetDatabaseDSN(settings DatabaseSettings) string {
-	return "user=" + settings.User + " password=" + settings.Password + " dbname=" + settings.DbName + " host=" + settings.Host + " port=" + settings.Port + " sslmode=disable TimeZone=Asia/Shanghai"
 }

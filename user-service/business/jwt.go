@@ -1,25 +1,28 @@
-package utils
+package business
 
 import (
 	"errors"
-	"github.com/golang-jwt/jwt/v4"
 	"time"
+
+	"github.com/OJ-lab/oj-lab-services/config"
+	"github.com/OJ-lab/oj-lab-services/model"
+	"github.com/golang-jwt/jwt/v4"
 )
 
-var jwtSettings *JWTSettings
+var jwtSettings *config.JWTSettings
 
-func SetupJWTSettings(settings JWTSettings) {
+func SetupJWTSettings(settings config.JWTSettings) {
 	jwtSettings = &settings
 }
 
-func GenerateTokenString(account string, role string) (string, error) {
+func GenerateTokenString(account string, roles []model.Role) (string, error) {
 	duration, err := time.ParseDuration(jwtSettings.Duration)
 	if err != nil {
 		return "", err
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"account": account,
-		"role":    role,
+		"roles":   roles,
 		"exp":     time.Now().Add(duration).Unix(),
 	})
 	return token.SignedString([]byte(jwtSettings.Secret))
