@@ -51,14 +51,17 @@ func GetJWTSettings(source interface{}) (JWTSettings, error) {
 	return jwtSettings, nil
 }
 
-func GetDatabaseSettings(source interface{}) (DatabaseSettings, error) {
-	var cfg *ini.File
-	cfg, _ = ini.Load(source)
-	var databaseSettings DatabaseSettings
-	err := cfg.Section("database").MapTo(&databaseSettings)
+func GetDatabaseSettings(source interface{}) (*DatabaseSettings, error) {
+	cfg, err := ini.Load(source)
 	if err != nil {
-		return DatabaseSettings{}, err
+		return nil, err
+	}
+
+	var databaseSettings DatabaseSettings
+	err = cfg.Section("database").MapTo(&databaseSettings)
+	if err != nil {
+		return nil, err
 	}
 	log.Println("load databaseSettings")
-	return databaseSettings, nil
+	return &databaseSettings, nil
 }

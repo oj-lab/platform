@@ -13,7 +13,7 @@ func SetupTestDatabase() {
 	if err != nil {
 		panic("failed to get database settings")
 	}
-	business.OpenDBConnection(dataBaseSettings)
+	business.OpenDBConnection(*dataBaseSettings)
 }
 
 func TestString2Role(t *testing.T) {

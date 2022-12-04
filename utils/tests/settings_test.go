@@ -9,6 +9,9 @@ import (
 )
 
 func TestIniBasicUsage(t *testing.T) {
-	databaseSettings, _ := config.GetDatabaseSettings("../../config/ini/example.ini")
-	log.Print(utils.GetDatabaseDSN(databaseSettings))
+	databaseSettings, err := config.GetDatabaseSettings("../../config/ini/test.ini")
+	if err != nil {
+		t.Error("Fail to load DB settings: ", err)
+	}
+	log.Print(utils.GetDatabaseDSN(*databaseSettings))
 }

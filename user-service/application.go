@@ -31,7 +31,7 @@ func main() {
 		panic("failed to get service settings")
 	}
 
-	business.OpenDBConnection(dataBaseSettings)
+	business.OpenDBConnection(*dataBaseSettings)
 	business.SetupJWTSettings(jwtSettings)
 	service.SetupServiceSetting(serviceSettings)
 
