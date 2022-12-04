@@ -13,5 +13,5 @@ func TestIniBasicUsage(t *testing.T) {
 	if err != nil {
 		t.Error("Fail to load DB settings: ", err)
 	}
-	log.Print(utils.GetDatabaseDSN(*databaseSettings))
+	log.Print(utils.MustGetDatabaseDSN(*databaseSettings))
 }

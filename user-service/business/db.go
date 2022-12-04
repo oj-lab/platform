@@ -12,7 +12,7 @@ import (
 var db *gorm.DB
 
 func OpenDBConnection(settings config.DatabaseSettings) {
-	db = utils.GetDBConnection(settings)
+	db = utils.MustGetDBConnection(settings)
 }
 
 func CreateUser(account string, password string, roles []model.Role) error {

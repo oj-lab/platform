@@ -22,7 +22,7 @@ func main() {
 		panic("failed to get database settings")
 	}
 	db, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  utils.GetDatabaseDSN(*dataBaseSettings),
+		DSN:                  utils.MustGetDatabaseDSN(*dataBaseSettings),
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
 	}), &gorm.Config{})
 	if err != nil {
