@@ -15,7 +15,7 @@ func OpenDBConnection(settings config.DatabaseSettings) {
 	db = utils.MustGetDBConnection(settings)
 }
 
-func CreateUser(account string, password string, roles []model.Role) error {
+func CreateUser(account string, password string, roles model.Roles) error {
 	hashedPassword, err := user_utils.GetHashedPassword(password, argon2id.DefaultParams)
 	if err != nil {
 		return err
@@ -24,7 +24,7 @@ func CreateUser(account string, password string, roles []model.Role) error {
 	user := model.User{
 		Account:        account,
 		HashedPassword: hashedPassword,
-		Roles:          roles,
+		Roles:          roles.ToPQArray(),
 	}
 
 	return db.Create(&user).Error
@@ -34,7 +34,7 @@ func DeleteUser(account string) error {
 	return db.Delete(&model.User{Account: account}).Error
 }
 
-func UpdateUser(account string, name *string, password *string, role []model.Role, email *string, mobile *string) error {
+func UpdateUser(account string, name *string, password *string, roles model.Roles, email *string, mobile *string) error {
 	var hashedPassword string
 	if password != nil {
 		var err error
@@ -50,7 +50,7 @@ func UpdateUser(account string, name *string, password *string, role []model.Rol
 		Account:        account,
 		Name:           name,
 		HashedPassword: hashedPassword,
-		Roles:          role,
+		Roles:          roles.ToPQArray(),
 		Email:          email,
 		Mobile:         mobile,
 	}
@@ -80,7 +80,7 @@ func GetUserInfo(maybeAccount *string, maybeEmail *string, maybeMobile *string) 
 	return &model.UserInfo{
 		Account:  user.Account,
 		Name:     user.Name,
-		Roles:    user.Roles,
+		Roles:    model.PQArray2Roles(&user.Roles),
 		Email:    user.Email,
 		CreateAt: user.CreateAt,
 		UpdateAt: user.UpdateAt,
@@ -98,7 +98,7 @@ func FindUserInfos(query string, offset int, limit int) ([]model.UserInfo, error
 		userInfos = append(userInfos, model.UserInfo{
 			Account:  user.Account,
 			Name:     user.Name,
-			Roles:    user.Roles,
+			Roles:    model.PQArray2Roles(&user.Roles),
 			Email:    user.Email,
 			CreateAt: user.CreateAt,
 			UpdateAt: user.UpdateAt,
