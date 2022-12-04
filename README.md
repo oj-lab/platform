@@ -24,3 +24,8 @@ So separating them can make the build of functionality clearer than ever before.
 There is a migration script in every service directory.
 
 You will need to run the migration script before you can use the service.
+
+## How to develop
+
+For service development, we don't want to make it too complex.
+Using VSCode on either Win/*nix System are avaliabe, try using the Makefile/Dockerfile in the repository.
