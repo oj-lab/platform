@@ -28,19 +28,24 @@ func GenerateTokenString(account string, roles []model.Role) (string, error) {
 	return token.SignedString([]byte(jwtSettings.Secret))
 }
 
-func ParseTokenString(tokenString string) (string, string, error) {
+func ParseTokenString(tokenString string) (string, []string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(jwtSettings.Secret), nil
 	})
 	if err != nil {
-		return "", "", err
+		return "", nil, err
 	}
 	if token.Valid {
-		return token.Claims.(jwt.MapClaims)["account"].(string), token.Claims.(jwt.MapClaims)["role"].(string), nil
+		roleInterface := token.Claims.(jwt.MapClaims)["roles"].([]interface{})
+		roles := make([]string, len(roleInterface))
+		for i, v := range roleInterface {
+			roles[i] = v.(string)
+		}
+		return token.Claims.(jwt.MapClaims)["account"].(string), roles, nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorExpired != 0 {
-			return "", "", errors.New("token is expired")
+			return "", nil, errors.New("token is expired")
 		}
 	}
-	return "", "", errors.New("invalid token")
+	return "", nil, errors.New("invalid token")
 }
