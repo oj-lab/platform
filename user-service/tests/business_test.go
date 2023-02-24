@@ -55,6 +55,7 @@ func TestComparePassword(t *testing.T) {
 	if match {
 		panic("wrong password should be rejected")
 	}
+	business.DeleteUser("common")
 }
 
 func TestUpdateUser(t *testing.T) {
@@ -69,6 +70,7 @@ func TestUpdateUser(t *testing.T) {
 	if !match {
 		panic("wrong password")
 	}
+	business.DeleteUser("common")
 }
 
 func TestGetUserInfo(t *testing.T) {
@@ -91,6 +93,7 @@ func TestGetUserInfo(t *testing.T) {
 	if userInfo.Account != "common" {
 		panic("wrong account")
 	}
+	business.DeleteUser("common")
 }
 
 func TestFindUserInfos(t *testing.T) {
@@ -103,6 +106,7 @@ func TestFindUserInfos(t *testing.T) {
 	if userInfo[0].Account != "common" {
 		panic("wrong account")
 	}
+	business.DeleteUser("common")
 }
 
 func TestCountUser(t *testing.T) {
@@ -115,4 +119,5 @@ func TestCountUser(t *testing.T) {
 	if count == 0 {
 		panic("wrong count")
 	}
+	business.DeleteUser("common")
 }
