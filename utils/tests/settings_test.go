@@ -1,12 +1,17 @@
 package tests
 
 import (
-	"github.com/OJ-lab/oj-lab-services/utils"
 	"log"
 	"testing"
+
+	"github.com/OJ-lab/oj-lab-services/config"
+	"github.com/OJ-lab/oj-lab-services/utils"
 )
 
 func TestIniBasicUsage(t *testing.T) {
-	databaseSettings, _ := utils.GetDatabaseSettings("../../config/example.ini")
-	log.Print(utils.GetDatabaseDSN(databaseSettings))
+	databaseSettings, err := config.GetDatabaseSettings("../../config/ini/test.ini")
+	if err != nil {
+		t.Error("Fail to load DB settings: ", err)
+	}
+	log.Print(utils.MustGetDatabaseDSN(*databaseSettings))
 }

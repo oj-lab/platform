@@ -1,9 +1,9 @@
 package service
 
-import "github.com/OJ-lab/oj-lab-services/utils"
+import "github.com/OJ-lab/oj-lab-services/config"
 
-var serviceSettings utils.ServiceSettings
+var serviceSettings config.ServiceSettings
 
-func SetupServiceSetting(settings utils.ServiceSettings) {
+func SetupServiceSetting(settings config.ServiceSettings) {
 	serviceSettings = settings
 }

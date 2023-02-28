@@ -1,8 +1,9 @@
-package utils
+package config
 
 import (
-	"gopkg.in/ini.v1"
 	"log"
+
+	"gopkg.in/ini.v1"
 )
 
 type DatabaseSettings struct {
@@ -50,18 +51,17 @@ func GetJWTSettings(source interface{}) (JWTSettings, error) {
 	return jwtSettings, nil
 }
 
-func GetDatabaseSettings(source interface{}) (DatabaseSettings, error) {
-	var cfg *ini.File
-	cfg, _ = ini.Load(source)
-	var databaseSettings DatabaseSettings
-	err := cfg.Section("database").MapTo(&databaseSettings)
+func GetDatabaseSettings(source interface{}) (*DatabaseSettings, error) {
+	cfg, err := ini.Load(source)
 	if err != nil {
-		return DatabaseSettings{}, err
+		return nil, err
+	}
+
+	var databaseSettings DatabaseSettings
+	err = cfg.Section("database").MapTo(&databaseSettings)
+	if err != nil {
+		return nil, err
 	}
 	log.Println("load databaseSettings")
-	return databaseSettings, nil
-}
-
-func GetDatabaseDSN(settings DatabaseSettings) string {
-	return "user=" + settings.User + " password=" + settings.Password + " dbname=" + settings.DbName + " host=" + settings.Host + " port=" + settings.Port + " sslmode=disable TimeZone=Asia/Shanghai"
+	return &databaseSettings, nil
 }

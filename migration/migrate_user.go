@@ -1,11 +1,13 @@
 package main
 
 import (
+	"os"
+
+	"github.com/OJ-lab/oj-lab-services/config"
 	"github.com/OJ-lab/oj-lab-services/model"
 	"github.com/OJ-lab/oj-lab-services/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"os"
 )
 
 func main() {
@@ -13,14 +15,14 @@ func main() {
 	if len(os.Args) > 1 {
 		configPath = os.Args[1]
 	} else {
-		configPath = "config/test.ini"
+		configPath = "config/ini/test.ini"
 	}
-	dataBaseSettings, err := utils.GetDatabaseSettings(configPath)
+	dataBaseSettings, err := config.GetDatabaseSettings(configPath)
 	if err != nil {
 		panic("failed to get database settings")
 	}
 	db, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  utils.GetDatabaseDSN(dataBaseSettings),
+		DSN:                  utils.MustGetDatabaseDSN(*dataBaseSettings),
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
 	}), &gorm.Config{})
 	if err != nil {

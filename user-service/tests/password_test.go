@@ -1,9 +1,10 @@
 package tests
 
 import (
-	"github.com/OJ-lab/oj-lab-services/utils"
-	"github.com/alexedwards/argon2id"
 	"testing"
+
+	"github.com/OJ-lab/oj-lab-services/user-service/utils"
+	"github.com/alexedwards/argon2id"
 )
 
 func TestPassword(t *testing.T) {

@@ -1,10 +1,11 @@
 package service
 
 import (
-	"github.com/OJ-lab/oj-lab-services/model"
+	"strconv"
+
+	"github.com/OJ-lab/oj-lab-services/user-service/business"
 	"github.com/OJ-lab/oj-lab-services/utils"
 	"github.com/gin-gonic/gin"
-	"strconv"
 )
 
 func GetCurrentUser(c *gin.Context) {
@@ -13,12 +14,12 @@ func GetCurrentUser(c *gin.Context) {
 		utils.ApplyError(c, err)
 		return
 	}
-	account, _, err := utils.ParseTokenString(token)
+	account, _, err := business.ParseTokenString(token)
 	if err != nil {
 		utils.ApplyError(c, err)
 		return
 	}
-	userInfo, err := model.GetUserInfo(&account, nil, nil)
+	userInfo, err := business.GetUserInfo(&account, nil, nil)
 	if err != nil {
 		utils.ApplyError(c, err)
 		return
@@ -30,7 +31,7 @@ func GetCurrentUser(c *gin.Context) {
 
 func GetUserInfo(c *gin.Context) {
 	account := c.Param("account")
-	userInfo, err := model.GetUserInfo(&account, nil, nil)
+	userInfo, err := business.GetUserInfo(&account, nil, nil)
 	if err != nil {
 		utils.ApplyError(c, err)
 		return
@@ -53,12 +54,12 @@ func FindUserInfos(c *gin.Context) {
 		utils.ApplyError(c, err)
 		return
 	}
-	userInfos, err := model.FindUserInfos(account, offset, limit)
+	userInfos, err := business.FindUserInfos(account, offset, limit)
 	if err != nil {
 		utils.ApplyError(c, err)
 		return
 	}
-	total, err := model.CountUser(account)
+	total, err := business.CountUser(account)
 	if err != nil {
 		utils.ApplyError(c, err)
 		return
