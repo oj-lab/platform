@@ -12,12 +12,12 @@ func DeleteUser(c *gin.Context) {
 
 	if serviceSettings.AuthOn {
 		tokenString := c.GetHeader("Authorization")
-		selfAccount, role, err := business.ParseTokenString(tokenString)
+		selfAccount, roles, err := business.ParseTokenString(tokenString)
 		if err != nil {
 			utils.ApplyError(c, err)
 			return
 		}
-		if selfAccount != account && model.String2Role(role) != model.RoleAdmin {
+		if selfAccount != account && model.RoleInRoles(model.RoleAdmin, model.Array2Roles(roles)) {
 			c.JSON(401, gin.H{
 				"status": "method not allowed",
 			})
