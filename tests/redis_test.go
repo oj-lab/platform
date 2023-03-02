@@ -12,7 +12,7 @@ var ctx = context.Background()
 
 func TestRedisCluster(t *testing.T) {
 	rdb := redis.NewClusterClient(&redis.ClusterOptions{
-		Addrs: []string{"127.0.0.1:7000", "127.0.0.:7001", "127.0.0.:7002", "127.0.0.:7003", "127.0.0.:7004", "127.0.0.:7005"},
+		Addrs: []string{":7000", ":7001", ":7002", ":7003", ":7004", ":7005"},
 
 		// To route commands by latency or randomly, enable one of the following.
 		// RouteByLatency: true,
