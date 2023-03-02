@@ -51,6 +51,23 @@ func PQArray2Roles(roleArray *pq.StringArray) Roles {
 	return res
 }
 
+func Array2Roles(roles []string) Roles {
+	res := Roles{}
+	for _, roleString := range roles {
+		res = append(res, String2Role(roleString))
+	}
+	return res
+}
+
+func RoleInRoles(role Role, roles Roles) bool {
+	for _, r := range(roles) {
+		if r == role {
+			return true
+		}
+	}
+	return false
+}
+
 func String2Role(s string) Role {
 	switch s {
 	case "admin":

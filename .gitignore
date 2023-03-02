@@ -16,3 +16,4 @@
 
 *.ini
 !config/ini/example.ini
+!config/ini/test.ini
