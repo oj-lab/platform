@@ -1,6 +1,8 @@
 {
     "recommendations": [
         "golang.go",
-        "cweijan.vscode-redis-client"
+        "cweijan.vscode-redis-client",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.makefile-tools"
     ],
 }
