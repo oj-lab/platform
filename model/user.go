@@ -7,14 +7,31 @@ import (
 )
 
 type User struct {
+	MetaFields
+	Account  string  `json:"account"`
+	Name     *string `json:"name"`
+	Password *string `json:"password"`
+	Roles    Roles   `json:"roles"`
+	Email    *string `json:"email"`
+	Mobile   *string `json:"mobile"`
+}
+
+type UserTable struct {
+	MetaFields
 	Account        string `gorm:"primaryKey"`
 	Name           *string
 	HashedPassword string         `gorm:"not null"`
 	Roles          pq.StringArray `gorm:"not null;type:varchar(255)[]"`
 	Email          *string        `gorm:"unique"`
 	Mobile         *string        `gorm:"unique"`
-	CreateAt       time.Time      `gorm:"autoCreateTime"`
-	UpdateAt       time.Time      `gorm:"autoUpdateTime"`
+}
+
+func (ut UserTable) ToUser() User {
+	return User{
+		MetaFields: ut.MetaFields,
+		Account:    ut.Account,
+		Name:       ut.Name,
+	}
 }
 
 type UserInfo struct {
@@ -60,7 +77,7 @@ func Array2Roles(roles []string) Roles {
 }
 
 func RoleInRoles(role Role, roles Roles) bool {
-	for _, r := range(roles) {
+	for _, r := range roles {
 		if r == role {
 			return true
 		}

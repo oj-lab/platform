@@ -3,7 +3,6 @@ package business
 import (
 	"github.com/OJ-lab/oj-lab-services/config"
 	"github.com/OJ-lab/oj-lab-services/model"
-	user_utils "github.com/OJ-lab/oj-lab-services/user-service/utils"
 	"github.com/OJ-lab/oj-lab-services/utils"
 	"github.com/alexedwards/argon2id"
 	"gorm.io/gorm"
@@ -16,12 +15,12 @@ func OpenDBConnection(settings config.DatabaseSettings) {
 }
 
 func CreateUser(account string, password string, roles model.Roles) error {
-	hashedPassword, err := user_utils.GetHashedPassword(password, argon2id.DefaultParams)
+	hashedPassword, err := utils.GetHashedPassword(password, argon2id.DefaultParams)
 	if err != nil {
 		return err
 	}
 
-	user := model.User{
+	user := model.UserTable{
 		Account:        account,
 		HashedPassword: hashedPassword,
 		Roles:          roles.ToPQArray(),
@@ -38,7 +37,7 @@ func UpdateUser(account string, name *string, password *string, roles model.Role
 	var hashedPassword string
 	if password != nil {
 		var err error
-		hashedPassword, err = user_utils.GetHashedPassword(*password, argon2id.DefaultParams)
+		hashedPassword, err = utils.GetHashedPassword(*password, argon2id.DefaultParams)
 		if err != nil {
 			return err
 		}
@@ -46,7 +45,7 @@ func UpdateUser(account string, name *string, password *string, roles model.Role
 		hashedPassword = ""
 	}
 
-	user := model.User{
+	user := model.UserTable{
 		Account:        account,
 		Name:           name,
 		HashedPassword: hashedPassword,
@@ -59,7 +58,7 @@ func UpdateUser(account string, name *string, password *string, roles model.Role
 }
 
 func ComparePassword(account string, password string) (bool, error) {
-	var user model.User
+	var user model.UserTable
 	err := db.Where("account = ?", account).First(&user).Error
 	if err != nil {
 		return false, err
@@ -72,7 +71,7 @@ func GetUserInfo(maybeAccount *string, maybeEmail *string, maybeMobile *string) 
 	if maybeAccount != nil {
 		account = *maybeAccount
 	}
-	var user model.User
+	var user model.UserTable
 	err := db.Where(&model.User{Account: account, Email: maybeEmail, Mobile: maybeMobile}).First(&user).Error
 	if err != nil {
 		return nil, err
@@ -88,7 +87,7 @@ func GetUserInfo(maybeAccount *string, maybeEmail *string, maybeMobile *string) 
 }
 
 func FindUserInfos(query string, offset int, limit int) ([]model.UserInfo, error) {
-	var users []model.User
+	var users []model.UserTable
 	err := db.Where("account LIKE ?", query).Or("name LIKE ?", query).Offset(offset).Limit(limit).Find(&users).Error
 	if err != nil {
 		return nil, err
