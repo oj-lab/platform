@@ -1,4 +1,4 @@
-package config
+package app
 
 import (
 	"os"
@@ -16,6 +16,8 @@ const (
 	PRD_SERVICE_ENV ServiceEnv = "production"
 )
 
+var serviceEnv ServiceEnv
+
 func (se ServiceEnv) isValid() bool {
 	if se == DEV_SERVICE_ENV || se == PRD_SERVICE_ENV {
 		return true
@@ -23,15 +25,19 @@ func (se ServiceEnv) isValid() bool {
 	return false
 }
 
-func loadConfig(basePath string) error {
+func IsDevEnv() bool {
+	return serviceEnv == DEV_SERVICE_ENV
+}
+
+func LoadConfig(basePath string) error {
 	viper.AddConfigPath(basePath)
 
+	serviceEnv = DEV_SERVICE_ENV
 	env := os.Getenv(SERVICE_ENV_KEY)
 	if ServiceEnv(env).isValid() {
-		viper.SetConfigName(env)
-	} else {
-		viper.SetConfigName(string(DEV_SERVICE_ENV))
+		serviceEnv = ServiceEnv(env)
 	}
+	viper.SetConfigName(string(serviceEnv))
 
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -41,7 +47,7 @@ func loadConfig(basePath string) error {
 	viper.SetConfigName(OVERRIDE_CONFIG_NAME)
 	err = viper.MergeInConfig()
 	if err == nil {
-		println("Found override config, merging...")
+		println("Found override config, merged")
 	}
 
 	return nil

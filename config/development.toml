@@ -1,3 +1,6 @@
+[log]
+level = "debug"
+
 [database]
 type = "postgres"
 user = "postgres"

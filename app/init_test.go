@@ -1,13 +1,14 @@
-package config
+package app
 
 import (
 	"testing"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
-func TestViper(T *testing.T) {
-	err := loadConfig("./")
+func TestInit(T *testing.T) {
+	err := LoadConfig("../config")
 	if err != nil {
 		T.Fatal(err)
 	}
@@ -18,4 +19,8 @@ func TestViper(T *testing.T) {
 	if len(databaseType) == 0 {
 		T.Fatal("databaseType not loaded")
 	}
+
+	SetupLog()
+
+	logrus.Error("debug")
 }
