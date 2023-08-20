@@ -7,14 +7,7 @@ import (
 )
 
 func TestViper(T *testing.T) {
-	viper.SetConfigFile("./test.toml")
-	err := viper.ReadInConfig()
-	if err != nil {
-		T.Fatal(err)
-	}
-
-	viper.SetConfigFile("./test_override.toml")
-	err = viper.MergeInConfig()
+	err := loadConfig("./")
 	if err != nil {
 		T.Fatal(err)
 	}
