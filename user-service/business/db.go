@@ -30,7 +30,7 @@ func CreateUser(account string, password string, roles model.Roles) error {
 }
 
 func DeleteUser(account string) error {
-	return db.Delete(&model.User{Account: account}).Error
+	return db.Delete(&model.UserTable{Account: account}).Error
 }
 
 func UpdateUser(account string, name *string, password *string, roles model.Roles, email *string, mobile *string) error {
@@ -54,7 +54,7 @@ func UpdateUser(account string, name *string, password *string, roles model.Role
 		Mobile:         mobile,
 	}
 
-	return db.Model(&model.User{Account: account}).Updates(user).Error
+	return db.Model(&model.UserTable{Account: account}).Updates(user).Error
 }
 
 func ComparePassword(account string, password string) (bool, error) {
@@ -72,7 +72,7 @@ func GetUserInfo(maybeAccount *string, maybeEmail *string, maybeMobile *string) 
 		account = *maybeAccount
 	}
 	var user model.UserTable
-	err := db.Where(&model.User{Account: account, Email: maybeEmail, Mobile: maybeMobile}).First(&user).Error
+	err := db.Where(&model.UserTable{Account: account, Email: maybeEmail, Mobile: maybeMobile}).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -108,6 +108,6 @@ func FindUserInfos(query string, offset int, limit int) ([]model.UserInfo, error
 
 func CountUser(query string) (int64, error) {
 	var count int64
-	err := db.Model(&model.User{}).Where("account LIKE ?", query).Or("name LIKE ?", query).Count(&count).Error
+	err := db.Model(&model.UserTable{}).Where("account LIKE ?", query).Or("name LIKE ?", query).Count(&count).Error
 	return count, err
 }

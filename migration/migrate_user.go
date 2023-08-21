@@ -21,7 +21,7 @@ func main() {
 	}
 	utils.MustCreateDatabase(*dataBaseSettings)
 	db := utils.MustGetDBConnection(*dataBaseSettings)
-	err = db.AutoMigrate(&model.User{})
+	err = db.AutoMigrate(&model.UserTable{})
 	if err != nil {
 		panic("failed to migrate database")
 	}
