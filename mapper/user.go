@@ -61,7 +61,7 @@ type UserOption struct {
 	Mobile  *string
 }
 
-func GetUserByOption(option UserOption) (*model.UserInfo, error) {
+func GetUserInfo(ctx context.Context, option UserOption) (*model.UserInfo, error) {
 	db := database.GetDefaultDB()
 	account := ""
 	if option.Account != nil {
@@ -80,4 +80,31 @@ func GetUserByOption(option UserOption) (*model.UserInfo, error) {
 		CreateAt: user.CreateAt,
 		UpdateAt: user.UpdateAt,
 	}, nil
+}
+
+type FuzzyQuery struct {
+	query  string
+	offset int
+	limit  int
+}
+
+func FindUserInfo(ctx context.Context, fq FuzzyQuery) ([]model.UserInfo, error) {
+	db := database.GetDefaultDB()
+	var users []model.UserTable
+	err := db.Where("account LIKE ?", fq.query).Or("name LIKE ?", fq.query).Offset(fq.offset).Limit(fq.limit).Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	var userInfos []model.UserInfo
+	for _, user := range users {
+		userInfos = append(userInfos, model.UserInfo{
+			Account:  user.Account,
+			Name:     user.Name,
+			Roles:    model.PQArray2Roles(&user.Roles),
+			Email:    user.Email,
+			CreateAt: user.CreateAt,
+			UpdateAt: user.UpdateAt,
+		})
+	}
+	return userInfos, err
 }
