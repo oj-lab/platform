@@ -4,3 +4,16 @@ level = "debug"
 [database]
 type = "postgres"
 user = "postgres"
+password = "development"
+host = "127.0.0.1"
+port = "5432"
+db_name = "oj_lab"
+
+[jwt]
+secret = "example_secret"
+duration = "24h"
+
+[service]
+auth_on = true
+port = ":8080"
+cookie.age = "24h"

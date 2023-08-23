@@ -1,6 +1,7 @@
 package app
 
 import (
+	"os"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -8,6 +9,8 @@ import (
 )
 
 func TestInit(T *testing.T) {
+	os.Setenv(OVERRIDE_CONFIG_NAME_ENV_KEY, "override.example")
+
 	databaseType := viper.GetString("database.type")
 	databaseUser := viper.GetString("database.user")
 	println(databaseType, databaseUser)

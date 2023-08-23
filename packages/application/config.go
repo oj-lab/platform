@@ -9,7 +9,9 @@ import (
 
 const SERVICE_ENV_KEY = "OJ_LAB_SERVICE_ENV"
 const PROJECT_ROOT_ENV_KEY = "OJ_LAB_PROJECT_ROOT"
-const OVERRIDE_CONFIG_NAME = "override"
+const OVERRIDE_CONFIG_NAME_ENV_KEY = "OJ_LAB_OVERRIDE_CONFIG_NAME"
+
+const DEFAULT_OVERRIDE_CONFIG_NAME = "override"
 const DEFAULT_PROJECT_ROOT = "oj-lab-services"
 
 type ServiceEnv string
@@ -48,7 +50,12 @@ func LoadConfig(basePath string) error {
 		return err
 	}
 
-	viper.SetConfigName(OVERRIDE_CONFIG_NAME)
+	overrideConfigName := os.Getenv(OVERRIDE_CONFIG_NAME_ENV_KEY)
+	if overrideConfigName == "" {
+		overrideConfigName = DEFAULT_OVERRIDE_CONFIG_NAME
+	}
+
+	viper.SetConfigName(overrideConfigName)
 	err = viper.MergeInConfig()
 	if err == nil {
 		println("Found override config, merged")
