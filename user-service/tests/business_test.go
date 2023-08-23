@@ -9,7 +9,7 @@ import (
 )
 
 func SetupTestDatabase() {
-	dataBaseSettings, err := config.GetDatabaseSettings("../../config/ini/test.ini")
+	dataBaseSettings, err := config.GetDatabaseSettings("../../packages/config/ini/test.ini")
 	if err != nil {
 		panic("failed to get database settings")
 	}

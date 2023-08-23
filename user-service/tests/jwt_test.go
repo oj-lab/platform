@@ -10,7 +10,7 @@ import (
 )
 
 func TestGenerateTokenString(t *testing.T) {
-	jwtSettings, _ := config.GetJWTSettings("../../config/ini/test.ini")
+	jwtSettings, _ := config.GetJWTSettings("../../packages/config/ini/test.ini")
 	business.SetupJWTSettings(jwtSettings)
 	tokenString, err := business.GenerateTokenString("account", []model.Role{model.RoleAdmin})
 	if err != nil {
@@ -20,7 +20,7 @@ func TestGenerateTokenString(t *testing.T) {
 }
 
 func TestParseTokenString(t *testing.T) {
-	jwtSettings, _ := config.GetJWTSettings("../../config/ini/test.ini")
+	jwtSettings, _ := config.GetJWTSettings("../../packages/config/ini/test.ini")
 	business.SetupJWTSettings(jwtSettings)
 	tokenString, err := business.GenerateTokenString("account", []model.Role{model.RoleAdmin})
 	if err != nil {
