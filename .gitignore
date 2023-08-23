@@ -15,7 +15,7 @@
 # vendor/
 
 *.ini
-!config/ini/example.ini
-!config/ini/test.ini
+!packages/config/ini/example.ini
+!packages/config/ini/test.ini
 
 bin/
