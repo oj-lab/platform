@@ -2,12 +2,15 @@ package app
 
 import (
 	"os"
+	"path"
 
 	"github.com/spf13/viper"
 )
 
 const SERVICE_ENV_KEY = "OJ_LAB_SERVICE_ENV"
+const PROJECT_ROOT_ENV_KEY = "OJ_LAB_PROJECT_ROOT"
 const OVERRIDE_CONFIG_NAME = "override"
+const DEFAULT_PROJECT_ROOT = "oj-lab-services"
 
 type ServiceEnv string
 
@@ -37,6 +40,7 @@ func LoadConfig(basePath string) error {
 	if ServiceEnv(env).isValid() {
 		serviceEnv = ServiceEnv(env)
 	}
+	println("Env: ", serviceEnv)
 	viper.SetConfigName(string(serviceEnv))
 
 	err := viper.ReadInConfig()
@@ -51,4 +55,31 @@ func LoadConfig(basePath string) error {
 	}
 
 	return nil
+}
+
+func GetProjectRoot() string {
+	projectRoot := os.Getenv(PROJECT_ROOT_ENV_KEY)
+	if projectRoot == "" {
+		projectRoot = DEFAULT_PROJECT_ROOT
+	}
+
+	wd, err := os.Getwd()
+	if err != nil {
+		panic("Cannot find working dir")
+	}
+	isRoot := path.Base(wd) == DEFAULT_PROJECT_ROOT
+	for !isRoot && wd != "" {
+		wd = path.Dir(wd)
+		isRoot = path.Base(wd) == DEFAULT_PROJECT_ROOT
+	}
+	if wd == "" {
+		panic("Cannot find project root folder")
+	}
+	return wd
+}
+
+func init() {
+	projectRoot := GetProjectRoot()
+	println("Initing config with project root: ", projectRoot)
+	LoadConfig(path.Join(projectRoot, "config"))
 }

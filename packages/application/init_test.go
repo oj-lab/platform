@@ -8,11 +8,6 @@ import (
 )
 
 func TestInit(T *testing.T) {
-	err := LoadConfig("../../config")
-	if err != nil {
-		T.Fatal(err)
-	}
-
 	databaseType := viper.GetString("database.type")
 	databaseUser := viper.GetString("database.user")
 	println(databaseType, databaseUser)
