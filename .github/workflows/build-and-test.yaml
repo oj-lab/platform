@@ -35,7 +35,7 @@ jobs:
     - name: SQL Migration
       run: |
         go build -o bin/migrate -v migration/migrate_user.go
-        ./bin/migrate config/ini/test.ini
+        ./bin/migrate packages/config/ini/test.ini
     
     - name: Test
       run: |
