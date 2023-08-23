@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/OJ-lab/oj-lab-services/config"
-	"github.com/OJ-lab/oj-lab-services/model"
+	"github.com/OJ-lab/oj-lab-services/packages/config"
+	"github.com/OJ-lab/oj-lab-services/packages/model"
 	"github.com/golang-jwt/jwt/v4"
 )
 

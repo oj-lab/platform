@@ -1,9 +1,9 @@
 package business
 
 import (
-	"github.com/OJ-lab/oj-lab-services/config"
-	"github.com/OJ-lab/oj-lab-services/model"
-	"github.com/OJ-lab/oj-lab-services/utils"
+	"github.com/OJ-lab/oj-lab-services/packages/config"
+	"github.com/OJ-lab/oj-lab-services/packages/model"
+	"github.com/OJ-lab/oj-lab-services/packages/utils"
 	"github.com/alexedwards/argon2id"
 	"gorm.io/gorm"
 )

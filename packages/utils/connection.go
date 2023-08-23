@@ -1,10 +1,10 @@
 package utils
 
 import (
-	"log"
 	"fmt"
+	"log"
 
-	"github.com/OJ-lab/oj-lab-services/config"
+	"github.com/OJ-lab/oj-lab-services/packages/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -27,7 +27,7 @@ func MustCreateDatabase(settings config.DatabaseSettings) {
 		DSN:                  MustGetPSqlDSN(settings),
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
 	}), &gorm.Config{})
-	if err!= nil {
+	if err != nil {
 		panic("failed to connect psql")
 	}
 	var exists bool

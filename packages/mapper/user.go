@@ -3,9 +3,9 @@ package mapper
 import (
 	"context"
 
-	"github.com/OJ-lab/oj-lab-services/database"
-	"github.com/OJ-lab/oj-lab-services/model"
-	"github.com/OJ-lab/oj-lab-services/utils"
+	"github.com/OJ-lab/oj-lab-services/packages/database"
+	"github.com/OJ-lab/oj-lab-services/packages/model"
+	"github.com/OJ-lab/oj-lab-services/packages/utils"
 	"github.com/alexedwards/argon2id"
 )
 

@@ -3,9 +3,9 @@ package service
 import (
 	"time"
 
-	"github.com/OJ-lab/oj-lab-services/model"
+	"github.com/OJ-lab/oj-lab-services/packages/model"
 	"github.com/OJ-lab/oj-lab-services/user-service/business"
-	"github.com/OJ-lab/oj-lab-services/utils"
+	"github.com/OJ-lab/oj-lab-services/packages/utils"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,9 +1,10 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/OJ-lab/oj-lab-services/user-service/service"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func SetupUserRouter(r *gin.Engine) {

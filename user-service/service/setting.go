@@ -1,6 +1,6 @@
 package service
 
-import "github.com/OJ-lab/oj-lab-services/config"
+import "github.com/OJ-lab/oj-lab-services/packages/config"
 
 var serviceSettings config.ServiceSettings
 

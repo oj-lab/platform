@@ -3,8 +3,8 @@ package tests
 import (
 	"testing"
 
-	"github.com/OJ-lab/oj-lab-services/config"
-	"github.com/OJ-lab/oj-lab-services/model"
+	"github.com/OJ-lab/oj-lab-services/packages/config"
+	"github.com/OJ-lab/oj-lab-services/packages/model"
 	"github.com/OJ-lab/oj-lab-services/user-service/business"
 )
 

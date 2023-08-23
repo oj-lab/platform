@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/OJ-lab/oj-lab-services/utils"
+	"github.com/OJ-lab/oj-lab-services/packages/utils"
 	"github.com/alexedwards/argon2id"
 )
 

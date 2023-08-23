@@ -8,7 +8,7 @@ import (
 )
 
 func TestInit(T *testing.T) {
-	err := LoadConfig("../config")
+	err := LoadConfig("../../config")
 	if err != nil {
 		T.Fatal(err)
 	}

@@ -39,5 +39,4 @@ jobs:
     
     - name: Test
       run: |
-        go test ./tests
-        go test ./user-service/tests
+        go test -cover -v ./...

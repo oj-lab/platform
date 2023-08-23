@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/OJ-lab/oj-lab-services/config"
+	"github.com/OJ-lab/oj-lab-services/packages/config"
 	"github.com/OJ-lab/oj-lab-services/user-service/business"
 	"github.com/OJ-lab/oj-lab-services/user-service/router"
 	"github.com/OJ-lab/oj-lab-services/user-service/service"
