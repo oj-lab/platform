@@ -27,5 +27,7 @@ You will need to run the migration script before you can use the service.
 
 ## Development
 
+🌟 Accept VSCode extension recommandation for complete experience 🌟
+
 For service development, we don't want to make it too complex.
 Using VSCode on either Win/*nix System are avaliabe, try using the Makefile/Dockerfile in the repository.
