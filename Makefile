@@ -10,7 +10,9 @@ build:
 .PHONY: setup-db
 setup-db: build
 	docker-compose up -d
-	 ./bin/migrate_user
+	@echo "Wait 10 seconds for db setup"
+	sleep 10s
+	./bin/migrate_user
 
 .PHONY: check
 check:
