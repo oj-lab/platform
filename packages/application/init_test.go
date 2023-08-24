@@ -7,7 +7,7 @@ import (
 )
 
 func TestInit(T *testing.T) {
-	logLevel := viper.GetString(LOG_LEVEL_PROP)
+	logLevel := viper.GetString(logLevelProp)
 	if logLevel != "debug" {
 		T.Errorf("log level is not debug but %s", logLevel)
 	}

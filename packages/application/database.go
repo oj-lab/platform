@@ -5,9 +5,18 @@ import (
 	"gorm.io/gorm"
 )
 
+const dsnProp = "database.dsn"
+
 var db *gorm.DB
 
 var dsn string
+
+func init() {
+	dsn = AppConfig.GetString(dsnProp)
+	if dsn == "" {
+		panic("database dsn is not set")
+	}
+}
 
 func GetDefaultDB() *gorm.DB {
 	if db == nil {
@@ -22,11 +31,4 @@ func GetDefaultDB() *gorm.DB {
 	}
 
 	return db
-}
-
-func init() {
-	dsn = AppConfig.GetString("database.dsn")
-	if dsn == "" {
-		panic("database dsn is not set")
-	}
 }

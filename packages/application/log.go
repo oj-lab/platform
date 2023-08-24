@@ -6,13 +6,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const LOG_LEVEL_PROP = "log.level"
+const logLevelProp = "log.level"
 
 func setupLog() {
 	logrus.SetOutput(os.Stdout)
 
 	logrus.SetLevel(logrus.DebugLevel)
-	lvl := AppConfig.GetString(LOG_LEVEL_PROP)
+	lvl := AppConfig.GetString(logLevelProp)
 	logLevel, err := logrus.ParseLevel(lvl)
 	if err == nil {
 		println("log level:", lvl)

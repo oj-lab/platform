@@ -12,3 +12,4 @@ duration = "24h"
 auth_on = true
 port = ":8080"
 cookie.age = "24h"
+mode = "debug"

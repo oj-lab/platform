@@ -12,6 +12,10 @@ setup-db: build
 	docker-compose up -d
 	 ./bin/migrate_user
 
+.PHONY: check
+check:
+	go vet ./...
+
 .PHONY: test
-test: build setup-db
+test: build check setup-db
 	go test -cover -v ./...

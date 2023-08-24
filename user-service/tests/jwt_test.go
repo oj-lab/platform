@@ -4,14 +4,11 @@ import (
 	"log"
 	"testing"
 
-	"github.com/OJ-lab/oj-lab-services/packages/config"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
 	"github.com/OJ-lab/oj-lab-services/user-service/business"
 )
 
 func TestGenerateTokenString(t *testing.T) {
-	jwtSettings, _ := config.GetJWTSettings("../../packages/config/ini/test.ini")
-	business.SetupJWTSettings(jwtSettings)
 	tokenString, err := business.GenerateTokenString("account", []model.Role{model.RoleAdmin})
 	if err != nil {
 		panic(err)
@@ -20,8 +17,6 @@ func TestGenerateTokenString(t *testing.T) {
 }
 
 func TestParseTokenString(t *testing.T) {
-	jwtSettings, _ := config.GetJWTSettings("../../packages/config/ini/test.ini")
-	business.SetupJWTSettings(jwtSettings)
 	tokenString, err := business.GenerateTokenString("account", []model.Role{model.RoleAdmin})
 	if err != nil {
 		panic(err)
