@@ -3,14 +3,14 @@ package mapper
 import (
 	"context"
 
-	"github.com/OJ-lab/oj-lab-services/packages/database"
+	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
 	"github.com/OJ-lab/oj-lab-services/packages/utils"
 	"github.com/alexedwards/argon2id"
 )
 
 func CreateUser(ctx context.Context, user model.User) error {
-	db := database.GetDefaultDB()
+	db := application.GetDefaultDB()
 	hashedPassword, err := utils.GetHashedPassword(*user.Password, argon2id.DefaultParams)
 	if err != nil {
 		return err
@@ -26,12 +26,12 @@ func CreateUser(ctx context.Context, user model.User) error {
 }
 
 func DeleteUser(ctx context.Context, user model.User) error {
-	db := database.GetDefaultDB()
+	db := application.GetDefaultDB()
 	return db.Delete(&model.UserTable{Account: user.Account}).Error
 }
 
 func UpdateUser(ctx context.Context, user model.User) error {
-	db := database.GetDefaultDB()
+	db := application.GetDefaultDB()
 	var hashedPassword string
 	if user.Password != nil {
 		var err error
@@ -62,7 +62,7 @@ type UserOption struct {
 }
 
 func GetUserInfo(ctx context.Context, option UserOption) (*model.UserInfo, error) {
-	db := database.GetDefaultDB()
+	db := application.GetDefaultDB()
 	account := ""
 	if option.Account != nil {
 		account = *option.Account
@@ -89,7 +89,7 @@ type FuzzyQuery struct {
 }
 
 func FindUserInfo(ctx context.Context, fq FuzzyQuery) ([]model.UserInfo, error) {
-	db := database.GetDefaultDB()
+	db := application.GetDefaultDB()
 	var users []model.UserTable
 	err := db.Where("account LIKE ?", fq.query).Or("name LIKE ?", fq.query).Offset(fq.offset).Limit(fq.limit).Find(&users).Error
 	if err != nil {

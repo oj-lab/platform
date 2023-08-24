@@ -8,9 +8,9 @@ build:
 	go build -o bin/user_service user-service/application.go
 
 .PHONY: setup-db
-setup-db:
+setup-db: build
 	docker-compose up -d
-	 ./bin/migrate_user packages/config/ini/test.ini
+	 ./bin/migrate_user
 
 .PHONY: test
 test: build setup-db

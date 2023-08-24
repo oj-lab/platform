@@ -1,20 +1,21 @@
-package app
+package application
 
 import (
 	"os"
 
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
 const LOG_LEVEL_PROP = "log.level"
 
-func SetupLog() {
+func setupLog() {
 	logrus.SetOutput(os.Stdout)
 
 	logrus.SetLevel(logrus.DebugLevel)
-	logLevel, err := logrus.ParseLevel(viper.GetString(LOG_LEVEL_PROP))
+	lvl := AppConfig.GetString(LOG_LEVEL_PROP)
+	logLevel, err := logrus.ParseLevel(lvl)
 	if err == nil {
+		println("log level:", lvl)
 		logrus.SetLevel(logLevel)
 	}
 }

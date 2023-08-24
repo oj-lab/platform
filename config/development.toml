@@ -2,12 +2,7 @@
 level = "debug"
 
 [database]
-type = "postgres"
-user = "postgres"
-password = "development"
-host = "127.0.0.1"
-port = "5432"
-db_name = "oj_lab"
+dsn = "user=postgres password=development host=127.0.0.1 port=5432 dbname=oj_lab sslmode=disable TimeZone=Asia/Shanghai"
 
 [jwt]
 secret = "example_secret"

@@ -1,7 +1,6 @@
-package database
+package application
 
 import (
-	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -26,5 +25,8 @@ func GetDefaultDB() *gorm.DB {
 }
 
 func init() {
-	dsn = viper.GetString("database.dsn")
+	dsn = AppConfig.GetString("database.dsn")
+	if dsn == "" {
+		panic("database dsn is not set")
+	}
 }
