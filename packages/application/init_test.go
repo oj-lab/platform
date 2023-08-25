@@ -1,26 +1,14 @@
-package app
+package application
 
 import (
 	"testing"
 
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
 func TestInit(T *testing.T) {
-	err := LoadConfig("../../config")
-	if err != nil {
-		T.Fatal(err)
+	logLevel := viper.GetString(logLevelProp)
+	if logLevel != "debug" {
+		T.Errorf("log level is not debug but %s", logLevel)
 	}
-
-	databaseType := viper.GetString("database.type")
-	databaseUser := viper.GetString("database.user")
-	println(databaseType, databaseUser)
-	if len(databaseType) == 0 {
-		T.Fatal("databaseType not loaded")
-	}
-
-	SetupLog()
-
-	logrus.Error("debug")
 }

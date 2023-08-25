@@ -3,11 +3,20 @@ package service
 import (
 	"time"
 
+	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
-	"github.com/OJ-lab/oj-lab-services/user-service/business"
 	"github.com/OJ-lab/oj-lab-services/packages/utils"
+	"github.com/OJ-lab/oj-lab-services/user-service/business"
 	"github.com/gin-gonic/gin"
 )
+
+const cookieAgeProp = "service.cookie_age"
+
+var cookieAge string
+
+func init() {
+	cookieAge = application.AppConfig.GetString(cookieAgeProp)
+}
 
 func Login(c *gin.Context) {
 	account := c.Param("account")
@@ -28,7 +37,7 @@ func Login(c *gin.Context) {
 			utils.ApplyError(c, err)
 			return
 		}
-		duration, err := time.ParseDuration(serviceSettings.CookieAge)
+		duration, err := time.ParseDuration(cookieAge)
 		if err != nil {
 			utils.ApplyError(c, err)
 			return

@@ -5,6 +5,9 @@
         // need to find another elegant way for operating & debug with redis 
         // "cweijan.vscode-redis-client",
         "ms-azuretools.vscode-docker",
-        "ms-vscode.makefile-tools"
+        "ms-vscode.makefile-tools",
+        "tamasfe.even-better-toml",
+        "pkief.material-icon-theme",
+        "ckolkman.vscode-postgres"
     ],
 }

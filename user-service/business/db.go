@@ -1,20 +1,15 @@
 package business
 
 import (
-	"github.com/OJ-lab/oj-lab-services/packages/config"
+	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
 	"github.com/OJ-lab/oj-lab-services/packages/utils"
 	"github.com/alexedwards/argon2id"
-	"gorm.io/gorm"
 )
 
-var db *gorm.DB
-
-func OpenDBConnection(settings config.DatabaseSettings) {
-	db = utils.MustGetDBConnection(settings)
-}
-
 func CreateUser(account string, password string, roles model.Roles) error {
+	db := application.GetDefaultDB()
+
 	hashedPassword, err := utils.GetHashedPassword(password, argon2id.DefaultParams)
 	if err != nil {
 		return err
@@ -30,10 +25,12 @@ func CreateUser(account string, password string, roles model.Roles) error {
 }
 
 func DeleteUser(account string) error {
+	db := application.GetDefaultDB()
 	return db.Delete(&model.UserTable{Account: account}).Error
 }
 
 func UpdateUser(account string, name *string, password *string, roles model.Roles, email *string, mobile *string) error {
+	db := application.GetDefaultDB()
 	var hashedPassword string
 	if password != nil {
 		var err error
@@ -58,6 +55,7 @@ func UpdateUser(account string, name *string, password *string, roles model.Role
 }
 
 func ComparePassword(account string, password string) (bool, error) {
+	db := application.GetDefaultDB()
 	var user model.UserTable
 	err := db.Where("account = ?", account).First(&user).Error
 	if err != nil {
@@ -67,6 +65,7 @@ func ComparePassword(account string, password string) (bool, error) {
 }
 
 func GetUserInfo(maybeAccount *string, maybeEmail *string, maybeMobile *string) (*model.UserInfo, error) {
+	db := application.GetDefaultDB()
 	account := ""
 	if maybeAccount != nil {
 		account = *maybeAccount
@@ -87,6 +86,7 @@ func GetUserInfo(maybeAccount *string, maybeEmail *string, maybeMobile *string) 
 }
 
 func FindUserInfos(query string, offset int, limit int) ([]model.UserInfo, error) {
+	db := application.GetDefaultDB()
 	var users []model.UserTable
 	err := db.Where("account LIKE ?", query).Or("name LIKE ?", query).Offset(offset).Limit(limit).Find(&users).Error
 	if err != nil {
@@ -107,6 +107,7 @@ func FindUserInfos(query string, offset int, limit int) ([]model.UserInfo, error
 }
 
 func CountUser(query string) (int64, error) {
+	db := application.GetDefaultDB()
 	var count int64
 	err := db.Model(&model.UserTable{}).Where("account LIKE ?", query).Or("name LIKE ?", query).Count(&count).Error
 	return count, err

@@ -1,45 +1,32 @@
 package main
 
 import (
-	"os"
-
-	"github.com/OJ-lab/oj-lab-services/packages/config"
-	"github.com/OJ-lab/oj-lab-services/user-service/business"
+	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/OJ-lab/oj-lab-services/user-service/router"
-	"github.com/OJ-lab/oj-lab-services/user-service/service"
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	servicePortProp = "service.port"
+	serviceModeProp = "service.mode"
+)
+
+var (
+	servicePort string
+	serviceMode string
+)
+
+func init() {
+	servicePort = application.AppConfig.GetString(servicePortProp)
+	serviceMode = application.AppConfig.GetString(serviceModeProp)
+}
+
 func main() {
-	var configPath string
-	if len(os.Args) > 1 {
-		configPath = os.Args[1]
-	} else {
-		configPath = "config/ini/example.ini"
-	}
-
-	dataBaseSettings, err := config.GetDatabaseSettings(configPath)
-	if err != nil {
-		panic("failed to get database settings")
-	}
-	jwtSettings, err := config.GetJWTSettings(configPath)
-	if err != nil {
-		panic("failed to get jwt settings")
-	}
-	serviceSettings, err := config.GetServiceSettings(configPath)
-	if err != nil {
-		panic("failed to get service settings")
-	}
-
-	business.OpenDBConnection(*dataBaseSettings)
-	business.SetupJWTSettings(jwtSettings)
-	service.SetupServiceSetting(serviceSettings)
-
 	r := gin.Default()
-	gin.SetMode(serviceSettings.Mode)
+	gin.SetMode(serviceMode)
 	router.SetupUserRouter(r)
 
-	err = r.Run(serviceSettings.Port)
+	err := r.Run(servicePort)
 	if err != nil {
 		panic(err)
 	} // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

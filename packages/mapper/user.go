@@ -3,14 +3,14 @@ package mapper
 import (
 	"context"
 
-	"github.com/OJ-lab/oj-lab-services/packages/database"
+	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
 	"github.com/OJ-lab/oj-lab-services/packages/utils"
 	"github.com/alexedwards/argon2id"
 )
 
 func CreateUser(ctx context.Context, user model.User) error {
-	db := database.GetDefaultDB()
+	db := application.GetDefaultDB()
 	hashedPassword, err := utils.GetHashedPassword(*user.Password, argon2id.DefaultParams)
 	if err != nil {
 		return err
@@ -26,85 +26,63 @@ func CreateUser(ctx context.Context, user model.User) error {
 }
 
 func DeleteUser(ctx context.Context, user model.User) error {
-	db := database.GetDefaultDB()
+	db := application.GetDefaultDB()
 	return db.Delete(&model.UserTable{Account: user.Account}).Error
 }
 
-func UpdateUser(ctx context.Context, user model.User) error {
-	db := database.GetDefaultDB()
-	var hashedPassword string
-	if user.Password != nil {
-		var err error
-		hashedPassword, err = utils.GetHashedPassword(*user.Password, argon2id.DefaultParams)
-		if err != nil {
-			return err
-		}
-	} else {
-		hashedPassword = ""
-	}
+func UpdateUser(ctx context.Context, update model.User) error {
+	db := application.GetDefaultDB()
 
-	userRow := model.UserTable{
-		Account:        user.Account,
-		Name:           user.Name,
-		HashedPassword: hashedPassword,
-		Roles:          user.Roles.ToPQArray(),
-		Email:          user.Email,
-		Mobile:         user.Mobile,
-	}
-
-	return db.Model(&model.UserTable{Account: userRow.Account}).Updates(userRow).Error
-}
-
-type UserOption struct {
-	Account *string
-	Email   *string
-	Mobile  *string
-}
-
-func GetUserInfo(ctx context.Context, option UserOption) (*model.UserInfo, error) {
-	db := database.GetDefaultDB()
-	account := ""
-	if option.Account != nil {
-		account = *option.Account
-	}
-	var user model.UserTable
-	err := db.Where(&model.UserTable{Account: account, Email: option.Email, Mobile: option.Mobile}).First(&user).Error
+	old := model.UserTable{}
+	err := db.Where("account = ?", update.Account).First(&old).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return &model.UserInfo{
-		Account:  user.Account,
-		Name:     user.Name,
-		Roles:    model.PQArray2Roles(&user.Roles),
-		Email:    user.Email,
-		CreateAt: user.CreateAt,
-		UpdateAt: user.UpdateAt,
-	}, nil
-}
 
-type FuzzyQuery struct {
-	query  string
-	offset int
-	limit  int
-}
-
-func FindUserInfo(ctx context.Context, fq FuzzyQuery) ([]model.UserInfo, error) {
-	db := database.GetDefaultDB()
-	var users []model.UserTable
-	err := db.Where("account LIKE ?", fq.query).Or("name LIKE ?", fq.query).Offset(fq.offset).Limit(fq.limit).Find(&users).Error
+	hashedPassword := ""
+	if update.Password != nil {
+		hashedPassword, err = utils.GetHashedPassword(*update.Password, argon2id.DefaultParams)
+	}
 	if err != nil {
-		return nil, err
+		return err
 	}
-	var userInfos []model.UserInfo
-	for _, user := range users {
-		userInfos = append(userInfos, model.UserInfo{
-			Account:  user.Account,
-			Name:     user.Name,
-			Roles:    model.PQArray2Roles(&user.Roles),
-			Email:    user.Email,
-			CreateAt: user.CreateAt,
-			UpdateAt: user.UpdateAt,
-		})
+
+	new := old
+	if update.Password != nil {
+		new.HashedPassword = hashedPassword
 	}
-	return userInfos, err
+	if update.Roles != nil {
+		new.Roles = update.Roles.ToPQArray()
+	}
+
+	return db.Model(&model.UserTable{Account: new.Account}).Updates(new).Error
+}
+
+type GetUserOptions struct {
+	Account string
+	Email   string
+	Mobile  string
+	Offset  *int
+	Limit   *int
+}
+
+func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.UserTable, error) {
+	db := application.GetDefaultDB()
+	users := []model.UserTable{}
+
+	tx := db.
+		Where("account = ?", options.Account).
+		Or("email = ?", options.Email).
+		Or("mobile = ?", options.Mobile)
+
+	if options.Offset != nil {
+		tx = tx.Offset(*options.Offset)
+	}
+	if options.Limit != nil {
+		tx = tx.Limit(*options.Limit)
+	}
+
+	err := tx.Find(&users).Error
+
+	return users, err
 }

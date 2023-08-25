@@ -1,16 +1,25 @@
 package service
 
 import (
+	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
-	"github.com/OJ-lab/oj-lab-services/user-service/business"
 	"github.com/OJ-lab/oj-lab-services/packages/utils"
+	"github.com/OJ-lab/oj-lab-services/user-service/business"
 	"github.com/gin-gonic/gin"
 )
+
+const authOnProp = "service.auth_on"
+
+var authOn bool
+
+func init() {
+	authOn = application.AppConfig.GetBool(authOnProp)
+}
 
 func DeleteUser(c *gin.Context) {
 	account := c.Param("account")
 
-	if serviceSettings.AuthOn {
+	if authOn {
 		tokenString := c.GetHeader("Authorization")
 		selfAccount, roles, err := business.ParseTokenString(tokenString)
 		if err != nil {

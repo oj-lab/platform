@@ -1,0 +1,10 @@
+# By default, you can override the config by creating a file named in `override` in the config directory.
+#
+# If you want to override the using config, instead the file name of `override`,
+# you need to set env `OJ_LAB_OVERRIDE_CONFIG_NAME` to the name of the config file you want to use.
+#
+# In this example, setting `OJ_LAB_OVERRIDE_CONFIG_NAME` to `override.example`
+# will override the log level to `info`.
+
+[log]
+level = "info"

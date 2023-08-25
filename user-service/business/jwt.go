@@ -4,33 +4,33 @@ import (
 	"errors"
 	"time"
 
-	"github.com/OJ-lab/oj-lab-services/packages/config"
+	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var jwtSettings *config.JWTSettings
+var jwtSecret string
+var jwtDuration time.Duration
 
-func SetupJWTSettings(settings config.JWTSettings) {
-	jwtSettings = &settings
+func init() {
+	jwtSecret = application.AppConfig.GetString("jwt.secret")
+	jwtDuration = application.AppConfig.GetDuration("jwt.duration")
 }
 
 func GenerateTokenString(account string, roles []model.Role) (string, error) {
-	duration, err := time.ParseDuration(jwtSettings.Duration)
-	if err != nil {
-		return "", err
-	}
+	duration := jwtDuration
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"account": account,
 		"roles":   roles,
 		"exp":     time.Now().Add(duration).Unix(),
 	})
-	return token.SignedString([]byte(jwtSettings.Secret))
+	return token.SignedString([]byte(jwtSecret))
 }
 
 func ParseTokenString(tokenString string) (string, []string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(jwtSettings.Secret), nil
+		return []byte(jwtSecret), nil
 	})
 	if err != nil {
 		return "", nil, err

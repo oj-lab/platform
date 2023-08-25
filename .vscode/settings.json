@@ -1,0 +1,8 @@
+{
+    "material-icon-theme.folders.associations": {
+        "application": "core",
+        "mapper": "database",
+        "migration": "import",
+        "user-service": "server",
+    }
+}

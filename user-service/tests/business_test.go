@@ -3,18 +3,9 @@ package tests
 import (
 	"testing"
 
-	"github.com/OJ-lab/oj-lab-services/packages/config"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
 	"github.com/OJ-lab/oj-lab-services/user-service/business"
 )
-
-func SetupTestDatabase() {
-	dataBaseSettings, err := config.GetDatabaseSettings("../../packages/config/ini/test.ini")
-	if err != nil {
-		panic("failed to get database settings")
-	}
-	business.OpenDBConnection(*dataBaseSettings)
-}
 
 func TestString2Role(t *testing.T) {
 	role := model.String2Role("admin")
@@ -32,12 +23,10 @@ func TestString2Role(t *testing.T) {
 }
 
 func TestCreateUser(t *testing.T) {
-	SetupTestDatabase()
 	_ = business.CreateUser("common", "password", []model.Role{model.RoleUser})
 }
 
 func TestDeleteUser(t *testing.T) {
-	SetupTestDatabase()
 	err := business.DeleteUser("common")
 	if err != nil {
 		panic(err)
@@ -45,7 +34,6 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func TestComparePassword(t *testing.T) {
-	SetupTestDatabase()
 	_ = business.CreateUser("common", "password", []model.Role{model.RoleUser})
 	_, err := business.ComparePassword("common", "password")
 	if err != nil {
@@ -59,7 +47,6 @@ func TestComparePassword(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
-	SetupTestDatabase()
 	_ = business.CreateUser("common", "password", []model.Role{model.RoleUser})
 	newPassword := "new password"
 	_ = business.UpdateUser("common", nil, &newPassword, nil, nil, nil)
@@ -74,7 +61,6 @@ func TestUpdateUser(t *testing.T) {
 }
 
 func TestGetUserInfo(t *testing.T) {
-	SetupTestDatabase()
 	_ = business.CreateUser("common", "password", []model.Role{model.RoleUser})
 	mobile := "12312312345"
 	_ = business.UpdateUser("common", nil, nil, nil, nil, &mobile)
@@ -97,7 +83,6 @@ func TestGetUserInfo(t *testing.T) {
 }
 
 func TestFindUserInfos(t *testing.T) {
-	SetupTestDatabase()
 	_ = business.CreateUser("common", "password", []model.Role{model.RoleUser})
 	userInfo, err := business.FindUserInfos("%co%", 0, 1)
 	if err != nil {
@@ -110,7 +95,6 @@ func TestFindUserInfos(t *testing.T) {
 }
 
 func TestCountUser(t *testing.T) {
-	SetupTestDatabase()
 	_ = business.CreateUser("common", "password", []model.Role{model.RoleUser})
 	count, err := business.CountUser("%co%")
 	if err != nil {

@@ -1,28 +1,16 @@
 package main
 
 import (
-	"os"
-
-	"github.com/OJ-lab/oj-lab-services/packages/config"
+	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
-	"github.com/OJ-lab/oj-lab-services/packages/utils"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	var configPath string
-	if len(os.Args) > 1 {
-		configPath = os.Args[1]
-	} else {
-		configPath = "packages/config/ini/test.ini"
-	}
-	dataBaseSettings, err := config.GetDatabaseSettings(configPath)
-	if err != nil {
-		panic("failed to get database settings")
-	}
-	utils.MustCreateDatabase(*dataBaseSettings)
-	db := utils.MustGetDBConnection(*dataBaseSettings)
-	err = db.AutoMigrate(&model.UserTable{})
+	db := application.GetDefaultDB()
+	err := db.AutoMigrate(&model.UserTable{})
 	if err != nil {
 		panic("failed to migrate database")
 	}
+	logrus.Info("migrate user table success")
 }
