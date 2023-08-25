@@ -26,6 +26,10 @@ type UserTable struct {
 	Mobile         *string        `gorm:"unique"`
 }
 
+func (ut UserTable) TableName() string {
+	return "user"
+}
+
 func (ut UserTable) ToUser() User {
 	return User{
 		MetaFields: ut.MetaFields,

@@ -7,6 +7,11 @@ build:
 	go build -o bin/migrate_user migration/migrate_user.go
 	go build -o bin/user_service user-service/application.go
 
+.PHONY: clear-db
+clear-db:
+	docker-compose stop
+	docker-compose rm -f
+
 .PHONY: setup-db
 setup-db: build
 	docker-compose up -d
