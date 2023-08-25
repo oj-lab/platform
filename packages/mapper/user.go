@@ -66,7 +66,29 @@ type GetUserOptions struct {
 	Limit   *int
 }
 
-func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.User, error) {
+// Count the total number of users that match the options,
+// ignoring the offset and limit.
+func CountUserByOptions(ctx context.Context, options GetUserOptions) (int64, error) {
+	db := application.GetDefaultDB()
+	var count int64
+
+	tx := db.
+		Model(&model.DbUser{}).
+		Where("account = ?", options.Account).
+		Or("email = ?", options.Email).
+		Or("mobile = ?", options.Mobile)
+
+	err := tx.Count(&count).Error
+
+	return count, err
+}
+
+func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.User, int64, error) {
+	total, err := CountUserByOptions(ctx, options)
+	if err != nil {
+		return nil, 0, err
+	}
+
 	db := application.GetDefaultDB()
 	db_users := []model.DbUser{}
 
@@ -74,7 +96,6 @@ func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.User
 		Where("account = ?", options.Account).
 		Or("email = ?", options.Email).
 		Or("mobile = ?", options.Mobile)
-
 	if options.Offset != nil {
 		tx = tx.Offset(*options.Offset)
 	}
@@ -82,12 +103,25 @@ func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.User
 		tx = tx.Limit(*options.Limit)
 	}
 
-	err := tx.Find(&db_users).Error
+	err = tx.Find(&db_users).Error
+	if err != nil {
+		return nil, 0, err
+	}
 
 	users := []model.User{}
 	for _, db_user := range db_users {
 		users = append(users, db_user.ToUser())
 	}
 
-	return users, err
+	return users, total, nil
+}
+
+func CheckUserPassword(ctx context.Context, account string, password string) (bool, error) {
+	db := application.GetDefaultDB()
+	db_user := model.DbUser{}
+	err := db.Where("account = ?", account).First(&db_user).Error
+	if err != nil {
+		return false, err
+	}
+	return utils.CompareWithHashedPassword(password, db_user.HashedPassword)
 }
