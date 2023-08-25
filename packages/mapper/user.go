@@ -16,24 +16,24 @@ func CreateUser(ctx context.Context, user model.User) error {
 		return err
 	}
 
-	userTable := model.UserTable{
+	DbUser := model.DbUser{
 		Account:        user.Account,
 		HashedPassword: hashedPassword,
 		Roles:          user.Roles.ToPQArray(),
 	}
 
-	return db.Create(&userTable).Error
+	return db.Create(&DbUser).Error
 }
 
 func DeleteUser(ctx context.Context, user model.User) error {
 	db := application.GetDefaultDB()
-	return db.Delete(&model.UserTable{Account: user.Account}).Error
+	return db.Delete(&model.DbUser{Account: user.Account}).Error
 }
 
 func UpdateUser(ctx context.Context, update model.User) error {
 	db := application.GetDefaultDB()
 
-	old := model.UserTable{}
+	old := model.DbUser{}
 	err := db.Where("account = ?", update.Account).First(&old).Error
 	if err != nil {
 		return err
@@ -55,7 +55,7 @@ func UpdateUser(ctx context.Context, update model.User) error {
 		new.Roles = update.Roles.ToPQArray()
 	}
 
-	return db.Model(&model.UserTable{Account: new.Account}).Updates(new).Error
+	return db.Model(&model.DbUser{Account: new.Account}).Updates(new).Error
 }
 
 type GetUserOptions struct {
@@ -66,9 +66,9 @@ type GetUserOptions struct {
 	Limit   *int
 }
 
-func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.UserTable, error) {
+func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.User, error) {
 	db := application.GetDefaultDB()
-	users := []model.UserTable{}
+	db_users := []model.DbUser{}
 
 	tx := db.
 		Where("account = ?", options.Account).
@@ -82,7 +82,12 @@ func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.User
 		tx = tx.Limit(*options.Limit)
 	}
 
-	err := tx.Find(&users).Error
+	err := tx.Find(&db_users).Error
+
+	users := []model.User{}
+	for _, db_user := range db_users {
+		users = append(users, db_user.ToUser())
+	}
 
 	return users, err
 }

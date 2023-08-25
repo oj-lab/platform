@@ -16,7 +16,7 @@ type User struct {
 	Mobile   *string `json:"mobile"`
 }
 
-type UserTable struct {
+type DbUser struct {
 	MetaFields
 	Account        string `gorm:"primaryKey"`
 	Name           *string
@@ -26,11 +26,11 @@ type UserTable struct {
 	Mobile         *string        `gorm:"unique"`
 }
 
-func (ut UserTable) TableName() string {
+func (ut DbUser) TableName() string {
 	return "user"
 }
 
-func (ut UserTable) ToUser() User {
+func (ut DbUser) ToUser() User {
 	return User{
 		MetaFields: ut.MetaFields,
 		Account:    ut.Account,

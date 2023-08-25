@@ -15,7 +15,7 @@ func CreateUser(account string, password string, roles model.Roles) error {
 		return err
 	}
 
-	user := model.UserTable{
+	user := model.DbUser{
 		Account:        account,
 		HashedPassword: hashedPassword,
 		Roles:          roles.ToPQArray(),
@@ -26,7 +26,7 @@ func CreateUser(account string, password string, roles model.Roles) error {
 
 func DeleteUser(account string) error {
 	db := application.GetDefaultDB()
-	return db.Delete(&model.UserTable{Account: account}).Error
+	return db.Delete(&model.DbUser{Account: account}).Error
 }
 
 func UpdateUser(account string, name *string, password *string, roles model.Roles, email *string, mobile *string) error {
@@ -42,7 +42,7 @@ func UpdateUser(account string, name *string, password *string, roles model.Role
 		hashedPassword = ""
 	}
 
-	user := model.UserTable{
+	user := model.DbUser{
 		Account:        account,
 		Name:           name,
 		HashedPassword: hashedPassword,
@@ -51,12 +51,12 @@ func UpdateUser(account string, name *string, password *string, roles model.Role
 		Mobile:         mobile,
 	}
 
-	return db.Model(&model.UserTable{Account: account}).Updates(user).Error
+	return db.Model(&model.DbUser{Account: account}).Updates(user).Error
 }
 
 func ComparePassword(account string, password string) (bool, error) {
 	db := application.GetDefaultDB()
-	var user model.UserTable
+	var user model.DbUser
 	err := db.Where("account = ?", account).First(&user).Error
 	if err != nil {
 		return false, err
@@ -70,8 +70,8 @@ func GetUserInfo(maybeAccount *string, maybeEmail *string, maybeMobile *string) 
 	if maybeAccount != nil {
 		account = *maybeAccount
 	}
-	var user model.UserTable
-	err := db.Where(&model.UserTable{Account: account, Email: maybeEmail, Mobile: maybeMobile}).First(&user).Error
+	var user model.DbUser
+	err := db.Where(&model.DbUser{Account: account, Email: maybeEmail, Mobile: maybeMobile}).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func GetUserInfo(maybeAccount *string, maybeEmail *string, maybeMobile *string) 
 
 func FindUserInfos(query string, offset int, limit int) ([]model.UserInfo, error) {
 	db := application.GetDefaultDB()
-	var users []model.UserTable
+	var users []model.DbUser
 	err := db.Where("account LIKE ?", query).Or("name LIKE ?", query).Offset(offset).Limit(limit).Find(&users).Error
 	if err != nil {
 		return nil, err
@@ -109,6 +109,6 @@ func FindUserInfos(query string, offset int, limit int) ([]model.UserInfo, error
 func CountUser(query string) (int64, error) {
 	db := application.GetDefaultDB()
 	var count int64
-	err := db.Model(&model.UserTable{}).Where("account LIKE ?", query).Or("name LIKE ?", query).Count(&count).Error
+	err := db.Model(&model.DbUser{}).Where("account LIKE ?", query).Or("name LIKE ?", query).Count(&count).Error
 	return count, err
 }

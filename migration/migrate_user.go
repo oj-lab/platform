@@ -8,7 +8,7 @@ import (
 
 func main() {
 	db := application.GetDefaultDB()
-	err := db.AutoMigrate(&model.UserTable{})
+	err := db.AutoMigrate(&model.DbUser{})
 	if err != nil {
 		panic("failed to migrate database")
 	}
