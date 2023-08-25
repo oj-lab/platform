@@ -26,3 +26,14 @@ check:
 .PHONY: test
 test: build check setup-db
 	go test -cover -v ./...
+
+.PHONY: help
+help:
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Targets:"
+	@echo "  build     - Build the application"
+	@echo "  clear-db  - Clear the database"
+	@echo "  setup-db  - Setup the database"
+	@echo "  check     - Run go vet"
+	@echo "  test      - Run tests"
