@@ -16,24 +16,31 @@ func CreateUser(ctx context.Context, user model.User) error {
 		return err
 	}
 
-	DbUser := model.DbUser{
+	User := model.User{
 		Account:        user.Account,
 		HashedPassword: hashedPassword,
-		Roles:          user.Roles.ToPQArray(),
+		Roles:          user.Roles,
 	}
 
-	return db.Create(&DbUser).Error
+	return db.Create(&User).Error
+}
+
+func GetUser(ctx context.Context, account string) (model.User, error) {
+	db := application.GetDefaultDB()
+	db_user := model.User{}
+	err := db.Model(&model.User{}).Preload("Roles").Where("account = ?", account).First(&db_user).Error
+	return db_user, err
 }
 
 func DeleteUser(ctx context.Context, user model.User) error {
 	db := application.GetDefaultDB()
-	return db.Delete(&model.DbUser{Account: user.Account}).Error
+	return db.Delete(&model.User{Account: user.Account}).Error
 }
 
 func UpdateUser(ctx context.Context, update model.User) error {
 	db := application.GetDefaultDB()
 
-	old := model.DbUser{}
+	old := model.User{}
 	err := db.Where("account = ?", update.Account).First(&old).Error
 	if err != nil {
 		return err
@@ -52,10 +59,10 @@ func UpdateUser(ctx context.Context, update model.User) error {
 		new.HashedPassword = hashedPassword
 	}
 	if update.Roles != nil {
-		new.Roles = update.Roles.ToPQArray()
+		new.Roles = update.Roles
 	}
 
-	return db.Model(&model.DbUser{Account: new.Account}).Updates(new).Error
+	return db.Model(&model.User{Account: new.Account}).Updates(new).Error
 }
 
 type GetUserOptions struct {
@@ -73,7 +80,7 @@ func CountUserByOptions(ctx context.Context, options GetUserOptions) (int64, err
 	var count int64
 
 	tx := db.
-		Model(&model.DbUser{}).
+		Model(&model.User{}).
 		Where("account = ?", options.Account).
 		Or("email = ?", options.Email).
 		Or("mobile = ?", options.Mobile)
@@ -90,7 +97,7 @@ func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.User
 	}
 
 	db := application.GetDefaultDB()
-	db_users := []model.DbUser{}
+	db_users := []model.User{}
 
 	tx := db.
 		Where("account = ?", options.Account).
@@ -108,17 +115,12 @@ func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.User
 		return nil, 0, err
 	}
 
-	users := []model.User{}
-	for _, db_user := range db_users {
-		users = append(users, db_user.ToUser())
-	}
-
-	return users, total, nil
+	return db_users, total, nil
 }
 
 func CheckUserPassword(ctx context.Context, account string, password string) (bool, error) {
 	db := application.GetDefaultDB()
-	db_user := model.DbUser{}
+	db_user := model.User{}
 	err := db.Where("account = ?", account).First(&db_user).Error
 	if err != nil {
 		return false, err

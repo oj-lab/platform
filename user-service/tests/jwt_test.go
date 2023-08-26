@@ -9,7 +9,7 @@ import (
 )
 
 func TestGenerateTokenString(t *testing.T) {
-	tokenString, err := business.GenerateTokenString("account", []model.Role{model.RoleAdmin})
+	tokenString, err := business.GenerateTokenString("account", []*model.Role{{Name: "admin"}})
 	if err != nil {
 		panic(err)
 	}
@@ -17,7 +17,7 @@ func TestGenerateTokenString(t *testing.T) {
 }
 
 func TestParseTokenString(t *testing.T) {
-	tokenString, err := business.GenerateTokenString("account", []model.Role{model.RoleAdmin})
+	tokenString, err := business.GenerateTokenString("account", []*model.Role{{Name: "admin"}})
 	if err != nil {
 		panic(err)
 	}

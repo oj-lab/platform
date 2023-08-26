@@ -17,7 +17,7 @@ func init() {
 	jwtDuration = application.AppConfig.GetDuration("jwt.duration")
 }
 
-func GenerateTokenString(account string, roles []model.Role) (string, error) {
+func GenerateTokenString(account string, roles []*model.Role) (string, error) {
 	duration := jwtDuration
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -28,7 +28,7 @@ func GenerateTokenString(account string, roles []model.Role) (string, error) {
 	return token.SignedString([]byte(jwtSecret))
 }
 
-func ParseTokenString(tokenString string) (string, []string, error) {
+func ParseTokenString(tokenString string) (string, []*model.Role, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(jwtSecret), nil
 	})
@@ -37,9 +37,10 @@ func ParseTokenString(tokenString string) (string, []string, error) {
 	}
 	if token.Valid {
 		roleInterface := token.Claims.(jwt.MapClaims)["roles"].([]interface{})
-		roles := make([]string, len(roleInterface))
-		for i, v := range roleInterface {
-			roles[i] = v.(string)
+		roles := make([]*model.Role, len(roleInterface))
+		for i, role := range roleInterface {
+			roleMap := role.(map[string]interface{})
+			roles[i] = &model.Role{Name: roleMap["name"].(string)}
 		}
 		return token.Claims.(jwt.MapClaims)["account"].(string), roles, nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
