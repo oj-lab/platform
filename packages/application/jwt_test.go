@@ -1,15 +1,14 @@
-package tests
+package application
 
 import (
 	"log"
 	"testing"
 
 	"github.com/OJ-lab/oj-lab-services/packages/model"
-	"github.com/OJ-lab/oj-lab-services/user-service/business"
 )
 
 func TestGenerateTokenString(t *testing.T) {
-	tokenString, err := business.GenerateTokenString("account", []*model.Role{{Name: "admin"}})
+	tokenString, err := GenerateTokenString("account", []*model.Role{{Name: "admin"}})
 	if err != nil {
 		panic(err)
 	}
@@ -17,11 +16,11 @@ func TestGenerateTokenString(t *testing.T) {
 }
 
 func TestParseTokenString(t *testing.T) {
-	tokenString, err := business.GenerateTokenString("account", []*model.Role{{Name: "admin"}})
+	tokenString, err := GenerateTokenString("account", []*model.Role{{Name: "admin"}})
 	if err != nil {
 		panic(err)
 	}
-	account, role, err := business.ParseTokenString(tokenString)
+	account, role, err := ParseTokenString(tokenString)
 	if err != nil {
 		panic(err)
 	}

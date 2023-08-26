@@ -1,10 +1,9 @@
-package business
+package application
 
 import (
 	"errors"
 	"time"
 
-	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -13,8 +12,8 @@ var jwtSecret string
 var jwtDuration time.Duration
 
 func init() {
-	jwtSecret = application.AppConfig.GetString("jwt.secret")
-	jwtDuration = application.AppConfig.GetDuration("jwt.duration")
+	jwtSecret = AppConfig.GetString("jwt.secret")
+	jwtDuration = AppConfig.GetDuration("jwt.duration")
 }
 
 func GenerateTokenString(account string, roles []*model.Role) (string, error) {

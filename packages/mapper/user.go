@@ -5,13 +5,12 @@ import (
 
 	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
-	"github.com/OJ-lab/oj-lab-services/packages/utils"
 	"github.com/alexedwards/argon2id"
 )
 
 func CreateUser(ctx context.Context, user model.User) error {
 	db := application.GetDefaultDB()
-	hashedPassword, err := utils.GetHashedPassword(*user.Password, argon2id.DefaultParams)
+	hashedPassword, err := argon2id.CreateHash(*user.Password, argon2id.DefaultParams)
 	if err != nil {
 		return err
 	}
@@ -48,10 +47,10 @@ func UpdateUser(ctx context.Context, update model.User) error {
 
 	hashedPassword := ""
 	if update.Password != nil {
-		hashedPassword, err = utils.GetHashedPassword(*update.Password, argon2id.DefaultParams)
-	}
-	if err != nil {
-		return err
+		hashedPassword, err = argon2id.CreateHash(*update.Password, argon2id.DefaultParams)
+		if err != nil {
+			return err
+		}
 	}
 
 	new := old
@@ -120,10 +119,10 @@ func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.User
 
 func CheckUserPassword(ctx context.Context, account string, password string) (bool, error) {
 	db := application.GetDefaultDB()
-	db_user := model.User{}
-	err := db.Where("account = ?", account).First(&db_user).Error
+	user := model.User{}
+	err := db.Where("account = ?", account).First(&user).Error
 	if err != nil {
 		return false, err
 	}
-	return utils.CompareWithHashedPassword(password, db_user.HashedPassword)
+	return argon2id.ComparePasswordAndHash(password, user.HashedPassword)
 }
