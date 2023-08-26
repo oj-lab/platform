@@ -1,19 +1,24 @@
 package model
 
-import "time"
-
-type Problem struct {
-	ID          uint      `gorm:"primaryKey"`
-	Title       string    `gorm:"not null"`
-	Description string    `gorm:"not null"`
-	Visibility  bool      `gorm:"not null"`
-	CreateAt    time.Time `gorm:"autoCreateTime"`
-	UpdateAt    time.Time `gorm:"autoUpdateTime"`
+type DbProblem struct {
+	MetaFields
+	Slug        string         `gorm:"primaryKey"`
+	Title       string         `gorm:"not null"`
+	Discription string         `gorm:"not null"`
+	ProblemTags []DbProblemTag `gorm:"many2many:problem_tag;"`
 }
 
-type TestCase struct {
-	ID        string `gorm:"primaryKey"`
-	ProblemID uint   `gorm:"not null"`
-	Input     string `gorm:"not null"`
-	Output    *string
+func (ut DbProblem) TableName() string {
+	return "problem"
+}
+
+type DbProblemTag struct {
+	MetaFields
+	Slug     string      `gorm:"primaryKey"`
+	Name     string      `gorm:"not null"`
+	Problems []DbProblem `gorm:"many2many:problem;"`
+}
+
+func (ut DbProblemTag) TableName() string {
+	return "problem_tag"
 }

@@ -4,7 +4,7 @@ OS := $(shell uname -s)
 build:
 	@echo "Building on $(OS)"
 	go mod tidy
-	go build -o bin/migrate_user migration/migrate_user.go
+	go build -o bin/migrate_db migration/migrate_db.go
 	go build -o bin/user_service user-service/application.go
 
 .PHONY: clear-db
@@ -17,7 +17,7 @@ setup-db: build
 	docker-compose up -d
 	@echo "Wait 10 seconds for db setup"
 	sleep 10s
-	./bin/migrate_user
+	./bin/migrate_db
 
 .PHONY: check
 check:
