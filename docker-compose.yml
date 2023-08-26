@@ -10,6 +10,17 @@ services:
       POSTGRES_DB: oj_lab
     ports:
       - 5432:5432
+  
+  # https://hub.docker.com/r/bitnami/minio
+  minio:
+    image: 'bitnami/minio:latest'
+    privileged: true
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - MINIO_ROOT_USER=minio-root-user
+      - MINIO_ROOT_PASSWORD=minio-root-password
 
   redis-cluster:
     image: grokzen/redis-cluster:6.0.1
