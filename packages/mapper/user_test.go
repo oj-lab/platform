@@ -1,7 +1,6 @@
 package mapper
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"testing"
@@ -10,20 +9,18 @@ import (
 )
 
 func TestUserMapper(t *testing.T) {
-	ctx := context.Background()
-
 	password := "test"
 	user := model.User{
 		Account:  "test",
 		Password: &password,
 		Roles:    []*model.Role{{Name: "admin"}},
 	}
-	err := CreateUser(ctx, user)
+	err := CreateUser(user)
 	if err != nil {
 		t.Error(err)
 	}
 
-	dbUser, err := GetUser(ctx, user.Account)
+	dbUser, err := GetUser(user.Account)
 	if err != nil {
 		t.Error(err)
 	}

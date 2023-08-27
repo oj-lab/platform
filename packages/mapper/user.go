@@ -1,14 +1,12 @@
 package mapper
 
 import (
-	"context"
-
 	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
 	"github.com/alexedwards/argon2id"
 )
 
-func CreateUser(ctx context.Context, user model.User) error {
+func CreateUser(user model.User) error {
 	db := application.GetDefaultDB()
 	hashedPassword, err := argon2id.CreateHash(*user.Password, argon2id.DefaultParams)
 	if err != nil {
@@ -24,19 +22,19 @@ func CreateUser(ctx context.Context, user model.User) error {
 	return db.Create(&User).Error
 }
 
-func GetUser(ctx context.Context, account string) (model.User, error) {
+func GetUser(account string) (model.User, error) {
 	db := application.GetDefaultDB()
 	db_user := model.User{}
 	err := db.Model(&model.User{}).Preload("Roles").Where("account = ?", account).First(&db_user).Error
 	return db_user, err
 }
 
-func DeleteUser(ctx context.Context, user model.User) error {
+func DeleteUser(user model.User) error {
 	db := application.GetDefaultDB()
 	return db.Delete(&model.User{Account: user.Account}).Error
 }
 
-func UpdateUser(ctx context.Context, update model.User) error {
+func UpdateUser(update model.User) error {
 	db := application.GetDefaultDB()
 
 	old := model.User{}
@@ -74,7 +72,7 @@ type GetUserOptions struct {
 
 // Count the total number of users that match the options,
 // ignoring the offset and limit.
-func CountUserByOptions(ctx context.Context, options GetUserOptions) (int64, error) {
+func CountUserByOptions(options GetUserOptions) (int64, error) {
 	db := application.GetDefaultDB()
 	var count int64
 
@@ -89,8 +87,8 @@ func CountUserByOptions(ctx context.Context, options GetUserOptions) (int64, err
 	return count, err
 }
 
-func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.User, int64, error) {
-	total, err := CountUserByOptions(ctx, options)
+func GetUserByOptions(options GetUserOptions) ([]model.User, int64, error) {
+	total, err := CountUserByOptions(options)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -117,7 +115,7 @@ func GetUserByOptions(ctx context.Context, options GetUserOptions) ([]model.User
 	return db_users, total, nil
 }
 
-func CheckUserPassword(ctx context.Context, account string, password string) (bool, error) {
+func CheckUserPassword(account string, password string) (bool, error) {
 	db := application.GetDefaultDB()
 	user := model.User{}
 	err := db.Where("account = ?", account).First(&user).Error
