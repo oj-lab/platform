@@ -27,6 +27,10 @@ check:
 test: build check setup-db
 	go test -cover -v ./...
 
+.PHONY: run
+run: build check setup-db
+	./bin/user_service
+
 .PHONY: help
 help:
 	@echo "Usage: make [target]"
