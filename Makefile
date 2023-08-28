@@ -13,10 +13,10 @@ clear-db:
 	docker-compose rm -f
 
 .PHONY: setup-db
-setup-db: build
+setup-db: clear-db build
 	docker-compose up -d
-	@echo "Wait 10 seconds for db setup"
-	sleep 10s
+	@echo "Wait 5 seconds for db setup"
+	sleep 5s
 	./bin/migrate_db
 
 .PHONY: check
@@ -26,6 +26,10 @@ check:
 .PHONY: test
 test: build check setup-db
 	go test -cover -v ./...
+
+.PHONY: run
+run: build check setup-db
+	./bin/user_service
 
 .PHONY: help
 help:
