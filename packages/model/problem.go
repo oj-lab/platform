@@ -4,7 +4,7 @@ type Problem struct {
 	MetaFields
 	Slug        string          `gorm:"primaryKey"`
 	Title       string          `gorm:"not null"`
-	Discription string          `gorm:"not null"`
+	Description string          `gorm:"not null"`
 	Tags        []*AlgorithmTag `gorm:"many2many:problem_algorithm_tags;"`
 }
 
