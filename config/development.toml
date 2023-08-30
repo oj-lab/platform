@@ -2,7 +2,7 @@
 level = "debug"
 
 [database]
-dsn = "user=postgres password=development host=127.0.0.1 port=5432 dbname=oj_lab sslmode=disable TimeZone=Asia/Shanghai"
+dsn = "user=postgres password=development host=localhost port=5432 dbname=oj_lab sslmode=disable TimeZone=Asia/Shanghai"
 
 [jwt]
 secret = "example_secret"
