@@ -14,3 +14,13 @@ func SetupUserRouter(r *gin.Engine) {
 		})
 	}
 }
+
+func SetupProblemRoute(r *gin.Engine) {
+	g := r.Group("/api/v1/problem")
+	{
+		g.GET("/health", func(c *gin.Context) {
+			c.String(http.StatusOK, "Hello, this is problem service")
+		})
+		g.GET("")
+	}
+}

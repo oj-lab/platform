@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/OJ-lab/oj-lab-services/packages/application"
-	"github.com/OJ-lab/oj-lab-services/user-service/router"
+	"github.com/OJ-lab/oj-lab-services/service/router"
 	"github.com/gin-gonic/gin"
 )
 
