@@ -5,7 +5,7 @@ build:
 	@echo "Building on $(OS)"
 	go mod tidy
 	go build -o bin/migrate_db migration/migrate_db.go
-	go build -o bin/user_service user-service/application.go
+	go build -o bin/service service/application.go
 
 .PHONY: clear-db
 clear-db:
@@ -29,7 +29,7 @@ test: build check setup-db
 
 .PHONY: run
 run: build check setup-db
-	./bin/user_service
+	./bin/service
 
 .PHONY: help
 help:

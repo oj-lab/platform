@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 
+	"github.com/OJ-lab/oj-lab-services/service/problem"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,6 +22,6 @@ func SetupProblemRoute(r *gin.Engine) {
 		g.GET("/health", func(c *gin.Context) {
 			c.String(http.StatusOK, "Hello, this is problem service")
 		})
-		g.GET("")
+		g.GET("/:slug", problem.GetProblemInfo)
 	}
 }

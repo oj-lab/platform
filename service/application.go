@@ -25,6 +25,7 @@ func main() {
 	r := gin.Default()
 	gin.SetMode(serviceMode)
 	router.SetupUserRouter(r)
+	router.SetupProblemRoute(r)
 
 	err := r.Run(servicePort)
 	if err != nil {

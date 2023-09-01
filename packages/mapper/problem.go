@@ -93,3 +93,11 @@ func GetProblemByOptions(options GetProblemOptions) ([]model.Problem, int64, err
 
 	return db_problems, total, nil
 }
+
+func GetTagsList(problem model.Problem) []string {
+	tagsList := []string{}
+	for _, tag := range problem.Tags {
+		tagsList = append(tagsList, tag.Slug)
+	}
+	return tagsList
+}
