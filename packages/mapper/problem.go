@@ -39,11 +39,19 @@ func CountProblemByOptions(options GetProblemOptions) (int64, error) {
 	db := application.GetDefaultDB()
 	var count int64
 
+	tagsList := []string{}
+	for _, tag := range options.Tags {
+		tagsList = append(tagsList, tag.Slug)
+	}
+
 	tx := db.
 		Model(&model.Problem{}).
-		Where("Slug = ?", options.Slug).
+		Joins("JOIN problem_algorithm_tags ON problem_algorithm_tags.problem_slug = problems.slug").
+		Where("problem_algorithm_tags.algorithm_tag_slug in ?", tagsList).
+		Or("Slug = ?", options.Slug).
 		Or("Title = ?", options.Title).
-		Or("Tags in ?", options.Tags)
+		Distinct().
+		Preload("Tags")
 
 	err := tx.Count(&count).Error
 
@@ -58,10 +66,19 @@ func GetProblemByOptions(options GetProblemOptions) ([]model.Problem, int64, err
 
 	db := application.GetDefaultDB()
 	db_problems := []model.Problem{}
+	tagsList := []string{}
+	for _, tag := range options.Tags {
+		tagsList = append(tagsList, tag.Slug)
+	}
 	tx := db.
-		Where("Slug = ?", options.Slug).
+		Model(&model.Problem{}).
+		Joins("JOIN problem_algorithm_tags ON problem_algorithm_tags.problem_slug = problems.slug").
+		Where("problem_algorithm_tags.algorithm_tag_slug in ?", tagsList).
+		Or("Slug = ?", options.Slug).
 		Or("Title = ?", options.Title).
-		Or("Tags in ?", options.Tags)
+		Distinct().
+		Preload("Tags")
+
 	if options.Offset != nil {
 		tx = tx.Offset(*options.Offset)
 	}
