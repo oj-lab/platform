@@ -12,5 +12,5 @@ func main() {
 	if err != nil {
 		panic("failed to migrate database")
 	}
-	logrus.Info("migrate user table success")
+	logrus.Info("migrate tables success")
 }
