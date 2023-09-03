@@ -23,5 +23,6 @@ func SetupProblemRoute(r *gin.Engine) {
 			c.String(http.StatusOK, "Hello, this is problem service")
 		})
 		g.GET("/:slug", problem.GetProblemInfo)
+		g.POST("/:slug/judge", problem.Judge)
 	}
 }

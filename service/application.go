@@ -23,6 +23,7 @@ func init() {
 
 func main() {
 	r := gin.Default()
+	r.Use(application.HandleError)
 	gin.SetMode(serviceMode)
 	router.SetupUserRouter(r)
 	router.SetupProblemRoute(r)

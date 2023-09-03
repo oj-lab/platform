@@ -5,6 +5,7 @@ import (
 	"runtime"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 type SeviceError struct {
@@ -50,14 +51,15 @@ func NewUnAuthorizedError(msg string) *SeviceError {
 }
 
 func HandleError(ginCtx *gin.Context) {
+	ginCtx.Next()
+
 	errCount := len(ginCtx.Errors)
 	if errCount > 0 {
+		logrus.Errorf("Last error from GIN middleware: %+v", ginCtx.Errors[errCount-1].Err)
 		err := WrapToServiceError(ginCtx.Errors[errCount-1].Err)
 		ginCtx.JSON(err.Code, gin.H{
 			"code": err.Code,
 			"msg":  err.Msg,
 		})
 	}
-
-	ginCtx.Next()
 }
