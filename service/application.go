@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/OJ-lab/oj-lab-services/packages/application"
-	"github.com/OJ-lab/oj-lab-services/user-service/router"
+	"github.com/OJ-lab/oj-lab-services/service/router"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,6 +25,7 @@ func main() {
 	r := gin.Default()
 	gin.SetMode(serviceMode)
 	router.SetupUserRouter(r)
+	router.SetupProblemRoute(r)
 
 	err := r.Run(servicePort)
 	if err != nil {
