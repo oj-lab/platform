@@ -2,19 +2,18 @@ package problem
 
 import (
 	"github.com/OJ-lab/oj-lab-services/packages/mapper"
-	"github.com/OJ-lab/oj-lab-services/packages/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func GetProblemInfo(c *gin.Context) {
-	slug := c.Param("slug")
+func GetProblemInfo(ctx *gin.Context) {
+	slug := ctx.Param("slug")
 	problem, err := mapper.GetProblem(slug)
 	if err != nil {
-		utils.ApplyError(c, err)
+		ctx.Error(err)
 		return
 	}
 
-	c.JSON(200, gin.H{
+	ctx.JSON(200, gin.H{
 		"slug":        problem.Slug,
 		"title":       problem.Title,
 		"description": problem.Description,
