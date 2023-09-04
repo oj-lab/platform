@@ -1,6 +1,9 @@
 package application
 
 import (
+	"context"
+	"log"
+
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -11,6 +14,7 @@ const (
 	minioSecretAccessKeyProp = "minio.secretAccessKey"
 	minioUseSSLProp          = "minio.useSSL"
 	minioRegionProp          = "minio.region"
+	minioBucketNameProp      = "minio.bucketName"
 )
 
 var (
@@ -20,6 +24,7 @@ var (
 	useSSL          bool
 	region          string
 	minioClient     *minio.Client
+	bucketName      string
 )
 
 func init() {
@@ -28,6 +33,11 @@ func init() {
 	secretAccessKey = AppConfig.GetString(minioSecretAccessKeyProp)
 	useSSL = AppConfig.GetBool(minioUseSSLProp)
 	region = AppConfig.GetString(minioRegionProp)
+	bucketName = AppConfig.GetString(minioBucketNameProp)
+}
+
+func GetBucketName() string {
+	return bucketName
 }
 
 func GetMinioClient() *minio.Client {
@@ -39,7 +49,21 @@ func GetMinioClient() *minio.Client {
 			Region: region,
 		})
 		if err != nil {
-			panic("failed to connect minio")
+			panic("failed to connect minio client")
+		}
+		ctx := context.Background()
+
+		err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
+		if err != nil {
+			// Check to see if we already own this bucket (which happens if you run this twice)
+			exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
+			if errBucketExists == nil && exists {
+				log.Printf("We already own %s\n", bucketName)
+			} else {
+				log.Fatalln(err)
+			}
+		} else {
+			log.Printf("Successfully created %s\n", bucketName)
 		}
 	}
 

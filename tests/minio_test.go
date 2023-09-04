@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/minio/minio-go/v7"
 	"github.com/OJ-lab/oj-lab-services/packages/application"
+	"github.com/minio/minio-go/v7"
 )
 
 func TestMinio(T *testing.T) {
@@ -16,9 +16,7 @@ func TestMinio(T *testing.T) {
 	minioClient := application.GetMinioClient()
 
 	log.Printf("%#v\n", minioClient) // minioClient is now set up
-
-	// Make a new bucket called mymusic.
-	bucketName := "oj-lab-problem-packages"
+	bucketName := application.GetBucketName()
 
 	err := minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 	if err != nil {
