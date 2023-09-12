@@ -7,31 +7,18 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 func TestMinio(T *testing.T) {
-	endpoint := "localhost:9000"
-	accessKeyID := "minio-root-user"
-	secretAccessKey := "minio-root-password"
-	useSSL := false
-
 	// Initialize minio client object.
-	minioClient, err := minio.New(endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: useSSL,
-	})
-	if err != nil {
-		log.Fatalln(err)
-	}
+	minioClient := application.GetMinioClient()
 
 	log.Printf("%#v\n", minioClient) // minioClient is now set up
+	bucketName := application.GetBucketName()
 
-	// Make a new bucket called mymusic.
-	bucketName := "oj-lab-problem-packages"
-
-	err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
+	err := minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 	if err != nil {
 		// Check to see if we already own this bucket (which happens if you run this twice)
 		exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
