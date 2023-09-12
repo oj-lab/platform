@@ -24,11 +24,11 @@ check:
 	go vet ./...
 
 .PHONY: test
-test: build check setup-db
+test: build check
 	go test -cover -v ./...
 
 .PHONY: run
-run: build check setup-db
+run: build check
 	./bin/service
 
 .PHONY: help
