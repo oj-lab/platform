@@ -4,8 +4,8 @@ OS := $(shell uname -s)
 build:
 	@echo "Building on $(OS)"
 	go mod tidy
-	go build -o bin/migrate_db migration/migrate_db.go
-	go build -o bin/service service/application.go
+	go build -o bin/migrate_db application/migrate_db/main.go
+	go build -o bin/service application/server/main.go
 
 .PHONY: clear-db
 clear-db:
@@ -24,7 +24,7 @@ check:
 	go vet ./...
 
 .PHONY: test
-test: build check
+test: setup-db check 
 	go test -cover -v ./...
 
 .PHONY: run

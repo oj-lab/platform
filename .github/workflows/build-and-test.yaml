@@ -17,9 +17,6 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version: 1.20.5
-    - name: Set up DB
-      run: |
-        make setup-db
     - name: Test All
       run: |
         make test

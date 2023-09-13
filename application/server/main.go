@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/OJ-lab/oj-lab-services/packages/application"
-	"github.com/OJ-lab/oj-lab-services/service/handler"
+	"github.com/OJ-lab/oj-lab-services/application/server/handler"
+	"github.com/OJ-lab/oj-lab-services/packages/core"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,13 +17,13 @@ var (
 )
 
 func init() {
-	servicePort = application.AppConfig.GetString(servicePortProp)
-	serviceMode = application.AppConfig.GetString(serviceModeProp)
+	servicePort = core.AppConfig.GetString(servicePortProp)
+	serviceMode = core.AppConfig.GetString(serviceModeProp)
 }
 
 func main() {
 	r := gin.Default()
-	r.Use(application.HandleError)
+	r.Use(core.HandleError)
 	gin.SetMode(serviceMode)
 	handler.SetupUserRouter(r)
 	handler.SetupProblemRoute(r)

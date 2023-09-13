@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/OJ-lab/oj-lab-services/packages/application"
+	"github.com/OJ-lab/oj-lab-services/packages/core"
 )
 
 const JUDGER_HOST_PROP = "judger.host"
@@ -15,7 +15,7 @@ const JUDGER_JUDGE_PATH = "/api/v1/judge"
 var judgerHost string
 
 func init() {
-	judgerHost = application.AppConfig.GetString(JUDGER_HOST_PROP)
+	judgerHost = core.AppConfig.GetString(JUDGER_HOST_PROP)
 }
 
 type JudgeRequest struct {
@@ -37,8 +37,8 @@ func PostJudgeSync(packageSlug string, judgeRequest JudgeRequest) ([]map[string]
 	if err != nil {
 		return nil, err
 	}
-	innerRequest.Header.Set("Content-Type", "application/json")
-	innerRequest.Header.Set("Accept", "application/json")
+	innerRequest.Header.Set("Content-Type", "core/json")
+	innerRequest.Header.Set("Accept", "core/json")
 	innerResponse, err := client.Do(innerRequest)
 	if err != nil {
 		return nil, err
