@@ -7,16 +7,16 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/OJ-lab/oj-lab-services/packages/application"
+	minioAgent "github.com/OJ-lab/oj-lab-services/packages/agent/minio"
 	"github.com/minio/minio-go/v7"
 )
 
 func TestMinio(T *testing.T) {
 	// Initialize minio client object.
-	minioClient := application.GetMinioClient()
+	minioClient := minioAgent.GetMinioClient()
 
 	log.Printf("%#v\n", minioClient) // minioClient is now set up
-	bucketName := application.GetBucketName()
+	bucketName := minioAgent.GetBucketName()
 
 	err := minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 	if err != nil {
