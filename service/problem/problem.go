@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	minioAgent "github.com/OJ-lab/oj-lab-services/packages/agent/minio"
 	"github.com/OJ-lab/oj-lab-services/packages/mapper"
 	"github.com/gin-gonic/gin"
 )
@@ -83,7 +84,7 @@ func PutProblemPackage(ctx *gin.Context) {
 	}
 
 	// put package to minio
-	err = mapper.PutProblemPackage(slug, targetDir)
+	err = minioAgent.PutProblemPackage(slug, targetDir)
 	if err != nil {
 		ctx.Error(err)
 		return

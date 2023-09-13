@@ -1,15 +1,8 @@
 package mapper
 
 import (
-	"context"
-	"io/fs"
-	"log"
-	"path/filepath"
-	"strings"
-
 	"github.com/OJ-lab/oj-lab-services/packages/application"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
-	"github.com/minio/minio-go/v7"
 )
 
 func CreateProblem(problem model.Problem) error {
@@ -107,43 +100,4 @@ func GetTagsList(problem model.Problem) []string {
 		tagsList = append(tagsList, tag.Slug)
 	}
 	return tagsList
-}
-
-func PutProblemPackage(slug string, pkgDir string) error {
-	ctx := context.Background()
-	minioClient := application.GetMinioClient()
-
-	// remove old package
-	objectsCh := minioClient.ListObjects(ctx, application.GetBucketName(), minio.ListObjectsOptions{
-		Prefix:    slug,
-		Recursive: true,
-	})
-	for objInfo := range objectsCh {
-		if objInfo.Err != nil {
-			return objInfo.Err
-		}
-
-		err := minioClient.RemoveObject(ctx, application.GetBucketName(), objInfo.Key, minio.RemoveObjectOptions{})
-		if err != nil {
-			return err
-		}
-	}
-
-	filepath.Walk(pkgDir, func(path string, info fs.FileInfo, err error) error {
-		if info.IsDir() {
-			return nil
-		}
-		relativePath := filepath.Join(slug, strings.Replace(path, pkgDir, "", 1))
-
-		_, minioErr := minioClient.FPutObject(ctx, application.GetBucketName(),
-			relativePath,
-			path,
-			minio.PutObjectOptions{})
-		if minioErr != nil {
-			log.Fatalln(minioErr)
-		}
-		return minioErr
-	})
-
-	return nil
 }
