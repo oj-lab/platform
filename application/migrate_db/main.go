@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/OJ-lab/oj-lab-services/packages/application"
+	"github.com/OJ-lab/oj-lab-services/packages/core"
 	"github.com/OJ-lab/oj-lab-services/packages/mapper"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	db := application.GetDefaultDB()
+	db := core.GetDefaultDB()
 	err := db.AutoMigrate(&model.User{}, &model.Problem{})
 	if err != nil {
 		panic("failed to migrate database")

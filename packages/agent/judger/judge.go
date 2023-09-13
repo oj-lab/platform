@@ -1,4 +1,4 @@
-package problem
+package judger
 
 import (
 	"bytes"
@@ -6,8 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/OJ-lab/oj-lab-services/packages/application"
-	"github.com/gin-gonic/gin"
+	"github.com/OJ-lab/oj-lab-services/packages/core"
 )
 
 const JUDGER_HOST_PROP = "judger.host"
@@ -16,7 +15,7 @@ const JUDGER_JUDGE_PATH = "/api/v1/judge"
 var judgerHost string
 
 func init() {
-	judgerHost = application.AppConfig.GetString(JUDGER_HOST_PROP)
+	judgerHost = core.AppConfig.GetString(JUDGER_HOST_PROP)
 }
 
 type JudgeRequest struct {
@@ -24,45 +23,32 @@ type JudgeRequest struct {
 	SrcLanguage string `json:"src_language"`
 }
 
-func Judge(ctx *gin.Context) {
-	packageSlug := ctx.Param("slug")
-
-	judgeRequest := JudgeRequest{}
-	if err := ctx.ShouldBindJSON(&judgeRequest); err != nil {
-		ctx.Error(err)
-		return
-	}
-
+func PostJudgeSync(packageSlug string, judgeRequest JudgeRequest) ([]map[string]interface{}, error) {
 	url, err := url.JoinPath(judgerHost, JUDGER_JUDGE_PATH, packageSlug)
 	if err != nil {
-		ctx.Error(err)
-		return
+		return nil, err
 	}
 	payloadBytes, err := json.Marshal(judgeRequest)
 	if err != nil {
-		ctx.Error(err)
-		return
+		return nil, err
 	}
 	client := &http.Client{}
 	innerRequest, err := http.NewRequest("POST", url, bytes.NewReader(payloadBytes))
 	if err != nil {
-		ctx.Error(err)
-		return
+		return nil, err
 	}
-	innerRequest.Header.Set("Content-Type", "application/json")
-	innerRequest.Header.Set("Accept", "application/json")
+	innerRequest.Header.Set("Content-Type", "core/json")
+	innerRequest.Header.Set("Accept", "core/json")
 	innerResponse, err := client.Do(innerRequest)
 	if err != nil {
-		ctx.Error(err)
-		return
+		return nil, err
 	}
 	defer innerResponse.Body.Close()
 
 	innerBody := []map[string]interface{}{}
 	if err := json.NewDecoder(innerResponse.Body).Decode(&innerBody); err != nil {
-		ctx.Error(err)
-		return
+		return nil, err
 	}
 
-	ctx.JSON(innerResponse.StatusCode, innerBody)
+	return innerBody, nil
 }

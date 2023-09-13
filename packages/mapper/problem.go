@@ -1,29 +1,33 @@
 package mapper
 
 import (
-	"github.com/OJ-lab/oj-lab-services/packages/application"
+	"github.com/OJ-lab/oj-lab-services/packages/core"
 	"github.com/OJ-lab/oj-lab-services/packages/model"
 )
 
 func CreateProblem(problem model.Problem) error {
-	db := application.GetDefaultDB()
+	db := core.GetDefaultDB()
 	return db.Create(&problem).Error
 }
 
-func GetProblem(slug string) (model.Problem, error) {
-	db := application.GetDefaultDB()
+func GetProblem(slug string) (*model.Problem, error) {
+	db := core.GetDefaultDB()
 	db_problem := model.Problem{}
 	err := db.Model(&model.Problem{}).Preload("Tags").Where("Slug = ?", slug).First(&db_problem).Error
-	return db_problem, err
+	if err != nil {
+		return nil, err
+	}
+
+	return &db_problem, nil
 }
 
 func DeleteProblem(problem model.Problem) error {
-	db := application.GetDefaultDB()
+	db := core.GetDefaultDB()
 	return db.Delete(&model.Problem{Slug: problem.Slug}).Error
 }
 
 func UpdateProblem(problem model.Problem) error {
-	db := application.GetDefaultDB()
+	db := core.GetDefaultDB()
 	return db.Model(&model.Problem{Slug: problem.Slug}).Updates(problem).Error
 }
 
@@ -36,7 +40,7 @@ type GetProblemOptions struct {
 }
 
 func CountProblemByOptions(options GetProblemOptions) (int64, error) {
-	db := application.GetDefaultDB()
+	db := core.GetDefaultDB()
 	var count int64
 
 	tagsList := []string{}
@@ -64,7 +68,7 @@ func GetProblemByOptions(options GetProblemOptions) ([]model.Problem, int64, err
 		return nil, 0, err
 	}
 
-	db := application.GetDefaultDB()
+	db := core.GetDefaultDB()
 	db_problems := []model.Problem{}
 	tagsList := []string{}
 	for _, tag := range options.Tags {

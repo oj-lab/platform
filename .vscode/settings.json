@@ -2,8 +2,11 @@
   "material-icon-theme.folders.associations": {
     "application": "core",
     "mapper": "database",
-    "migration": "import",
-    "user-service": "server",
-    "postman": "api"
+    "migrate_db": "import",
+    "service": "components",
+    "business": "hook",
+    "postman": "api",
+    ".github/workflows": "github",
+    "test-collection": "resource"
   }
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/OJ-lab/oj-lab-services/packages/application"
+	"github.com/OJ-lab/oj-lab-services/packages/core"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -29,12 +29,12 @@ var (
 )
 
 func init() {
-	endpoint = application.AppConfig.GetString(minioEndpointProp)
-	accessKeyID = application.AppConfig.GetString(minioAccessKeyProp)
-	secretAccessKey = application.AppConfig.GetString(minioSecretAccessKeyProp)
-	useSSL = application.AppConfig.GetBool(minioUseSSLProp)
-	region = application.AppConfig.GetString(minioRegionProp)
-	bucketName = application.AppConfig.GetString(minioBucketNameProp)
+	endpoint = core.AppConfig.GetString(minioEndpointProp)
+	accessKeyID = core.AppConfig.GetString(minioAccessKeyProp)
+	secretAccessKey = core.AppConfig.GetString(minioSecretAccessKeyProp)
+	useSSL = core.AppConfig.GetBool(minioUseSSLProp)
+	region = core.AppConfig.GetString(minioRegionProp)
+	bucketName = core.AppConfig.GetString(minioBucketNameProp)
 }
 
 func GetBucketName() string {
