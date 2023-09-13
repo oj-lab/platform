@@ -1,4 +1,4 @@
-package router
+package handler
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 )
 
 func SetupUserRouter(r *gin.Engine) {
-	g := r.Group("/api/user")
+	g := r.Group("/api/v1/user")
 	{
 		g.GET("/health", func(c *gin.Context) {
 			c.String(http.StatusOK, "Hello, this is user service")
