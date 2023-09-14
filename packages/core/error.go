@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:packages/model/error.go
 package model
-========
-package core
->>>>>>>> slhmy/user_service2:packages/core/error.go
 
 import (
 	"fmt"
