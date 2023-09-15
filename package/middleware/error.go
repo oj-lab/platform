@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/OJ-lab/oj-lab-services/packages/model"
+	"github.com/OJ-lab/oj-lab-services/package/model"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )

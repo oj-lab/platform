@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/OJ-lab/oj-lab-services/packages/core"
+	"github.com/OJ-lab/oj-lab-services/package/core"
 )
 
 const JUDGER_HOST_PROP = "judger.host"
@@ -23,8 +23,8 @@ type JudgeRequest struct {
 	SrcLanguage string `json:"src_language"`
 }
 
-func PostJudgeSync(packageSlug string, judgeRequest JudgeRequest) ([]map[string]interface{}, error) {
-	url, err := url.JoinPath(judgerHost, JUDGER_JUDGE_PATH, packageSlug)
+func PostJudgeSync(packagelug string, judgeRequest JudgeRequest) ([]map[string]interface{}, error) {
+	url, err := url.JoinPath(judgerHost, JUDGER_JUDGE_PATH, packagelug)
 	if err != nil {
 		return nil, err
 	}

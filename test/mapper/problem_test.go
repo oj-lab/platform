@@ -1,11 +1,12 @@
-package mapper
+package mapper_test
 
 import (
 	"encoding/json"
 	"fmt"
 	"testing"
 
-	"github.com/OJ-lab/oj-lab-services/packages/model"
+	"github.com/OJ-lab/oj-lab-services/package/mapper"
+	"github.com/OJ-lab/oj-lab-services/package/model"
 )
 
 func TestProblemMapper(t *testing.T) {
@@ -15,12 +16,12 @@ func TestProblemMapper(t *testing.T) {
 		Description: "Given two integer A and B, please output the answer of A+B.",
 		Tags:        []*model.AlgorithmTag{{Slug: "tag1"}, {Slug: "tag2"}},
 	}
-	err := CreateProblem(problem)
+	err := mapper.CreateProblem(problem)
 	if err != nil {
 		t.Error(err)
 	}
 
-	dbProblem, err := GetProblem(problem.Slug)
+	dbProblem, err := mapper.GetProblem(problem.Slug)
 	if err != nil {
 		t.Error(err)
 	}
@@ -31,13 +32,13 @@ func TestProblemMapper(t *testing.T) {
 	}
 	fmt.Printf("%+v\n", string(problemJson))
 
-	problemOption := GetProblemOptions{
+	problemOption := mapper.GetProblemOptions{
 		Slug:  "",
 		Title: "",
 		Tags:  []*model.AlgorithmTag{{Slug: "tag1"}},
 	}
 
-	dbProblems, problemCount, err := GetProblemByOptions(problemOption)
+	dbProblems, problemCount, err := mapper.GetProblemByOptions(problemOption)
 	if err != nil {
 		t.Error(err)
 	}

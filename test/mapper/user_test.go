@@ -1,11 +1,12 @@
-package mapper
+package mapper_test
 
 import (
 	"encoding/json"
 	"fmt"
 	"testing"
 
-	"github.com/OJ-lab/oj-lab-services/packages/model"
+	"github.com/OJ-lab/oj-lab-services/package/mapper"
+	"github.com/OJ-lab/oj-lab-services/package/model"
 )
 
 func TestUserMapper(t *testing.T) {
@@ -15,12 +16,12 @@ func TestUserMapper(t *testing.T) {
 		Password: &password,
 		Roles:    []*model.Role{{Name: "admin"}},
 	}
-	err := CreateUser(user)
+	err := mapper.CreateUser(user)
 	if err != nil {
 		t.Error(err)
 	}
 
-	dbUser, err := GetUser(user.Account)
+	dbUser, err := mapper.GetUser(user.Account)
 	if err != nil {
 		t.Error(err)
 	}

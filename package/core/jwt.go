@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/OJ-lab/oj-lab-services/packages/model"
+	"github.com/OJ-lab/oj-lab-services/package/model"
 	"github.com/golang-jwt/jwt/v4"
 )
 

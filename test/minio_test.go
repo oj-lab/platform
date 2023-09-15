@@ -1,4 +1,4 @@
-package tests
+package test
 
 import (
 	"io/fs"
@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	minioAgent "github.com/OJ-lab/oj-lab-services/packages/agent/minio"
+	minioAgent "github.com/OJ-lab/oj-lab-services/package/agent/minio"
 	"github.com/minio/minio-go/v7"
 )
 

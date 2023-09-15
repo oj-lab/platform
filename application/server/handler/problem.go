@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"github.com/OJ-lab/oj-lab-services/packages/agent/judger"
-	"github.com/OJ-lab/oj-lab-services/packages/mapper"
+	"github.com/OJ-lab/oj-lab-services/package/agent/judger"
+	"github.com/OJ-lab/oj-lab-services/package/mapper"
 	"github.com/OJ-lab/oj-lab-services/service"
 	"github.com/gin-gonic/gin"
 )

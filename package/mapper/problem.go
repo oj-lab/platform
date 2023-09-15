@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	"github.com/OJ-lab/oj-lab-services/packages/core"
-	"github.com/OJ-lab/oj-lab-services/packages/model"
+	"github.com/OJ-lab/oj-lab-services/package/core"
+	"github.com/OJ-lab/oj-lab-services/package/model"
 )
 
 func CreateProblem(problem model.Problem) error {

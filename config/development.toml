@@ -22,4 +22,4 @@ endpoint = "localhost:9000"
 accessKeyID = "minio-root-user"
 secretAccessKey = "minio-root-password"
 useSSL = false
-bucketName = "oj-lab-problem-packages"
+bucketName = "oj-lab-problem-package"

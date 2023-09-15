@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/OJ-lab/oj-lab-services/packages/core"
-	"github.com/OJ-lab/oj-lab-services/packages/mapper"
-	"github.com/OJ-lab/oj-lab-services/packages/model"
+	"github.com/OJ-lab/oj-lab-services/package/core"
+	"github.com/OJ-lab/oj-lab-services/package/mapper"
+	"github.com/OJ-lab/oj-lab-services/package/model"
 	"github.com/sirupsen/logrus"
 )
 
