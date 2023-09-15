@@ -6,6 +6,7 @@ import (
 	"github.com/alexedwards/argon2id"
 )
 
+// Account, Password, Roles will be used to create a new user.
 func CreateUser(user model.User) error {
 	db := core.GetDefaultDB()
 	hashedPassword, err := argon2id.CreateHash(*user.Password, argon2id.DefaultParams)
@@ -26,6 +27,17 @@ func GetUser(account string) (*model.User, error) {
 	db := core.GetDefaultDB()
 	db_user := model.User{}
 	err := db.Model(&model.User{}).Preload("Roles").Where("account = ?", account).First(&db_user).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &db_user, err
+}
+
+func GetPublicUser(account string) (*model.PublicUser, error) {
+	db := core.GetDefaultDB()
+	db_user := model.PublicUser{}
+	err := db.Model(&model.User{}).Where("account = ?", account).First(&db_user).Error
 	if err != nil {
 		return nil, err
 	}

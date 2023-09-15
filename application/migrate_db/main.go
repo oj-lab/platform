@@ -20,5 +20,10 @@ func main() {
 		Description: `Write a program that prints "Hello! %s" to the standard output (stdout).`,
 	})
 
+	mapper.CreateUser(model.User{
+		Name:     "admin",
+		Password: func() *string { s := "admin"; return &s }(),
+	})
+
 	logrus.Info("migrate tables success")
 }

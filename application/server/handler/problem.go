@@ -15,13 +15,13 @@ func SetupProblemRoute(r *gin.Engine) {
 		g.GET("/greet", func(c *gin.Context) {
 			c.String(http.StatusOK, "Hello, this is problem service")
 		})
-		g.GET("/:slug", GetProblemInfo)
-		g.PUT("/:slug/package", PutProblemPackage)
-		g.POST("/:slug/judge", Judge)
+		g.GET("/:slug", getProblemInfo)
+		g.PUT("/:slug/package", putProblemPackage)
+		g.POST("/:slug/judge", judge)
 	}
 }
 
-func GetProblemInfo(ctx *gin.Context) {
+func getProblemInfo(ctx *gin.Context) {
 	slug := ctx.Param("slug")
 
 	problemInfo, err := service.GetProblemInfo(slug)
@@ -38,7 +38,7 @@ func GetProblemInfo(ctx *gin.Context) {
 	})
 }
 
-func PutProblemPackage(ctx *gin.Context) {
+func putProblemPackage(ctx *gin.Context) {
 	slug := ctx.Param("slug")
 	file, err := ctx.FormFile("file")
 	if err != nil {
@@ -56,7 +56,7 @@ func PutProblemPackage(ctx *gin.Context) {
 	ctx.Done()
 }
 
-func Judge(ctx *gin.Context) {
+func judge(ctx *gin.Context) {
 	slug := ctx.Param("slug")
 	judgeRequest := judger.JudgeRequest{}
 	if err := ctx.ShouldBindJSON(&judgeRequest); err != nil {
