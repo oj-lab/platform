@@ -1,6 +1,7 @@
-package core
+package gorm
 
 import (
+	"github.com/OJ-lab/oj-lab-services/core"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -12,7 +13,7 @@ var db *gorm.DB
 var dsn string
 
 func init() {
-	dsn = AppConfig.GetString(dsnProp)
+	dsn = core.AppConfig.GetString(dsnProp)
 	if dsn == "" {
 		panic("database dsn is not set")
 	}

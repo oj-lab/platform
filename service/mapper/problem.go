@@ -1,17 +1,17 @@
 package mapper
 
 import (
-	"github.com/OJ-lab/oj-lab-services/packages/core"
-	"github.com/OJ-lab/oj-lab-services/packages/model"
+	"github.com/OJ-lab/oj-lab-services/core/agent/gorm"
+	"github.com/OJ-lab/oj-lab-services/service/model"
 )
 
 func CreateProblem(problem model.Problem) error {
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 	return db.Create(&problem).Error
 }
 
 func GetProblem(slug string) (*model.Problem, error) {
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 	db_problem := model.Problem{}
 	err := db.Model(&model.Problem{}).Preload("Tags").Where("Slug = ?", slug).First(&db_problem).Error
 	if err != nil {
@@ -22,12 +22,12 @@ func GetProblem(slug string) (*model.Problem, error) {
 }
 
 func DeleteProblem(problem model.Problem) error {
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 	return db.Delete(&model.Problem{Slug: problem.Slug}).Error
 }
 
 func UpdateProblem(problem model.Problem) error {
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 	return db.Model(&model.Problem{Slug: problem.Slug}).Updates(problem).Error
 }
 
@@ -40,7 +40,7 @@ type GetProblemOptions struct {
 }
 
 func CountProblemByOptions(options GetProblemOptions) (int64, error) {
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 	var count int64
 
 	tagsList := []string{}
@@ -68,7 +68,7 @@ func GetProblemByOptions(options GetProblemOptions) ([]model.Problem, int64, err
 		return nil, 0, err
 	}
 
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 	db_problems := []model.Problem{}
 	tagsList := []string{}
 	for _, tag := range options.Tags {

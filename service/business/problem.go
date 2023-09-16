@@ -2,12 +2,15 @@ package business
 
 import (
 	"archive/zip"
+	"context"
 	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/OJ-lab/oj-lab-services/core/agent/minio"
 )
 
-func UnzipProblemPackage(zipFile, targetDir string) error {
+func UnzipProblemPackage(ctx context.Context, zipFile, targetDir string) error {
 	err := os.RemoveAll(targetDir)
 	if err != nil {
 		return err
@@ -41,6 +44,15 @@ func UnzipProblemPackage(zipFile, targetDir string) error {
 				return err
 			}
 		}
+	}
+
+	return nil
+}
+
+func PutProblemPackage(ctx context.Context, slug string, pkgDir string) error {
+	err := minio.PutLocalObjects(ctx, slug, pkgDir)
+	if err != nil {
+		return err
 	}
 
 	return nil

@@ -1,13 +1,14 @@
 package mapper
 
 import (
-	"github.com/OJ-lab/oj-lab-services/packages/core"
-	"github.com/OJ-lab/oj-lab-services/packages/model"
+	"github.com/OJ-lab/oj-lab-services/core/agent/gorm"
+	"github.com/OJ-lab/oj-lab-services/service/model"
 	"github.com/alexedwards/argon2id"
 )
 
+// Account, Password, Roles will be used to create a new user.
 func CreateUser(user model.User) error {
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 	hashedPassword, err := argon2id.CreateHash(*user.Password, argon2id.DefaultParams)
 	if err != nil {
 		return err
@@ -23,7 +24,7 @@ func CreateUser(user model.User) error {
 }
 
 func GetUser(account string) (*model.User, error) {
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 	db_user := model.User{}
 	err := db.Model(&model.User{}).Preload("Roles").Where("account = ?", account).First(&db_user).Error
 	if err != nil {
@@ -33,13 +34,24 @@ func GetUser(account string) (*model.User, error) {
 	return &db_user, err
 }
 
+func GetPublicUser(account string) (*model.PublicUser, error) {
+	db := gorm.GetDefaultDB()
+	db_user := model.PublicUser{}
+	err := db.Model(&model.User{}).Where("account = ?", account).First(&db_user).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &db_user, err
+}
+
 func DeleteUser(user model.User) error {
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 	return db.Delete(&model.User{Account: user.Account}).Error
 }
 
 func UpdateUser(update model.User) error {
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 
 	old := model.User{}
 	err := db.Where("account = ?", update.Account).First(&old).Error
@@ -77,7 +89,7 @@ type GetUserOptions struct {
 // Count the total number of users that match the options,
 // ignoring the offset and limit.
 func CountUserByOptions(options GetUserOptions) (int64, error) {
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 	var count int64
 
 	tx := db.
@@ -97,7 +109,7 @@ func GetUserByOptions(options GetUserOptions) ([]model.User, int64, error) {
 		return nil, 0, err
 	}
 
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 	db_users := []model.User{}
 
 	tx := db.
@@ -120,7 +132,7 @@ func GetUserByOptions(options GetUserOptions) ([]model.User, int64, error) {
 }
 
 func CheckUserPassword(account string, password string) (bool, error) {
-	db := core.GetDefaultDB()
+	db := gorm.GetDefaultDB()
 	user := model.User{}
 	err := db.Where("account = ?", account).First(&user).Error
 	if err != nil {

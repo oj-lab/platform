@@ -2,7 +2,8 @@ package main
 
 import (
 	"github.com/OJ-lab/oj-lab-services/application/server/handler"
-	"github.com/OJ-lab/oj-lab-services/packages/core"
+	"github.com/OJ-lab/oj-lab-services/core"
+	"github.com/OJ-lab/oj-lab-services/core/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,7 +24,7 @@ func init() {
 
 func main() {
 	r := gin.Default()
-	r.Use(core.HandleError)
+	r.Use(middleware.HandleError)
 	gin.SetMode(serviceMode)
 	handler.SetupUserRouter(r)
 	handler.SetupProblemRoute(r)
