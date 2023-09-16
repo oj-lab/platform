@@ -21,16 +21,16 @@ func SetupProblemRoute(r *gin.Engine) {
 	}
 }
 
-func getProblemInfo(ctx *gin.Context) {
-	slug := ctx.Param("slug")
+func getProblemInfo(ginCtx *gin.Context) {
+	slug := ginCtx.Param("slug")
 
-	problemInfo, err := service.GetProblemInfo(slug)
+	problemInfo, err := service.GetProblemInfo(ginCtx, slug)
 	if err != nil {
-		ctx.Error(err)
+		ginCtx.Error(err)
 		return
 	}
 
-	ctx.JSON(200, gin.H{
+	ginCtx.JSON(200, gin.H{
 		"slug":        problemInfo.Slug,
 		"title":       problemInfo.Title,
 		"description": problemInfo.Description,
@@ -38,37 +38,37 @@ func getProblemInfo(ctx *gin.Context) {
 	})
 }
 
-func putProblemPackage(ctx *gin.Context) {
-	slug := ctx.Param("slug")
-	file, err := ctx.FormFile("file")
+func putProblemPackage(ginCtx *gin.Context) {
+	slug := ginCtx.Param("slug")
+	file, err := ginCtx.FormFile("file")
 	if err != nil {
-		ctx.Error(err)
+		ginCtx.Error(err)
 		return
 	}
 	zipFile := "/tmp/" + slug + ".zip"
-	if err := ctx.SaveUploadedFile(file, zipFile); err != nil {
-		ctx.Error(err)
+	if err := ginCtx.SaveUploadedFile(file, zipFile); err != nil {
+		ginCtx.Error(err)
 		return
 	}
 
-	service.PutProblemPackage(slug, zipFile)
+	service.PutProblemPackage(ginCtx, slug, zipFile)
 
-	ctx.Done()
+	ginCtx.Done()
 }
 
-func judge(ctx *gin.Context) {
-	slug := ctx.Param("slug")
+func judge(ginCtx *gin.Context) {
+	slug := ginCtx.Param("slug")
 	judgeRequest := judger.JudgeRequest{}
-	if err := ctx.ShouldBindJSON(&judgeRequest); err != nil {
-		ctx.Error(err)
+	if err := ginCtx.ShouldBindJSON(&judgeRequest); err != nil {
+		ginCtx.Error(err)
 		return
 	}
 
-	body, err := service.Judge(slug, judgeRequest)
+	body, err := service.Judge(ginCtx, slug, judgeRequest)
 	if err != nil {
-		ctx.Error(err)
+		ginCtx.Error(err)
 		return
 	}
 
-	ctx.JSON(200, body)
+	ginCtx.JSON(200, body)
 }

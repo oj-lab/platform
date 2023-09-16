@@ -50,7 +50,7 @@ func me(ginCtx *gin.Context) {
 		core.NewUnauthorizedError("not logined").AppendToGin(ginCtx)
 		return
 	}
-	user, svcErr := service.GetUser(ls.Account)
+	user, svcErr := service.GetUser(ginCtx, ls.Account)
 	if svcErr != nil {
 		svcErr.AppendToGin(ginCtx)
 		return
@@ -66,7 +66,7 @@ func checkUserExist(ginCtx *gin.Context) {
 		return
 	}
 
-	exist, err := service.CheckUserExist(account)
+	exist, err := service.CheckUserExist(ginCtx, account)
 	if err != nil {
 		ginCtx.Error(err)
 		return

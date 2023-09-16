@@ -10,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func GetUser(account string) (*model.User, *core.SeviceError) {
+func GetUser(ctx context.Context, account string) (*model.User, *core.SeviceError) {
 	user, err := mapper.GetUser(account)
 	if err != nil {
 		return nil, core.NewInternalError("failed to get user")
@@ -19,7 +19,7 @@ func GetUser(account string) (*model.User, *core.SeviceError) {
 	return user, nil
 }
 
-func CheckUserExist(account string) (bool, error) {
+func CheckUserExist(ctx context.Context, account string) (bool, error) {
 	getOptions := mapper.GetUserOptions{
 		Account: account,
 	}
