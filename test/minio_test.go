@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	minioAgent "github.com/OJ-lab/oj-lab-services/package/agent/minio"
+	minioAgent "github.com/OJ-lab/oj-lab-services/core/agent/minio"
 	"github.com/minio/minio-go/v7"
 )
 

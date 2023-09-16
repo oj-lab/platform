@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/OJ-lab/oj-lab-services/application/server/handler"
-	"github.com/OJ-lab/oj-lab-services/package/core"
-	"github.com/OJ-lab/oj-lab-services/package/middleware"
+	"github.com/OJ-lab/oj-lab-services/core"
+	"github.com/OJ-lab/oj-lab-services/core/middleware"
 	"github.com/gin-gonic/gin"
 )
 

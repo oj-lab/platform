@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/OJ-lab/oj-lab-services/package/core"
+	"github.com/OJ-lab/oj-lab-services/core"
 )
 
 const JUDGER_HOST_PROP = "judger.host"

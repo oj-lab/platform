@@ -37,16 +37,6 @@ func IsServiceError(err interface{}) bool {
 	return ok
 }
 
-func GetServiceErrorFromGinError(ginErr gin.Error) *SeviceError {
-	if IsServiceError(ginErr.Meta) {
-		return ginErr.Meta.(*SeviceError)
-	} else {
-		serviceErr := NewInternalError(fmt.Sprintf("%v", ginErr.Err))
-		serviceErr.CaptureStackTrace()
-		return serviceErr
-	}
-}
-
 func NewInternalError(msg string) *SeviceError {
 	return &SeviceError{
 		Code: 500,
@@ -54,7 +44,7 @@ func NewInternalError(msg string) *SeviceError {
 	}
 }
 
-func NewUnAuthorizedError(msg string) *SeviceError {
+func NewUnauthorizedError(msg string) *SeviceError {
 	return &SeviceError{
 		Code: 401,
 		Msg:  msg,

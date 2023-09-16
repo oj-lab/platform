@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/OJ-lab/oj-lab-services/package/core"
+	"github.com/OJ-lab/oj-lab-services/core"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )

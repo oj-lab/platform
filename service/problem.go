@@ -1,11 +1,11 @@
 package service
 
 import (
-	"github.com/OJ-lab/oj-lab-services/package/agent/judger"
-	"github.com/OJ-lab/oj-lab-services/package/agent/minio"
-	"github.com/OJ-lab/oj-lab-services/package/mapper"
-	"github.com/OJ-lab/oj-lab-services/package/model"
+	"github.com/OJ-lab/oj-lab-services/core/agent/judger"
+	"github.com/OJ-lab/oj-lab-services/core/agent/minio"
 	"github.com/OJ-lab/oj-lab-services/service/business"
+	"github.com/OJ-lab/oj-lab-services/service/mapper"
+	"github.com/OJ-lab/oj-lab-services/service/model"
 )
 
 func GetProblemInfo(slug string) (*model.Problem, error) {

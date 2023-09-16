@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/OJ-lab/oj-lab-services/package/mapper"
-	"github.com/OJ-lab/oj-lab-services/package/model"
+	"github.com/OJ-lab/oj-lab-services/service/mapper"
+	"github.com/OJ-lab/oj-lab-services/service/model"
 )
 
 func TestProblemMapper(t *testing.T) {

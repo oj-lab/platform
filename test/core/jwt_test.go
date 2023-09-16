@@ -4,12 +4,11 @@ import (
 	"log"
 	"testing"
 
-	"github.com/OJ-lab/oj-lab-services/package/core"
-	"github.com/OJ-lab/oj-lab-services/package/model"
+	"github.com/OJ-lab/oj-lab-services/core/auth"
 )
 
 func TestGenerateTokenString(t *testing.T) {
-	tokenString, err := core.GenerateTokenString("account", []*model.Role{{Name: "admin"}})
+	tokenString, err := auth.GenerateAuthTokenString("account", []string{"admin"}...)
 	if err != nil {
 		panic(err)
 	}
@@ -17,11 +16,11 @@ func TestGenerateTokenString(t *testing.T) {
 }
 
 func TestParseTokenString(t *testing.T) {
-	tokenString, err := core.GenerateTokenString("account", []*model.Role{{Name: "admin"}})
+	tokenString, err := auth.GenerateAuthTokenString("account", []string{"admin"}...)
 	if err != nil {
 		panic(err)
 	}
-	account, role, err := core.ParseTokenString(tokenString)
+	account, role, err := auth.ParseAuthTokenString(tokenString)
 	if err != nil {
 		panic(err)
 	}
