@@ -13,6 +13,7 @@ auth_on = true
 port = ":8080"
 cookie.age = "24h"
 mode = "debug"
+swagger_on = true
 
 [judger]
 host = "http://localhost:8000"
