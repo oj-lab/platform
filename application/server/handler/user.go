@@ -26,6 +26,8 @@ type loginBody struct {
 	Password string `json:"password" example:"admin"`
 }
 
+// Login
+//
 //	@Summary		Login by account and password
 //	@Description	A Cookie will be set if login successfully
 //	@Tags			user
@@ -51,6 +53,8 @@ func login(ginCtx *gin.Context) {
 	ginCtx.Status(http.StatusOK)
 }
 
+// Me
+//
 //	@Summary		Get current user
 //	@Description	If correctly logined with cookie, return current user
 //	@Tags			user
