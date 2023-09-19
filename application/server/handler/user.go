@@ -26,14 +26,13 @@ type loginBody struct {
 	Password string `json:"password" example:"admin"`
 }
 
-// Login
-// @Summary      Login by account and password
-// @Description  A Cookie will be set if login successfully
-// @Tags         user
-// @Accept       json
-// @Param        loginBody body loginBody true "body"
-// @Router       /user/login [post]
-// @Success      200
+//	@Summary		Login by account and password
+//	@Description	A Cookie will be set if login successfully
+//	@Tags			user
+//	@Accept			json
+//	@Param			loginBody	body	loginBody	true	"body"
+//	@Router			/user/login [post]
+//	@Success		200
 func login(ginCtx *gin.Context) {
 	body := &loginBody{}
 	err := ginCtx.BindJSON(body)
@@ -52,6 +51,12 @@ func login(ginCtx *gin.Context) {
 	ginCtx.Status(http.StatusOK)
 }
 
+//	@Summary		Get current user
+//	@Description	If correctly logined with cookie, return current user
+//	@Tags			user
+//	@Router			/user/me [get]
+//	@Success		200
+//	@Failure		401
 func me(ginCtx *gin.Context) {
 	ls := middleware.GetLoginSession(ginCtx)
 	if ls == nil {

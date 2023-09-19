@@ -7,6 +7,7 @@ install-tools:
 .PHONY: build
 build: install-tools
 	@echo "Building on $(OS)"
+	swag fmt -d application/server
 	swag init -d application/server -ot go -o application/server/swaggo-gen
 	go mod tidy
 	go build -o bin/migrate_db application/migrate_db/main.go
