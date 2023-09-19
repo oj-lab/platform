@@ -34,7 +34,7 @@ func main() {
 
 	baseRouter := r.Group("/")
 	if swaggerOn {
-		logrus.Info("Serving swagger Doc")
+		logrus.Info("Serving swagger Doc...")
 		handler.SetupSwaggoRouter(baseRouter)
 	}
 
