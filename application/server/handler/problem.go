@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupProblemRoute(r *gin.Engine) {
-	g := r.Group("/api/v1/problem")
+func SetupProblemRoute(baseRoute *gin.RouterGroup) {
+	g := baseRoute.Group("/problem")
 	{
 		g.GET("/greet", func(c *gin.Context) {
 			c.String(http.StatusOK, "Hello, this is problem service")

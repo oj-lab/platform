@@ -1,8 +1,14 @@
 OS := $(shell uname -s)
 
+.PHONY: install-tools
+install-tools:
+	go install github.com/swaggo/swag/cmd/swag@latest
+
 .PHONY: build
-build:
+build: install-tools
 	@echo "Building on $(OS)"
+	swag fmt -d application/server
+	swag init -d application/server -ot go -o application/server/swaggo-gen
 	go mod tidy
 	go build -o bin/migrate_db application/migrate_db/main.go
 	go build -o bin/service application/server/main.go

@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupUserRouter(r *gin.Engine) {
-	g := r.Group("/api/v1/user")
+func SetupUserRouter(baseRoute *gin.RouterGroup) {
+	g := baseRoute.Group("/user")
 	{
 		g.GET("/health", func(ginCtx *gin.Context) {
 			ginCtx.String(http.StatusOK, "Hello, this is user service")
@@ -22,10 +22,19 @@ func SetupUserRouter(r *gin.Engine) {
 }
 
 type loginBody struct {
-	Account  string `json:"account"`
-	Password string `json:"password"`
+	Account  string `json:"account" example:"admin"`
+	Password string `json:"password" example:"admin"`
 }
 
+// Login
+//
+//	@Summary		Login by account and password
+//	@Description	A Cookie will be set if login successfully
+//	@Tags			user
+//	@Accept			json
+//	@Param			loginBody	body	loginBody	true	"body"
+//	@Router			/user/login [post]
+//	@Success		200
 func login(ginCtx *gin.Context) {
 	body := &loginBody{}
 	err := ginCtx.BindJSON(body)
@@ -41,9 +50,17 @@ func login(ginCtx *gin.Context) {
 	}
 	middleware.SetLoginSessionCookie(ginCtx, *lsId)
 
-	ginCtx.String(http.StatusOK, "")
+	ginCtx.Status(http.StatusOK)
 }
 
+// Me
+//
+//	@Summary		Get current user
+//	@Description	If correctly logined with cookie, return current user
+//	@Tags			user
+//	@Router			/user/me [get]
+//	@Success		200
+//	@Failure		401
 func me(ginCtx *gin.Context) {
 	ls := middleware.GetLoginSession(ginCtx)
 	if ls == nil {
