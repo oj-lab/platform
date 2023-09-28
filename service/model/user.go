@@ -11,13 +11,10 @@ type User struct {
 	Mobile         *string `gorm:"unique" json:"mobile,omitempty"`
 }
 
+var PublicUserSelection = append([]string{"account", "name"}, MetaFieldsSelection...)
+
 type Role struct {
+	MetaFields
 	Name  string  `gorm:"primaryKey" json:"name"`
 	Users []*User `gorm:"many2many:user_roles" json:"users,omitempty"`
-}
-
-// User model that will be exposed to the public.
-type PublicUser struct {
-	Account string `json:"account"`
-	Name    string `json:"name"`
 }

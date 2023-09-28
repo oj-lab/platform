@@ -10,12 +10,14 @@ import (
 )
 
 func TestProblemMapper(t *testing.T) {
+	description := "Given two integer A and B, please output the answer of A+B."
 	problem := model.Problem{
 		Slug:        "a+b-problem",
 		Title:       "A+B Problem",
-		Description: "Given two integer A and B, please output the answer of A+B.",
+		Description: &description,
 		Tags:        []*model.AlgorithmTag{{Slug: "tag1"}, {Slug: "tag2"}},
 	}
+
 	err := mapper.CreateProblem(problem)
 	if err != nil {
 		t.Error(err)
@@ -33,12 +35,11 @@ func TestProblemMapper(t *testing.T) {
 	fmt.Printf("%+v\n", string(problemJson))
 
 	problemOption := mapper.GetProblemOptions{
-		Slug:  "",
-		Title: "",
-		Tags:  []*model.AlgorithmTag{{Slug: "tag1"}},
+		Tags:     []*model.AlgorithmTag{{Slug: "tag1"}},
+		InfoOnly: true,
 	}
 
-	dbProblems, problemCount, err := mapper.GetProblemByOptions(problemOption)
+	problemList, problemCount, err := mapper.GetProblemListByOptions(problemOption)
 	if err != nil {
 		t.Error(err)
 	}
@@ -47,9 +48,9 @@ func TestProblemMapper(t *testing.T) {
 		t.Error("problemCount should be 1")
 	}
 
-	problemsJson, err := json.MarshalIndent(dbProblems, "", "\t")
+	problemListJson, err := json.MarshalIndent(problemList, "", "\t")
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Printf("%+v\n", string(problemsJson))
+	fmt.Printf("%+v\n", string(problemListJson))
 }

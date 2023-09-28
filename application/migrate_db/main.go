@@ -14,10 +14,11 @@ func main() {
 		panic("failed to migrate database")
 	}
 
+	description := `Write a program that prints "Hello! %s" to the standard output (stdout).`
 	mapper.CreateProblem(model.Problem{
 		Slug:        "hello-world",
 		Title:       "Hello! { ... }",
-		Description: `Write a program that prints "Hello! %s" to the standard output (stdout).`,
+		Description: &description,
 	})
 
 	mapper.CreateUser(model.User{
