@@ -33,12 +33,12 @@ func UpdateProblem(problem model.Problem) error {
 }
 
 type GetProblemOptions struct {
-	Slug     string
-	Title    string
-	Tags     []*model.AlgorithmTag
-	Offset   *int
-	Limit    *int
-	InfoOnly bool
+	Selection []string
+	Slug      *string
+	Title     *string
+	Tags      []*model.AlgorithmTag
+	Offset    *int
+	Limit     *int
 }
 
 func buildTXByOptions(db *gorm.DB, options GetProblemOptions, isCount bool) *gorm.DB {
@@ -47,14 +47,20 @@ func buildTXByOptions(db *gorm.DB, options GetProblemOptions, isCount bool) *gor
 		tagsList = append(tagsList, tag.Slug)
 	}
 	tx := db.Model(&model.Problem{})
-	if options.InfoOnly {
-		tx = tx.Select(model.ProblemInfoSelection)
+	if len(options.Selection) > 0 {
+		tx = tx.Select(options.Selection)
 	}
-	tx.Joins("JOIN problem_algorithm_tags ON problem_algorithm_tags.problem_slug = problems.slug").
-		Where("problem_algorithm_tags.algorithm_tag_slug in ?", tagsList).
-		Or("Slug = ?", options.Slug).
-		Or("Title = ?", options.Title).
-		Distinct().
+	if len(tagsList) > 0 {
+		tx = tx.Joins("JOIN problem_algorithm_tags ON problem_algorithm_tags.problem_slug = problems.slug").
+			Where("problem_algorithm_tags.algorithm_tag_slug in ?", tagsList)
+	}
+	if options.Slug != nil {
+		tx = tx.Where("slug = ?", *options.Slug)
+	}
+	if options.Title != nil {
+		tx = tx.Where("title = ?", *options.Title)
+	}
+	tx = tx.Distinct().
 		Preload("Tags")
 	if !isCount {
 		if options.Offset != nil {

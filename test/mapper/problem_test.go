@@ -12,7 +12,7 @@ import (
 func TestProblemMapper(t *testing.T) {
 	description := "Given two integer A and B, please output the answer of A+B."
 	problem := model.Problem{
-		Slug:        "a+b-problem",
+		Slug:        "a-plus-b-problem",
 		Title:       "A+B Problem",
 		Description: &description,
 		Tags:        []*model.AlgorithmTag{{Slug: "tag1"}, {Slug: "tag2"}},
@@ -35,8 +35,9 @@ func TestProblemMapper(t *testing.T) {
 	fmt.Printf("%+v\n", string(problemJson))
 
 	problemOption := mapper.GetProblemOptions{
-		Tags:     []*model.AlgorithmTag{{Slug: "tag1"}},
-		InfoOnly: true,
+		Selection: model.ProblemInfoSelection,
+		Tags:      []*model.AlgorithmTag{{Slug: "tag1"}},
+		Slug:      &problem.Slug,
 	}
 
 	problemList, problemCount, err := mapper.GetProblemListByOptions(problemOption)

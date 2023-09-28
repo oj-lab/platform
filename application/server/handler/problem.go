@@ -15,16 +15,17 @@ func SetupProblemRoute(baseRoute *gin.RouterGroup) {
 		g.GET("/greet", func(c *gin.Context) {
 			c.String(http.StatusOK, "Hello, this is problem service")
 		})
-		g.GET("/:slug", getProblemInfo)
+		g.GET("", GetProblemInfoList)
+		g.GET("/:slug", getProblem)
 		g.PUT("/:slug/package", putProblemPackage)
 		g.POST("/:slug/judge", judge)
 	}
 }
 
-func getProblemInfo(ginCtx *gin.Context) {
+func getProblem(ginCtx *gin.Context) {
 	slug := ginCtx.Param("slug")
 
-	problemInfo, err := service.GetProblemInfo(ginCtx, slug)
+	problemInfo, err := service.GetProblem(ginCtx, slug)
 	if err != nil {
 		ginCtx.Error(err)
 		return
@@ -35,6 +36,27 @@ func getProblemInfo(ginCtx *gin.Context) {
 		"title":       problemInfo.Title,
 		"description": problemInfo.Description,
 		"tags":        mapper.GetTagsList(*problemInfo),
+	})
+}
+
+// GetProblemInfoList
+//
+//	@Router			/problem [get]
+//	@Summary		Get problem list
+//	@Description	Get problem list
+//	@Tags			problem
+//	@Accept			json
+//	@Success		200
+func GetProblemInfoList(ginCtx *gin.Context) {
+	problemInfoList, total, err := service.GetProblemInfoList(ginCtx)
+	if err != nil {
+		ginCtx.Error(err)
+		return
+	}
+
+	ginCtx.JSON(200, gin.H{
+		"total": total,
+		"list":  problemInfoList,
 	})
 }
 

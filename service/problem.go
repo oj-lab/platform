@@ -9,12 +9,16 @@ import (
 	"github.com/OJ-lab/oj-lab-services/service/model"
 )
 
-func GetProblemInfo(ctx context.Context, slug string) (*model.Problem, error) {
+func GetProblem(ctx context.Context, slug string) (*model.Problem, error) {
 	problem, err := mapper.GetProblem(slug)
 	if err != nil {
 		return nil, err
 	}
 	return problem, nil
+}
+
+func GetProblemInfoList(ctx context.Context) ([]model.ProblemInfo, int64, error) {
+	return business.GetProblemInfoList(ctx)
 }
 
 func PutProblemPackage(ctx context.Context, slug, zipFile string) error {
