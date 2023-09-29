@@ -8,3 +8,7 @@
 
 [log]
 level = "info"
+
+# If you want to serve the frontend dist, set `serve_front` to `true`.
+[service]
+serve_front = true

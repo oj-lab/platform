@@ -1,6 +1,9 @@
 package main
 
 import (
+	"path/filepath"
+	"runtime"
+
 	"github.com/OJ-lab/oj-lab-services/application/server/handler"
 	"github.com/sirupsen/logrus"
 
@@ -10,21 +13,31 @@ import (
 )
 
 const (
-	servicePortProp  = "service.port"
-	serviceModeProp  = "service.mode"
-	serveSwaggerProp = "service.swagger_on"
+	servicePortProp   = "service.port"
+	serviceModeProp   = "service.mode"
+	swaggerOnProp     = "service.swagger_on"
+	serveFrontendProp = "service.serve_front"
 )
 
 var (
-	servicePort string
-	serviceMode string
-	swaggerOn   bool
+	servicePort   string
+	serviceMode   string
+	swaggerOn     bool
+	serveFrontend bool
 )
 
 func init() {
 	servicePort = core.AppConfig.GetString(servicePortProp)
 	serviceMode = core.AppConfig.GetString(serviceModeProp)
-	swaggerOn = core.AppConfig.GetBool(serveSwaggerProp)
+	swaggerOn = core.AppConfig.GetBool(swaggerOnProp)
+	serveFrontend = core.AppConfig.GetBool(serveFrontendProp)
+}
+
+func GetProjectDir() string {
+	_, b, _, _ := runtime.Caller(0)
+	projectDir := filepath.Join(filepath.Dir(b), "..", "..")
+
+	return projectDir
 }
 
 func main() {
@@ -33,6 +46,12 @@ func main() {
 	gin.SetMode(serviceMode)
 
 	baseRouter := r.Group("/")
+	if serveFrontend {
+		logrus.Info("Serving frontend...")
+		r.LoadHTMLFiles("./frontend/dist/index.html")
+		handler.SetupFrontendRoute(baseRouter)
+	}
+
 	if swaggerOn {
 		logrus.Info("Serving swagger Doc...")
 		handler.SetupSwaggoRouter(baseRouter)

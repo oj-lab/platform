@@ -1,5 +1,9 @@
 OS := $(shell uname -s)
 
+.PHONY: get-front
+get-front:
+	./script/update-frontend-dist.sh
+
 .PHONY: install-tools
 install-tools:
 	go install github.com/swaggo/swag/cmd/swag@latest
