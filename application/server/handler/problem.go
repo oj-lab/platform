@@ -3,7 +3,6 @@ package handler
 import (
 	"net/http"
 
-	"github.com/OJ-lab/oj-lab-services/core/agent/judger"
 	"github.com/OJ-lab/oj-lab-services/service"
 	"github.com/OJ-lab/oj-lab-services/service/mapper"
 	"github.com/gin-gonic/gin"
@@ -15,9 +14,10 @@ func SetupProblemRoute(baseRoute *gin.RouterGroup) {
 		g.GET("/greet", func(c *gin.Context) {
 			c.String(http.StatusOK, "Hello, this is problem service")
 		})
-		g.GET("", GetProblemInfoList)
+		g.GET("", getProblemInfoList)
 		g.GET("/:slug", getProblem)
 		g.PUT("/:slug/package", putProblemPackage)
+		g.POST("/:slug/judge/task", postJudgeTask)
 		g.POST("/:slug/judge", judge)
 	}
 }
@@ -39,7 +39,7 @@ func getProblem(ginCtx *gin.Context) {
 	})
 }
 
-// GetProblemInfoList
+// getProblemInfoList
 //
 //	@Router			/problem [get]
 //	@Summary		Get problem list
@@ -47,7 +47,7 @@ func getProblem(ginCtx *gin.Context) {
 //	@Tags			problem
 //	@Accept			json
 //	@Success		200
-func GetProblemInfoList(ginCtx *gin.Context) {
+func getProblemInfoList(ginCtx *gin.Context) {
 	problemInfoList, total, err := service.GetProblemInfoList(ginCtx)
 	if err != nil {
 		ginCtx.Error(err)
@@ -78,19 +78,46 @@ func putProblemPackage(ginCtx *gin.Context) {
 	ginCtx.Done()
 }
 
-func judge(ginCtx *gin.Context) {
+type judgeTaskBody struct {
+	Src         string `json:"src"`
+	SrcLanguage string `json:"srcLanguage"`
+}
+
+// postJudgeTask
+//
+//	@Router			/problem/{slug}/judge/task [post]
+//	@Summary		Post judge task
+//	@Description	Post judge task
+//	@Tags			problem
+//	@Accept			json
+//	@Param			slug			path	string			true	"problem slug"
+//	@Param			judgeRequest	body	judgeTaskBody	true	"judge request"
+func postJudgeTask(ginCtx *gin.Context) {
 	slug := ginCtx.Param("slug")
-	judgeRequest := judger.JudgeRequest{}
-	if err := ginCtx.ShouldBindJSON(&judgeRequest); err != nil {
+	body := judgeTaskBody{}
+	if err := ginCtx.ShouldBindJSON(&body); err != nil {
 		ginCtx.Error(err)
 		return
 	}
 
-	body, err := service.Judge(ginCtx, slug, judgeRequest)
+	service.PostJudgeTask(ginCtx, slug, body.Src, body.SrcLanguage)
+
+	ginCtx.Done()
+}
+
+func judge(ginCtx *gin.Context) {
+	slug := ginCtx.Param("slug")
+	body := judgeTaskBody{}
+	if err := ginCtx.ShouldBindJSON(&body); err != nil {
+		ginCtx.Error(err)
+		return
+	}
+
+	responseBody, err := service.Judge(ginCtx, slug, body.Src, body.SrcLanguage)
 	if err != nil {
 		ginCtx.Error(err)
 		return
 	}
 
-	ginCtx.JSON(200, body)
+	ginCtx.JSON(200, responseBody)
 }
