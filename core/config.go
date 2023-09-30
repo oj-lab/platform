@@ -77,12 +77,12 @@ func GetProjectRoot() string {
 	if err != nil {
 		panic("Cannot find working dir")
 	}
-	isRoot := path.Base(wd) == DEFAULT_PROJECT_ROOT
-	for !isRoot && wd != "" {
+	isRoot := path.Base(wd) == projectRoot
+	for !isRoot && wd != "/" {
 		wd = path.Dir(wd)
-		isRoot = path.Base(wd) == DEFAULT_PROJECT_ROOT
+		isRoot = path.Base(wd) == projectRoot
 	}
-	if wd == "" {
+	if wd == "/" {
 		panic("Cannot find project root folder")
 	}
 	return wd
