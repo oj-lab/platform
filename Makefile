@@ -16,6 +16,7 @@ build: install-tools
 	go mod tidy
 	go build -o bin/migrate_db application/migrate_db/main.go
 	go build -o bin/service application/server/main.go
+	go build -o bin/asynq_worker application/asynq_worker/main.go
 
 .PHONY: clear-db
 clear-db:
@@ -37,9 +38,17 @@ check:
 test: setup-db check 
 	go test -cover -v ./...
 
+.PHONY: run-task-worker
+run-task-worker: build check
+	./bin/asynq_worker
+
+.PHONY: run-server
+run-server: build check
+	./bin/service
+
 .PHONY: run
 run: build check
-	./bin/service
+	make -j run-task-worker run-server
 
 .PHONY: help
 help:

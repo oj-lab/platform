@@ -16,6 +16,7 @@ RUN make build
 FROM ubuntu:latest
 
 COPY --from=build /usr/src/bin/service /usr/local/bin/oj-lab-service
+COPY --from=build /usr/src/bin/asynq_worker /usr/local/bin/asynq_worker
 
 RUN apt update && apt install -y make zip curl
 

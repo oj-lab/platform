@@ -32,6 +32,37 @@ const docTemplate = `{
                 }
             }
         },
+        "/problem/{slug}/judge/task": {
+            "post": {
+                "description": "Post judge task",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "problem"
+                ],
+                "summary": "Post judge task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "problem slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "judge request",
+                        "name": "judgeRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.judgeTaskBody"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/user/login": {
             "post": {
                 "description": "A Cookie will be set if login successfully",
@@ -79,6 +110,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handler.judgeTaskBody": {
+            "type": "object",
+            "properties": {
+                "src": {
+                    "type": "string"
+                },
+                "srcLanguage": {
+                    "type": "string"
+                }
+            }
+        },
         "handler.loginBody": {
             "type": "object",
             "properties": {

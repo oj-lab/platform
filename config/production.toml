@@ -4,6 +4,9 @@ level = "debug"
 [database]
 dsn = "user=postgres password=development host=host.docker.internal port=5432 dbname=oj_lab sslmode=disable TimeZone=Asia/Shanghai"
 
+[redis]
+host = "localhost:6379"
+
 [jwt]
 secret = "example_secret"
 duration = "24h"
