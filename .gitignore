@@ -22,3 +22,6 @@ config/override.toml
 bin/
 dist.zip
 frontend/dist/
+
+# Ignore generated files
+*.pb.go
