@@ -5,6 +5,7 @@ COPY core/ /usr/src/core/
 COPY service/ /usr/src/service/
 COPY go.mod /usr/src/go.mod
 COPY go.sum /usr/src/go.sum
+COPY script/ /usr/src/script/
 COPY Makefile /usr/src/Makefile
 
 WORKDIR /usr/src
