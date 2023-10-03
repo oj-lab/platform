@@ -19,6 +19,9 @@ mode = "debug"
 swagger_on = true
 serve_front = false
 
+[rpc-server]
+port = 50051
+
 [judger]
 host = "http://localhost:8000"
 

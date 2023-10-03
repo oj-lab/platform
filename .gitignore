@@ -25,3 +25,4 @@ frontend/dist/
 
 # Ignore generated files
 *.pb.go
+**/swaggo-gen/docs.go
