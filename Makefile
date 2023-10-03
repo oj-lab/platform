@@ -47,7 +47,7 @@ check:
 	go vet ./...
 
 .PHONY: test
-test: setup-db check 
+test: gen-proto check setup-db
 	go test -cover -v ./...
 
 .PHONY: run-task-worker
