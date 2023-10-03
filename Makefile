@@ -19,11 +19,14 @@ gen-proto: install-tools
 		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
 		service/proto/*.proto
 
-.PHONY: build
-build: install-tools gen-proto
-	@echo "Building on $(OS)"
+.PHONY: gen-swagger
+gen-swagger: install-tools
 	swag fmt -d application/server
 	swag init -d application/server -ot go -o application/server/swaggo-gen
+
+.PHONY: build
+build: gen-proto gen-swagger
+	@echo "Building on $(OS)"
 	go mod tidy
 	go build -o bin/migrate_db application/migrate_db/main.go
 	go build -o bin/service application/server/main.go
@@ -47,7 +50,7 @@ check: gen-proto
 	go vet ./...
 
 .PHONY: test
-test: check setup-db
+test: gen-swagger check setup-db
 	go test -cover -v ./...
 
 .PHONY: run-task-worker
