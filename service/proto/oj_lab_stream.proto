@@ -4,7 +4,7 @@ package oj_lab_stream.protos;
 
 option go_package = "github.com/OJ-lab/oj-lab-services/service/proto";
 
-service Messaging {
+service Streamer {
     rpc StartStream (StreamRequest) returns (stream StreamResponse) {}
 }
 
@@ -13,6 +13,11 @@ message StreamRequest {
 }
 
 message StreamResponse {
-    string id = 1;
-    string message = 2;
+    oneof body {
+        ServerHealth health = 1;
+        string data = 2;
+    }
+}
+
+message ServerHealth {
 }

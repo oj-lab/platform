@@ -28,6 +28,7 @@ build: install-tools
 	go build -o bin/migrate_db application/migrate_db/main.go
 	go build -o bin/service application/server/main.go
 	go build -o bin/asynq_worker application/asynq_worker/main.go
+	go build -o bin/rpc_server application/rpc_server/main.go
 
 .PHONY: clear-db
 clear-db:
@@ -57,9 +58,13 @@ run-task-worker: build check
 run-server: build check
 	./bin/service
 
+.PHONY: run-rpc-server
+run-rpc-server: build check
+	./bin/rpc_server
+
 .PHONY: run
 run: build check
-	make -j run-task-worker run-server
+	make -j run-task-worker run-server run-rpc-server
 
 .PHONY: help
 help:

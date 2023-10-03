@@ -19,6 +19,9 @@ mode = "debug"
 swagger_on = true
 serve_front = true
 
+[rpc-server]
+port = 50051
+
 [judger]
 host = "http://host.docker.internal:8000"
 
