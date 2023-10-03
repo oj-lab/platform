@@ -64,7 +64,7 @@ run-rpc-server: build check
 
 .PHONY: run
 run: build check
-	make -j run-task-worker run-server run-rpc-server
+	make -j run-task-worker run-server
 
 .PHONY: help
 help:
