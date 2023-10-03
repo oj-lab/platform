@@ -20,7 +20,7 @@ gen-proto: install-tools
 		service/proto/*.proto
 
 .PHONY: build
-build: install-tools
+build: install-tools gen-proto
 	@echo "Building on $(OS)"
 	swag fmt -d application/server
 	swag init -d application/server -ot go -o application/server/swaggo-gen
@@ -47,7 +47,7 @@ check:
 	go vet ./...
 
 .PHONY: test
-test: gen-proto check setup-db
+test: check setup-db
 	go test -cover -v ./...
 
 .PHONY: run-task-worker
