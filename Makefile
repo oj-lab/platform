@@ -43,7 +43,7 @@ setup-db: clear-db build
 	./bin/migrate_db
 
 .PHONY: check
-check:
+check: gen-proto
 	go vet ./...
 
 .PHONY: test
