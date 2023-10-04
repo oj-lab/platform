@@ -10,7 +10,7 @@ import (
 
 var ctx = context.Background()
 
-func TestRedisCluster(t *testing.T) {
+func TestRedis(t *testing.T) {
 	// rdb := redis.NewClusterClient(&redis.ClusterOptions{
 	// 	Addrs: []string{":7000", ":7001", ":7002", ":7003", ":7004", ":7005"},
 
@@ -32,4 +32,34 @@ func TestRedisCluster(t *testing.T) {
 		panic(err)
 	}
 	fmt.Println("key", val)
+
+	// 订阅频道
+	pubsub := rdb.Subscribe(ctx, "mychannel")
+
+	// 从通道中读取消息
+	ch := pubsub.Channel()
+
+	waitGroup := make(chan struct{})
+	// 在 goroutine 中处理消息
+	go func() {
+		fmt.Println("start")
+		for msg := range ch {
+			fmt.Println(msg.Channel, msg.Payload)
+			close(waitGroup)
+		}
+	}()
+
+	// 发布消息
+	err = rdb.Publish(ctx, "mychannel", "hello world").Err()
+	if err != nil {
+		panic(err)
+	}
+
+	<-waitGroup
+
+	// 关闭订阅
+	err = pubsub.Close()
+	if err != nil {
+		panic(err)
+	}
 }
