@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"testing"
 
+	oj_lab_proto "github.com/OJ-lab/oj-lab-services/service/proto"
 	"github.com/redis/go-redis/v9"
+	"google.golang.org/protobuf/proto"
 )
 
 var ctx = context.Background()
@@ -31,33 +33,45 @@ func TestRedis(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("key", val)
+	fmt.Println("Get key: ", val)
 
-	// 订阅频道
 	pubsub := rdb.Subscribe(ctx, "mychannel")
-
-	// 从通道中读取消息
 	ch := pubsub.Channel()
 
 	waitGroup := make(chan struct{})
-	// 在 goroutine 中处理消息
 	go func() {
-		fmt.Println("start")
+		fmt.Println("Start listen event...")
 		for msg := range ch {
-			fmt.Println(msg.Channel, msg.Payload)
+			message := oj_lab_proto.StreamResponse{}
+			err := proto.Unmarshal([]byte(msg.Payload), &message)
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Printf("Received from '%s': %+v\n", msg.Channel, &message)
 			close(waitGroup)
 		}
 	}()
 
-	// 发布消息
-	err = rdb.Publish(ctx, "mychannel", "hello world").Err()
+	message := oj_lab_proto.StreamResponse{
+		Body: &oj_lab_proto.StreamResponse_Data{
+			Data: "hello world",
+		},
+	}
+
+	data, err := proto.Marshal(&message)
+	if err != nil {
+		panic(err)
+	}
+
+	err = rdb.Publish(ctx, "mychannel", data).Err()
 	if err != nil {
 		panic(err)
 	}
 
 	<-waitGroup
+	fmt.Println("Subscriber received message!")
 
-	// 关闭订阅
 	err = pubsub.Close()
 	if err != nil {
 		panic(err)
