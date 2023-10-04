@@ -1,16 +1,12 @@
 package handler
 
 import (
-	"fmt"
-	"io"
 	"net/http"
-	"time"
 
 	"github.com/OJ-lab/oj-lab-services/core"
 	"github.com/OJ-lab/oj-lab-services/core/middleware"
 	"github.com/OJ-lab/oj-lab-services/service"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 func SetupUserRouter(baseRoute *gin.RouterGroup) {
@@ -22,31 +18,7 @@ func SetupUserRouter(baseRoute *gin.RouterGroup) {
 		g.POST("/login", login)
 		g.GET("/me", middleware.HandleRequireLogin, me)
 		g.GET("/check-exist", checkUserExist)
-		g.GET("/stream", Stream)
 	}
-}
-
-// Stream
-//
-//	@Summary		Stream
-//	@Description	Stream
-//	@Tags			user
-//	@Router			/user/stream [get]
-//	@Accept			text/event-stream
-//	@Produce		text/event-stream
-//	@Success		200	{string}	string	"data: {message}"
-//	@Router			/user/stream [get]
-func Stream(ginCtx *gin.Context) {
-	ginCtx.Header("Content-Type", "text/event-stream")
-	ginCtx.Header("Cache-Control", "no-cache")
-
-	ginCtx.Stream(func(w io.Writer) bool {
-		// 每秒钟向客户端发送一条消息
-		logrus.Info("send message")
-		fmt.Fprintf(w, "data: %s\n\n", time.Now().String())
-		time.Sleep(1 * time.Second)
-		return true
-	})
 }
 
 type loginBody struct {

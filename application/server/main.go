@@ -60,6 +60,7 @@ func main() {
 	apiRouter := r.Group("/api/v1")
 	handler.SetupUserRouter(apiRouter)
 	handler.SetupProblemRoute(apiRouter)
+	handler.SetupEventRouter(apiRouter)
 
 	err := r.Run(servicePort)
 	if err != nil {
