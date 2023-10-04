@@ -32,12 +32,14 @@ func Stream(ginCtx *gin.Context) {
 
 	counter := 0
 	ginCtx.Stream(func(w io.Writer) bool {
+		// With event type
 		message := fmt.Sprintf("event: %s\ndata: %s\n\n", "eventType", time.Now().String())
 		logrus.Infof("Send message:\n%s", message)
 		fmt.Fprint(w, message)
 		time.Sleep(1 * time.Second)
 		counter++
 		if counter > 5 {
+			// Close connection (without event type)
 			closeMessage := fmt.Sprintf("data: %s\n\n", "close")
 			fmt.Fprint(w, closeMessage)
 			return false
