@@ -80,7 +80,7 @@ func putProblemPackage(ginCtx *gin.Context) {
 
 type judgeTaskBody struct {
 	Src         string `json:"src"`
-	SrcLanguage string `json:"srcLanguage"`
+	SrcLanguage string `json:"src_language"`
 }
 
 // postJudgeTask
