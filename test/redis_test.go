@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	oj_lab_proto "github.com/OJ-lab/oj-lab-services/service/proto"
 	"github.com/redis/go-redis/v9"
@@ -40,18 +41,27 @@ func TestRedis(t *testing.T) {
 
 	waitGroup := make(chan struct{})
 	go func() {
+		defer close(waitGroup)
 		fmt.Println("Start listen event...")
-		for msg := range ch {
-			message := oj_lab_proto.StreamResponse{}
-			err := proto.Unmarshal([]byte(msg.Payload), &message)
-			if err != nil {
-				panic(err)
+		timeout := time.After(5 * time.Second)
+		for {
+			select {
+			case msg := <-ch:
+				message := oj_lab_proto.StreamResponse{}
+				err := proto.Unmarshal([]byte(msg.Payload), &message)
+				if err != nil {
+					panic(err)
+				}
+				fmt.Printf("Received from '%s': %+v\n", msg.Channel, &message)
+				return
+			case <-timeout:
+				panic("timeout")
 			}
-
-			fmt.Printf("Received from '%s': %+v\n", msg.Channel, &message)
-			close(waitGroup)
 		}
 	}()
+
+	fmt.Println("Wait for 1 second...")
+	time.Sleep(1 * time.Second)
 
 	message := oj_lab_proto.StreamResponse{
 		Body: &oj_lab_proto.StreamResponse_Data{
@@ -68,6 +78,7 @@ func TestRedis(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("Published message...")
 
 	<-waitGroup
 	fmt.Println("Subscriber received message!")
