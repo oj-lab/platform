@@ -5,8 +5,10 @@ if ! [ -x "$(command -v protoc)" ]; then
     echo "Installing protoc"
     # Check has sudo
     if ! [ -x "$(command -v sudo)" ]; then
+        apt-get update
         apt-get install -y protobuf-compiler
     else
+        sudo apt-get update
         sudo apt-get install -y protobuf-compiler
     fi
 else
