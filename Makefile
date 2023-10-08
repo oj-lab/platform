@@ -22,7 +22,7 @@ gen-proto: install-tools
 .PHONY: gen-swagger
 gen-swagger: install-tools
 	swag fmt -d application/server
-	swag init -d application/server -ot go -o application/server/swaggo-gen
+	swag init -d application/server,service/model -ot go -o application/server/swaggo-gen
 
 .PHONY: build
 build: gen-proto gen-swagger
