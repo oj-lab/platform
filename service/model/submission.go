@@ -1,22 +1,20 @@
 package model
 
-import "time"
+type SubmissionStatus string
 
+const (
+	SubmissionStatusPending SubmissionStatus = "pending"
+	SubmissionStatusRunning SubmissionStatus = "running"
+	SubmissionStatusDone    SubmissionStatus = "done"
+)
+
+// Using relationship according to https://gorm.io/docs/belongs_to.html
 type Submission struct {
-	ID         string    `gorm:"primaryKey"`
-	ProblemID  string    `gorm:"not null"`
-	UserID     string    `gorm:"not null"`
-	Language   string    `gorm:"not null"`
-	Code       string    `gorm:"not null"`
-	Status     string    `gorm:"not null"`
-	Visibility bool      `gorm:"not null"`
-	CreateAt   time.Time `gorm:"autoCreateTime"`
-	UpdateAt   time.Time `gorm:"autoUpdateTime"`
-}
-
-type CheckPoint struct {
-	ID           string `gorm:"primaryKey"`
-	SubmissionID string `gorm:"not null"`
-	TestCaseID   string `gorm:"not null"`
-	Result       string `gorm:"not null"`
+	MetaFields
+	UID         string           `gorm:"primaryKey" json:"uid"`
+	UserAccount string           `gorm:"not null" json:"userAccount"`
+	User        User             `json:"user"`
+	ProblemSlug string           `gorm:"not null" json:"problemSlug"`
+	Problem     Problem          `json:"problem"`
+	Status      SubmissionStatus `gorm:"not null"`
 }

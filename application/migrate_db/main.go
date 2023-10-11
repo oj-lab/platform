@@ -9,7 +9,7 @@ import (
 
 func main() {
 	db := gorm.GetDefaultDB()
-	err := db.AutoMigrate(&model.User{}, &model.Problem{})
+	err := db.AutoMigrate(&model.User{}, &model.Problem{}, &model.Submission{})
 	if err != nil {
 		panic("failed to migrate database")
 	}
