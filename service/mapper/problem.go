@@ -41,7 +41,7 @@ type GetProblemOptions struct {
 	Limit     *int
 }
 
-func buildTXByOptions(db *gorm.DB, options GetProblemOptions, isCount bool) *gorm.DB {
+func buildGetProblemTXByOptions(db *gorm.DB, options GetProblemOptions, isCount bool) *gorm.DB {
 	tagsList := []string{}
 	for _, tag := range options.Tags {
 		tagsList = append(tagsList, tag.Slug)
@@ -78,7 +78,7 @@ func CountProblemByOptions(options GetProblemOptions) (int64, error) {
 	db := gormAgent.GetDefaultDB()
 	var count int64
 
-	tx := buildTXByOptions(db, options, true)
+	tx := buildGetProblemTXByOptions(db, options, true)
 	err := tx.Count(&count).Error
 
 	return count, err
@@ -93,7 +93,7 @@ func GetProblemListByOptions(options GetProblemOptions) ([]model.Problem, int64,
 	db := gormAgent.GetDefaultDB()
 	problemList := []model.Problem{}
 
-	tx := buildTXByOptions(db, options, false)
+	tx := buildGetProblemTXByOptions(db, options, false)
 	err = tx.Find(&problemList).Error
 	if err != nil {
 		return nil, 0, err

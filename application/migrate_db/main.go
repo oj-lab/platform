@@ -40,5 +40,10 @@ func main() {
 		Password: func() *string { s := "admin"; return &s }(),
 	})
 
+	mapper.CreateSubmission(model.Submission{
+		UserAccount: "admin",
+		ProblemSlug: "hello-world",
+	})
+
 	logrus.Info("migrate tables success")
 }
