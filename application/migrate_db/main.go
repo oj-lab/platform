@@ -9,7 +9,7 @@ import (
 
 func main() {
 	db := gorm.GetDefaultDB()
-	err := db.AutoMigrate(&model.User{}, &model.Problem{}, &model.Submission{})
+	err := db.AutoMigrate(&model.User{}, &model.Problem{}, &model.JudgeTaskSubmission{})
 	if err != nil {
 		panic("failed to migrate database")
 	}
@@ -40,9 +40,11 @@ func main() {
 		Password: func() *string { s := "admin"; return &s }(),
 	})
 
-	mapper.CreateSubmission(model.Submission{
+	mapper.CreateSubmission(model.JudgeTaskSubmission{
 		UserAccount: "admin",
 		ProblemSlug: "hello-world",
+		Language:    "cpp",
+		Code:        "#include <iostream>\nint main() { std::cout << \"Hello World!\" << std::endl; return 0; }",
 	})
 
 	logrus.Info("migrate tables success")

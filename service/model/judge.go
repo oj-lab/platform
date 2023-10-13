@@ -5,7 +5,9 @@ import "github.com/google/uuid"
 type JudgeTask struct {
 	UID         string `json:"uid"`
 	ProblemSlug string `json:"problemSlug"`
-	Src         string `json:"src"`
+	// TODO: Change to name Code
+	Src string `json:"src"`
+	// TODO: Change to name Language
 	SrcLanguage string `json:"srcLanguage"`
 }
 
