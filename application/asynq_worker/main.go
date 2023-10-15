@@ -12,5 +12,5 @@ func main() {
 		Concurrency: 10,
 		UsePriority: true,
 	}
-	asynqAgent.RunServer(config, business.JudgeTaskHandler)
+	asynqAgent.RunServer(config, business.GetJudgeMux())
 }

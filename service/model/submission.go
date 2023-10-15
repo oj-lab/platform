@@ -1,17 +1,20 @@
 package model
 
+import "github.com/google/uuid"
+
 type SubmissionStatus string
 
 const (
-	SubmissionStatusPending SubmissionStatus = "pending"
-	SubmissionStatusRunning SubmissionStatus = "running"
-	SubmissionStatusDone    SubmissionStatus = "done"
+	SubmissionStatusPending  SubmissionStatus = "pending"
+	SubmissionStatusWaiting  SubmissionStatus = "waiting"
+	SubmissionStatusRunning  SubmissionStatus = "running"
+	SubmissionStatusFinished SubmissionStatus = "finished"
 )
 
 // Using relationship according to https://gorm.io/docs/belongs_to.html
 type JudgeTaskSubmission struct {
 	MetaFields
-	UID         string           `gorm:"primaryKey" json:"uid"`
+	UID         uuid.UUID        `gorm:"primaryKey" json:"uid"`
 	UserAccount string           `gorm:"not null" json:"userAccount"`
 	User        User             `json:"user"`
 	ProblemSlug string           `gorm:"not null" json:"problemSlug"`
@@ -21,11 +24,17 @@ type JudgeTaskSubmission struct {
 	Status      SubmissionStatus `gorm:"not null" json:"status"`
 }
 
-func (jts JudgeTaskSubmission) GetJudgeTask() JudgeTask {
-	return JudgeTask{
-		UID:         jts.UID,
-		ProblemSlug: jts.ProblemSlug,
-		Src:         jts.Code,
-		SrcLanguage: jts.Language,
+func NewSubmission(
+	userAccount string,
+	problemSlug string,
+	code string,
+	language string,
+) JudgeTaskSubmission {
+	return JudgeTaskSubmission{
+		UserAccount: userAccount,
+		ProblemSlug: problemSlug,
+		Code:        code,
+		Language:    language,
+		Status:      SubmissionStatusPending,
 	}
 }

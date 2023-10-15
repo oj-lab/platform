@@ -6,9 +6,9 @@ import (
 	"github.com/hibiken/asynq"
 )
 
-type AsynqTaskHandler struct {
-	TaskName     string
-	InnerHandler asynq.HandlerFunc
+type AsynqMux struct {
+	Pattern string
+	*asynq.ServeMux
 }
 
 type AsynqServerConfig struct {
@@ -16,7 +16,7 @@ type AsynqServerConfig struct {
 	UsePriority bool
 }
 
-func RunServer(config AsynqServerConfig, handlers ...AsynqTaskHandler) {
+func RunServer(config AsynqServerConfig, subMuxs ...AsynqMux) {
 	asynqConfig := asynq.Config{
 		Concurrency: config.Concurrency,
 	}
@@ -30,8 +30,8 @@ func RunServer(config AsynqServerConfig, handlers ...AsynqTaskHandler) {
 	)
 
 	mux := asynq.NewServeMux()
-	for _, handler := range handlers {
-		mux.HandleFunc(handler.TaskName, handler.InnerHandler)
+	for _, subMux := range subMuxs {
+		mux.Handle(subMux.Pattern, subMux.ServeMux)
 	}
 
 	if err := server.Run(mux); err != nil {

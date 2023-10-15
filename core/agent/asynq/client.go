@@ -24,14 +24,14 @@ func GetDefaultTaskClient() *AsynqClient {
 	return client
 }
 
-func (ac *AsynqClient) EnqueueTask(name string, payload interface{}) error {
+func (ac *AsynqClient) EnqueueTask(name string, payload interface{}, opts ...asynq.Option) error {
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}
 
-	task := asynq.NewTask(name, payloadBytes)
-	ac.innerClient.Enqueue(task)
+	task := asynq.NewTask(name, payloadBytes, opts...)
+	_, err = ac.innerClient.Enqueue(task)
 
-	return nil
+	return err
 }

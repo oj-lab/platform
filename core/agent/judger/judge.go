@@ -19,8 +19,8 @@ func init() {
 }
 
 type JudgeRequest struct {
-	Src         string `json:"src"`
-	SrcLanguage string `json:"src_language"`
+	Code     string `json:"code"`
+	Language string `json:"language"`
 }
 
 func PostJudgeSync(packagelug string, judgeRequest JudgeRequest) ([]map[string]interface{}, error) {

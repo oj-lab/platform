@@ -36,22 +36,22 @@ func PutProblemPackage(ctx context.Context, slug, zipFile string) error {
 	return nil
 }
 
-func PostJudgeTask(ctx context.Context, slug, src, srcLanguage string) error {
-	judgeTask := model.NewJudgeTask(slug, src, srcLanguage)
-	err := business.EnqueueJudgeTask(ctx, *judgeTask)
+func PostSubmission(ctx context.Context, problemSlug, code, language string) (*model.JudgeTaskSubmission, error) {
+	submission := model.NewSubmission("", problemSlug, code, language)
+	result, err := mapper.CreateSubmission(submission)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return result, nil
 }
 
-func Judge(ctx context.Context, slug string, src string, srcLanguage string) (
+func Judge(ctx context.Context, slug string, code string, language string) (
 	[]map[string]interface{}, error,
 ) {
 	request := judger.JudgeRequest{
-		Src:         src,
-		SrcLanguage: srcLanguage,
+		Code:     code,
+		Language: language,
 	}
 	responseBody, err := judger.PostJudgeSync(slug, request)
 	if err != nil {

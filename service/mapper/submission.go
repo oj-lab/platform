@@ -7,11 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateSubmission(submission model.JudgeTaskSubmission) error {
-	submission.UID = uuid.New().String()
-
+func CreateSubmission(submission model.JudgeTaskSubmission) (*model.JudgeTaskSubmission, error) {
+	submission.UID = uuid.New()
 	db := gormAgent.GetDefaultDB()
-	return db.Create(&submission).Error
+
+	return &submission, db.Create(&submission).Error
 }
 
 type GetSubmissionOptions struct {
