@@ -24,6 +24,13 @@ type JudgeTaskSubmission struct {
 	Status      SubmissionStatus `gorm:"not null" json:"status"`
 }
 
+type JudgeTaskSubmissionSortByColumn string
+
+const (
+	JudgeTaskSubmissionSortByColumnCreateAt JudgeTaskSubmissionSortByColumn = "CreateAt"
+	JudgeTaskSubmissionSortByColumnUpdateAt JudgeTaskSubmissionSortByColumn = "UpdateAt"
+)
+
 func NewSubmission(
 	userAccount string,
 	problemSlug string,

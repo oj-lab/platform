@@ -47,5 +47,12 @@ func main() {
 		Code:        "#include <iostream>\nint main() { std::cout << \"Hello World!\" << std::endl; return 0; }",
 	})
 
+	mapper.CreateSubmission(model.JudgeTaskSubmission{
+		UserAccount: "admin",
+		ProblemSlug: "hello-world",
+		Language:    "cpp",
+		Code:        "#include <iostream>\nint main() { std::cout << \"Hello World!\" << std::endl; return 0; }",
+	})
+
 	logrus.Info("migrate tables success")
 }

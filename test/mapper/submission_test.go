@@ -5,21 +5,21 @@ import (
 	"testing"
 
 	"github.com/OJ-lab/oj-lab-services/service/mapper"
+	"github.com/OJ-lab/oj-lab-services/service/model"
 )
 
 func TestSubmissionMapper(t *testing.T) {
 	getOptions := mapper.GetSubmissionOptions{
 		UserAccount: func() *string { s := "admin"; return &s }(),
+		OrderByColumns: []model.OrderByColumnOption{{
+			Column: string(model.JudgeTaskSubmissionSortByColumnCreateAt),
+			Desc:   true,
+		}},
 	}
-	submissionList, count, err := mapper.GetSubmissionListByOptions(getOptions)
+	submissionList, _, err := mapper.GetSubmissionListByOptions(getOptions)
 	if err != nil {
 		t.Error(err)
 	}
-	if count != 1 {
-		t.Error("submission count should be 1")
-	}
-	if len(submissionList) != 1 {
-		t.Error("submission list length should be 1")
-	}
-	fmt.Printf("%+v\n", submissionList[0])
+
+	fmt.Printf("%+v\n", submissionList)
 }

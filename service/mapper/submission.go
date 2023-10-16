@@ -5,21 +5,24 @@ import (
 	"github.com/OJ-lab/oj-lab-services/service/model"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func CreateSubmission(submission model.JudgeTaskSubmission) (*model.JudgeTaskSubmission, error) {
 	submission.UID = uuid.New()
+	submission.MetaFields = model.NewMetaFields()
 	db := gormAgent.GetDefaultDB()
 
 	return &submission, db.Create(&submission).Error
 }
 
 type GetSubmissionOptions struct {
-	Selection   []string
-	UserAccount *string
-	ProblemSlug *string
-	Offset      *int
-	Limit       *int
+	Selection      []string
+	UserAccount    *string
+	ProblemSlug    *string
+	Offset         *int
+	Limit          *int
+	OrderByColumns []model.OrderByColumnOption
 }
 
 func buildGetSubmissionTXByOptions(db *gorm.DB, options GetSubmissionOptions, isCount bool) *gorm.DB {
@@ -39,6 +42,13 @@ func buildGetSubmissionTXByOptions(db *gorm.DB, options GetSubmissionOptions, is
 	if options.Limit != nil {
 		tx = tx.Limit(*options.Limit)
 	}
+	for _, option := range options.OrderByColumns {
+		tx = tx.Order(clause.OrderByColumn{
+			Column: clause.Column{Name: option.Column},
+			Desc:   option.Desc,
+		})
+	}
+
 	return tx
 }
 
