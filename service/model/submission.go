@@ -27,8 +27,8 @@ type JudgeTaskSubmission struct {
 type JudgeTaskSubmissionSortByColumn string
 
 const (
-	JudgeTaskSubmissionSortByColumnCreateAt JudgeTaskSubmissionSortByColumn = "CreateAt"
-	JudgeTaskSubmissionSortByColumnUpdateAt JudgeTaskSubmissionSortByColumn = "UpdateAt"
+	JudgeTaskSubmissionSortByColumnCreateAt JudgeTaskSubmissionSortByColumn = "create_at"
+	JudgeTaskSubmissionSortByColumnUpdateAt JudgeTaskSubmissionSortByColumn = "update_at"
 )
 
 func NewSubmission(
