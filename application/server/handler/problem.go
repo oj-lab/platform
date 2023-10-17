@@ -5,7 +5,6 @@ import (
 
 	"github.com/OJ-lab/oj-lab-services/service"
 	"github.com/OJ-lab/oj-lab-services/service/mapper"
-	"github.com/OJ-lab/oj-lab-services/service/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,7 +18,7 @@ func SetupProblemRoute(baseRoute *gin.RouterGroup) {
 		g.GET("/:slug", getProblem)
 		g.PUT("/:slug/package", putProblemPackage)
 		g.POST("/:slug/submission", postSubmission)
-		g.POST("/:slug/judge", judge)
+		// g.POST("/:slug/judge", judge)
 	}
 }
 
@@ -110,19 +109,19 @@ func postSubmission(ginCtx *gin.Context) {
 	ginCtx.JSON(200, submission)
 }
 
-func judge(ginCtx *gin.Context) {
-	slug := ginCtx.Param("slug")
-	body := model.JudgeTask{}
-	if err := ginCtx.ShouldBindJSON(&body); err != nil {
-		ginCtx.Error(err)
-		return
-	}
+// func judge(ginCtx *gin.Context) {
+// 	slug := ginCtx.Param("slug")
+// 	body := model.JudgeTask{}
+// 	if err := ginCtx.ShouldBindJSON(&body); err != nil {
+// 		ginCtx.Error(err)
+// 		return
+// 	}
 
-	responseBody, err := service.Judge(ginCtx, slug, body.Code, body.Language)
-	if err != nil {
-		ginCtx.Error(err)
-		return
-	}
+// 	responseBody, err := service.Judge(ginCtx, slug, body.Code, body.Language)
+// 	if err != nil {
+// 		ginCtx.Error(err)
+// 		return
+// 	}
 
-	ginCtx.JSON(200, responseBody)
-}
+// 	ginCtx.JSON(200, responseBody)
+// }

@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 
-	"github.com/OJ-lab/oj-lab-services/core/agent/judger"
 	"github.com/OJ-lab/oj-lab-services/service/business"
 	"github.com/OJ-lab/oj-lab-services/service/mapper"
 	"github.com/OJ-lab/oj-lab-services/service/model"
@@ -46,17 +45,17 @@ func PostSubmission(ctx context.Context, problemSlug, code, language string) (*m
 	return result, nil
 }
 
-func Judge(ctx context.Context, slug string, code string, language string) (
-	[]map[string]interface{}, error,
-) {
-	request := judger.JudgeRequest{
-		Code:     code,
-		Language: language,
-	}
-	responseBody, err := judger.PostJudgeSync(slug, request)
-	if err != nil {
-		return nil, err
-	}
+// func Judge(ctx context.Context, slug string, code string, language string) (
+// 	[]map[string]interface{}, error,
+// ) {
+// 	request := judger.JudgeRequest{
+// 		Code:     code,
+// 		Language: language,
+// 	}
+// 	responseBody, err := judger.PostJudgeSync(slug, request)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return responseBody, nil
-}
+// 	return responseBody, nil
+// }

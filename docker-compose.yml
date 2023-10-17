@@ -29,3 +29,9 @@ services:
     restart: always
     ports:
       - "6379:6379"
+
+  judger:
+    image: ghcr.io/oj-lab/judger/judge-server:main
+    restart: always
+    ports:
+      - "8000:8000"

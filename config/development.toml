@@ -22,9 +22,6 @@ serve_front = false
 [rpc-server]
 port = 50051
 
-[judger]
-host = "http://localhost:8000"
-
 [minio]
 endpoint = "localhost:9000"
 accessKeyID = "minio-root-user"
