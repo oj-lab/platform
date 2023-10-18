@@ -54,5 +54,9 @@ func main() {
 		Code:        "#include <iostream>\nint main() { std::cout << \"Hello World!\" << std::endl; return 0; }",
 	})
 
+	mapper.CreateJudger(model.Judger{
+		Host: "http://localhost:8080",
+	})
+
 	logrus.Info("migrate tables success")
 }
