@@ -9,7 +9,7 @@ import (
 
 func main() {
 	db := gorm.GetDefaultDB()
-	err := db.AutoMigrate(&model.User{}, &model.Problem{}, &model.JudgeTaskSubmission{})
+	err := db.AutoMigrate(&model.User{}, &model.Problem{}, &model.JudgeTaskSubmission{}, &model.Judger{})
 	if err != nil {
 		panic("failed to migrate database")
 	}
@@ -52,6 +52,10 @@ func main() {
 		ProblemSlug: "hello-world",
 		Language:    "cpp",
 		Code:        "#include <iostream>\nint main() { std::cout << \"Hello World!\" << std::endl; return 0; }",
+	})
+
+	mapper.CreateJudger(model.Judger{
+		Host: "http://localhost:8080",
 	})
 
 	logrus.Info("migrate tables success")

@@ -3,7 +3,9 @@ package model
 import "github.com/google/uuid"
 
 type Judger struct {
-	Host string `json:"host"`
+	MetaFields
+	UID  uuid.UUID `gorm:"primaryKey" json:"uid"`
+	Host string    `gorm:"not null" json:"host"`
 }
 
 type JudgeTask struct {
