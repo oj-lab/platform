@@ -3,13 +3,15 @@ package service
 import (
 	"context"
 
+	gormAgent "github.com/OJ-lab/oj-lab-services/core/agent/gorm"
 	"github.com/OJ-lab/oj-lab-services/service/business"
 	"github.com/OJ-lab/oj-lab-services/service/mapper"
 	"github.com/OJ-lab/oj-lab-services/service/model"
 )
 
 func GetProblem(ctx context.Context, slug string) (*model.Problem, error) {
-	problem, err := mapper.GetProblem(slug)
+	db := gormAgent.GetDefaultDB()
+	problem, err := mapper.GetProblem(db, slug)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +39,8 @@ func PutProblemPackage(ctx context.Context, slug, zipFile string) error {
 
 func PostSubmission(ctx context.Context, problemSlug, code, language string) (*model.JudgeTaskSubmission, error) {
 	submission := model.NewSubmission("", problemSlug, code, language)
-	result, err := mapper.CreateSubmission(submission)
+	db := gormAgent.GetDefaultDB()
+	result, err := mapper.CreateSubmission(db, submission)
 	if err != nil {
 		return nil, err
 	}

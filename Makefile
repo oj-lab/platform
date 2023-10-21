@@ -32,6 +32,7 @@ build: gen-proto gen-swagger
 	go build -o bin/service application/server/main.go
 	go build -o bin/asynq_worker application/asynq_worker/main.go
 	go build -o bin/rpc_server application/rpc_server/main.go
+	go build -o bin/schedule application/schedule/main.go
 
 .PHONY: clear-db
 clear-db:
@@ -57,6 +58,10 @@ test: gen-swagger check setup-db
 run-task-worker: build check
 	./bin/asynq_worker
 
+.PHONY: run-schedule
+run-schedule: build check
+	./bin/schedule
+
 .PHONY: run-server
 run-server: build check
 	./bin/service
@@ -67,7 +72,7 @@ run-rpc-server: build check
 
 .PHONY: run
 run: build check
-	make -j run-task-worker run-server
+	make -j run-task-worker run-server run-schedule
 
 .PHONY: help
 help:

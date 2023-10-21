@@ -1,4 +1,4 @@
-package judger
+package judgerAgent
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"net/url"
 )
 
-const JUDGER_JUDGE_PATH = "/api/v1/judge"
+const judgerJudgeRoute = "/api/v1/judge"
 
 type JudgeRequest struct {
 	Code     string `json:"code"`
@@ -15,7 +15,7 @@ type JudgeRequest struct {
 }
 
 func (jc JudgerClient) PostJudgeSync(packagelug string, judgeRequest JudgeRequest) ([]map[string]interface{}, error) {
-	url, err := url.JoinPath(jc.Host, JUDGER_JUDGE_PATH, packagelug)
+	url, err := url.JoinPath(jc.Host, judgerJudgeRoute, packagelug)
 	if err != nil {
 		return nil, err
 	}

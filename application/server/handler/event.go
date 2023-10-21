@@ -5,8 +5,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/OJ-lab/oj-lab-services/core"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 func SetupEventRouter(baseRoute *gin.RouterGroup) {
@@ -34,7 +34,7 @@ func Stream(ginCtx *gin.Context) {
 	ginCtx.Stream(func(w io.Writer) bool {
 		// With event type
 		message := fmt.Sprintf("event: %s\ndata: %s\n\n", "eventType", time.Now().String())
-		logrus.Infof("Send message:\n%s", message)
+		core.GetAppLogger().Infof("Send message:\n%s", message)
 		fmt.Fprint(w, message)
 		time.Sleep(1 * time.Second)
 		counter++

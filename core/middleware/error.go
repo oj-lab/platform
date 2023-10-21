@@ -5,7 +5,6 @@ import (
 
 	"github.com/OJ-lab/oj-lab-services/core"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 func GetServiceError(ginErr gin.Error) *core.SeviceError {
@@ -23,7 +22,7 @@ func HandleError(ginCtx *gin.Context) {
 
 	errCount := len(ginCtx.Errors)
 	if errCount > 0 {
-		logrus.Errorf("Last error from GIN middleware: %+v", ginCtx.Errors[errCount-1].Err)
+		core.GetAppLogger().Errorf("Last error from GIN middleware: %+v", ginCtx.Errors[errCount-1].Err)
 		err := GetServiceError(*ginCtx.Errors[errCount-1])
 		ginCtx.JSON(err.Code, gin.H{
 			"code": err.Code,

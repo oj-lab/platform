@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"testing"
 
+	gormAgent "github.com/OJ-lab/oj-lab-services/core/agent/gorm"
 	"github.com/OJ-lab/oj-lab-services/service/mapper"
 	"github.com/OJ-lab/oj-lab-services/service/model"
 )
 
 func TestSubmissionMapper(t *testing.T) {
+	db := gormAgent.GetDefaultDB()
 	getOptions := mapper.GetSubmissionOptions{
 		UserAccount: func() *string { s := "admin"; return &s }(),
 		OrderByColumns: []model.OrderByColumnOption{{
@@ -16,7 +18,7 @@ func TestSubmissionMapper(t *testing.T) {
 			Desc:   true,
 		}},
 	}
-	submissionList, _, err := mapper.GetSubmissionListByOptions(getOptions)
+	submissionList, _, err := mapper.GetSubmissionListByOptions(db, getOptions)
 	if err != nil {
 		t.Error(err)
 	}

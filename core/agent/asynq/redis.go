@@ -1,4 +1,4 @@
-package asynq
+package asynqAgent
 
 import "github.com/OJ-lab/oj-lab-services/core"
 

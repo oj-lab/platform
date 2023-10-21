@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/OJ-lab/oj-lab-services/core/agent/minio"
+	minioAgent "github.com/OJ-lab/oj-lab-services/core/agent/minio"
 )
 
 func UnzipProblemPackage(ctx context.Context, zipFile, targetDir string) error {
@@ -50,7 +50,7 @@ func UnzipProblemPackage(ctx context.Context, zipFile, targetDir string) error {
 }
 
 func PutProblemPackage(ctx context.Context, slug string, pkgDir string) error {
-	err := minio.PutLocalObjects(ctx, slug, pkgDir)
+	err := minioAgent.PutLocalObjects(ctx, slug, pkgDir)
 	if err != nil {
 		return err
 	}

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/OJ-lab/oj-lab-services/core/agent/redis"
+	redisAgent "github.com/OJ-lab/oj-lab-services/core/agent/redis"
 	"github.com/google/uuid"
 )
 
@@ -29,7 +29,7 @@ func (ls *LoginSession) SaveToRedis(ctx context.Context) error {
 	}
 	lsString := string(lsBytes)
 
-	err = redis.SetLoginSession(ctx, ls.Id, lsString)
+	err = redisAgent.SetLoginSession(ctx, ls.Id, lsString)
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func (ls *LoginSession) SaveToRedis(ctx context.Context) error {
 }
 
 func CheckLoginSession(ctx context.Context, id string) (*LoginSession, error) {
-	lsString, err := redis.GetLoginSession(ctx, id)
+	lsString, err := redisAgent.GetLoginSession(ctx, id)
 	if err != nil {
 		return nil, err
 	}

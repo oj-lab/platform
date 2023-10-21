@@ -1,18 +1,16 @@
 package mapper
 
 import (
-	gormAgent "github.com/OJ-lab/oj-lab-services/core/agent/gorm"
 	"github.com/OJ-lab/oj-lab-services/service/model"
+	"gorm.io/gorm"
 )
 
-func CreateJudger(judger model.Judger) error {
-	db := gormAgent.GetDefaultDB()
-	return db.Create(&judger).Error
+func CreateJudger(tx *gorm.DB, judger model.Judger) error {
+	return tx.Create(&judger).Error
 }
 
-func GetJudgerList() ([]model.Judger, error) {
-	db := gormAgent.GetDefaultDB()
+func GetJudgerList(tx *gorm.DB) ([]model.Judger, error) {
 	var judgers []model.Judger
-	err := db.Find(&judgers).Error
+	err := tx.Find(&judgers).Error
 	return judgers, err
 }
