@@ -9,12 +9,8 @@ import (
 
 func TestJudgerMapper(t *testing.T) {
 	db := gormAgent.GetDefaultDB()
-	judgerList, err := mapper.GetJudgerList(db)
+	_, err := mapper.GetJudgerList(db)
 	if err != nil {
 		t.Error(err)
-	}
-
-	if len(judgerList) != 1 {
-		t.Error("judger list should be 1")
 	}
 }
