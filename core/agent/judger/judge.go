@@ -1,30 +1,21 @@
-package judger
+package judgerAgent
 
 import (
 	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/url"
-
-	"github.com/OJ-lab/oj-lab-services/core"
 )
 
-const JUDGER_HOST_PROP = "judger.host"
-const JUDGER_JUDGE_PATH = "/api/v1/judge"
-
-var judgerHost string
-
-func init() {
-	judgerHost = core.AppConfig.GetString(JUDGER_HOST_PROP)
-}
+const judgerJudgeRoute = "/api/v1/judge"
 
 type JudgeRequest struct {
-	Src         string `json:"src"`
-	SrcLanguage string `json:"src_language"`
+	Code     string `json:"code"`
+	Language string `json:"language"`
 }
 
-func PostJudgeSync(packagelug string, judgeRequest JudgeRequest) ([]map[string]interface{}, error) {
-	url, err := url.JoinPath(judgerHost, JUDGER_JUDGE_PATH, packagelug)
+func (jc JudgerClient) PostJudgeSync(packagelug string, judgeRequest JudgeRequest) ([]map[string]interface{}, error) {
+	url, err := url.JoinPath(jc.Host, judgerJudgeRoute, packagelug)
 	if err != nil {
 		return nil, err
 	}

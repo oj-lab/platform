@@ -3,14 +3,15 @@ package service
 import (
 	"context"
 
-	"github.com/OJ-lab/oj-lab-services/core/agent/judger"
+	gormAgent "github.com/OJ-lab/oj-lab-services/core/agent/gorm"
 	"github.com/OJ-lab/oj-lab-services/service/business"
 	"github.com/OJ-lab/oj-lab-services/service/mapper"
 	"github.com/OJ-lab/oj-lab-services/service/model"
 )
 
 func GetProblem(ctx context.Context, slug string) (*model.Problem, error) {
-	problem, err := mapper.GetProblem(slug)
+	db := gormAgent.GetDefaultDB()
+	problem, err := mapper.GetProblem(db, slug)
 	if err != nil {
 		return nil, err
 	}
@@ -36,27 +37,30 @@ func PutProblemPackage(ctx context.Context, slug, zipFile string) error {
 	return nil
 }
 
-func PostJudgeTask(ctx context.Context, slug, src, srcLanguage string) error {
-	judgeTask := model.NewJudgeTask(slug, src, srcLanguage)
-	err := business.EnqueueJudgeTask(ctx, *judgeTask)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func Judge(ctx context.Context, slug string, src string, srcLanguage string) (
-	[]map[string]interface{}, error,
-) {
-	request := judger.JudgeRequest{
-		Src:         src,
-		SrcLanguage: srcLanguage,
-	}
-	responseBody, err := judger.PostJudgeSync(slug, request)
+func PostSubmission(
+	ctx context.Context, problemSlug, code string, language model.SubmissionLanguage,
+) (*model.JudgeTaskSubmission, error) {
+	submission := model.NewSubmission("", problemSlug, code, language)
+	db := gormAgent.GetDefaultDB()
+	result, err := mapper.CreateSubmission(db, submission)
 	if err != nil {
 		return nil, err
 	}
 
-	return responseBody, nil
+	return result, nil
 }
+
+// func Judge(ctx context.Context, slug string, code string, language string) (
+// 	[]map[string]interface{}, error,
+// ) {
+// 	request := judger.JudgeRequest{
+// 		Code:     code,
+// 		Language: language,
+// 	}
+// 	responseBody, err := judger.PostJudgeSync(slug, request)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return responseBody, nil
+// }

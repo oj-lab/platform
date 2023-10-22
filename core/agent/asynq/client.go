@@ -1,8 +1,6 @@
-package asynq
+package asynqAgent
 
 import (
-	"encoding/json"
-
 	"github.com/hibiken/asynq"
 )
 
@@ -24,14 +22,7 @@ func GetDefaultTaskClient() *AsynqClient {
 	return client
 }
 
-func (ac *AsynqClient) EnqueueTask(name string, payload interface{}) error {
-	payloadBytes, err := json.Marshal(payload)
-	if err != nil {
-		return err
-	}
-
-	task := asynq.NewTask(name, payloadBytes)
-	ac.innerClient.Enqueue(task)
-
-	return nil
+func (ac *AsynqClient) EnqueueTask(task *asynq.Task, opts ...asynq.Option) error {
+	_, err := ac.innerClient.Enqueue(task)
+	return err
 }

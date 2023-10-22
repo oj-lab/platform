@@ -5,7 +5,6 @@ import (
 	"runtime"
 
 	"github.com/OJ-lab/oj-lab-services/application/server/handler"
-	"github.com/sirupsen/logrus"
 
 	"github.com/OJ-lab/oj-lab-services/core"
 	"github.com/OJ-lab/oj-lab-services/core/middleware"
@@ -47,13 +46,13 @@ func main() {
 
 	baseRouter := r.Group("/")
 	if serveFrontend {
-		logrus.Info("Serving frontend...")
+		core.AppLogger().Info("Serving frontend...")
 		r.LoadHTMLFiles("./frontend/dist/index.html")
 		handler.SetupFrontendRoute(baseRouter)
 	}
 
 	if swaggerOn {
-		logrus.Info("Serving swagger Doc...")
+		core.AppLogger().Info("Serving swagger Doc...")
 		handler.SetupSwaggoRouter(baseRouter)
 	}
 

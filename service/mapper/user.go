@@ -1,14 +1,13 @@
 package mapper
 
 import (
-	gormAgent "github.com/OJ-lab/oj-lab-services/core/agent/gorm"
 	"github.com/OJ-lab/oj-lab-services/service/model"
 	"github.com/alexedwards/argon2id"
+	"gorm.io/gorm"
 )
 
 // Account, Password, Roles will be used to create a new user.
-func CreateUser(user model.User) error {
-	db := gormAgent.GetDefaultDB()
+func CreateUser(tx *gorm.DB, user model.User) error {
 	hashedPassword, err := argon2id.CreateHash(*user.Password, argon2id.DefaultParams)
 	if err != nil {
 		return err
@@ -20,13 +19,12 @@ func CreateUser(user model.User) error {
 		Roles:          user.Roles,
 	}
 
-	return db.Create(&User).Error
+	return tx.Create(&User).Error
 }
 
-func GetUser(account string) (*model.User, error) {
-	db := gormAgent.GetDefaultDB()
+func GetUser(tx *gorm.DB, account string) (*model.User, error) {
 	db_user := model.User{}
-	err := db.Model(&model.User{}).Preload("Roles").Where("account = ?", account).First(&db_user).Error
+	err := tx.Model(&model.User{}).Preload("Roles").Where("account = ?", account).First(&db_user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -34,10 +32,10 @@ func GetUser(account string) (*model.User, error) {
 	return &db_user, err
 }
 
-func GetPublicUser(account string) (*model.User, error) {
-	db := gormAgent.GetDefaultDB()
+func GetPublicUser(tx *gorm.DB, account string) (*model.User, error) {
+
 	db_user := model.User{}
-	err := db.Model(&model.User{}).Preload("Roles").Select(model.PublicUserSelection).Where("account = ?", account).First(&db_user).Error
+	err := tx.Model(&model.User{}).Preload("Roles").Select(model.PublicUserSelection).Where("account = ?", account).First(&db_user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -45,16 +43,13 @@ func GetPublicUser(account string) (*model.User, error) {
 	return &db_user, err
 }
 
-func DeleteUser(user model.User) error {
-	db := gormAgent.GetDefaultDB()
-	return db.Delete(&model.User{Account: user.Account}).Error
+func DeleteUser(tx *gorm.DB, user model.User) error {
+	return tx.Delete(&model.User{Account: user.Account}).Error
 }
 
-func UpdateUser(update model.User) error {
-	db := gormAgent.GetDefaultDB()
-
+func UpdateUser(tx *gorm.DB, update model.User) error {
 	old := model.User{}
-	err := db.Where("account = ?", update.Account).First(&old).Error
+	err := tx.Where("account = ?", update.Account).First(&old).Error
 	if err != nil {
 		return err
 	}
@@ -75,7 +70,7 @@ func UpdateUser(update model.User) error {
 		new.Roles = update.Roles
 	}
 
-	return db.Model(&model.User{Account: new.Account}).Updates(new).Error
+	return tx.Model(&model.User{Account: new.Account}).Updates(new).Error
 }
 
 type GetUserOptions struct {
@@ -88,11 +83,10 @@ type GetUserOptions struct {
 
 // Count the total number of users that match the options,
 // ignoring the offset and limit.
-func CountUserByOptions(options GetUserOptions) (int64, error) {
-	db := gormAgent.GetDefaultDB()
+func CountUserByOptions(tx *gorm.DB, options GetUserOptions) (int64, error) {
 	var count int64
 
-	tx := db.
+	tx = tx.
 		Model(&model.User{}).
 		Where("account = ?", options.Account).
 		Or("email = ?", options.Email).
@@ -103,16 +97,15 @@ func CountUserByOptions(options GetUserOptions) (int64, error) {
 	return count, err
 }
 
-func GetUserByOptions(options GetUserOptions) ([]model.User, int64, error) {
-	total, err := CountUserByOptions(options)
+func GetUserByOptions(tx *gorm.DB, options GetUserOptions) ([]model.User, int64, error) {
+	total, err := CountUserByOptions(tx, options)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	db := gormAgent.GetDefaultDB()
 	db_users := []model.User{}
 
-	tx := db.
+	tx = tx.
 		Where("account = ?", options.Account).
 		Or("email = ?", options.Email).
 		Or("mobile = ?", options.Mobile)
@@ -131,10 +124,9 @@ func GetUserByOptions(options GetUserOptions) ([]model.User, int64, error) {
 	return db_users, total, nil
 }
 
-func CheckUserPassword(account string, password string) (bool, error) {
-	db := gormAgent.GetDefaultDB()
+func CheckUserPassword(tx *gorm.DB, account string, password string) (bool, error) {
 	user := model.User{}
-	err := db.Where("account = ?", account).First(&user).Error
+	err := tx.Where("account = ?", account).First(&user).Error
 	if err != nil {
 		return false, err
 	}

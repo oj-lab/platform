@@ -1,20 +1,17 @@
 package mapper
 
 import (
-	gormAgent "github.com/OJ-lab/oj-lab-services/core/agent/gorm"
 	"github.com/OJ-lab/oj-lab-services/service/model"
 	"gorm.io/gorm"
 )
 
-func CreateProblem(problem model.Problem) error {
-	db := gormAgent.GetDefaultDB()
-	return db.Create(&problem).Error
+func CreateProblem(tx *gorm.DB, problem model.Problem) error {
+	return tx.Create(&problem).Error
 }
 
-func GetProblem(slug string) (*model.Problem, error) {
-	db := gormAgent.GetDefaultDB()
+func GetProblem(tx *gorm.DB, slug string) (*model.Problem, error) {
 	db_problem := model.Problem{}
-	err := db.Model(&model.Problem{}).Preload("Tags").Where("Slug = ?", slug).First(&db_problem).Error
+	err := tx.Model(&model.Problem{}).Preload("Tags").Where("Slug = ?", slug).First(&db_problem).Error
 	if err != nil {
 		return nil, err
 	}
@@ -22,14 +19,12 @@ func GetProblem(slug string) (*model.Problem, error) {
 	return &db_problem, nil
 }
 
-func DeleteProblem(problem model.Problem) error {
-	db := gormAgent.GetDefaultDB()
-	return db.Delete(&model.Problem{Slug: problem.Slug}).Error
+func DeleteProblem(tx *gorm.DB, problem model.Problem) error {
+	return tx.Delete(&model.Problem{Slug: problem.Slug}).Error
 }
 
-func UpdateProblem(problem model.Problem) error {
-	db := gormAgent.GetDefaultDB()
-	return db.Model(&model.Problem{Slug: problem.Slug}).Updates(problem).Error
+func UpdateProblem(tx *gorm.DB, problem model.Problem) error {
+	return tx.Model(&model.Problem{Slug: problem.Slug}).Updates(problem).Error
 }
 
 type GetProblemOptions struct {
@@ -41,12 +36,12 @@ type GetProblemOptions struct {
 	Limit     *int
 }
 
-func buildTXByOptions(db *gorm.DB, options GetProblemOptions, isCount bool) *gorm.DB {
+func buildGetProblemTXByOptions(tx *gorm.DB, options GetProblemOptions, isCount bool) *gorm.DB {
 	tagsList := []string{}
 	for _, tag := range options.Tags {
 		tagsList = append(tagsList, tag.Slug)
 	}
-	tx := db.Model(&model.Problem{})
+	tx = tx.Model(&model.Problem{})
 	if len(options.Selection) > 0 {
 		tx = tx.Select(options.Selection)
 	}
@@ -74,26 +69,24 @@ func buildTXByOptions(db *gorm.DB, options GetProblemOptions, isCount bool) *gor
 	return tx
 }
 
-func CountProblemByOptions(options GetProblemOptions) (int64, error) {
-	db := gormAgent.GetDefaultDB()
+func CountProblemByOptions(tx *gorm.DB, options GetProblemOptions) (int64, error) {
 	var count int64
 
-	tx := buildTXByOptions(db, options, true)
+	tx = buildGetProblemTXByOptions(tx, options, true)
 	err := tx.Count(&count).Error
 
 	return count, err
 }
 
-func GetProblemListByOptions(options GetProblemOptions) ([]model.Problem, int64, error) {
-	total, err := CountProblemByOptions(options)
+func GetProblemListByOptions(tx *gorm.DB, options GetProblemOptions) ([]model.Problem, int64, error) {
+	total, err := CountProblemByOptions(tx, options)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	db := gormAgent.GetDefaultDB()
 	problemList := []model.Problem{}
 
-	tx := buildTXByOptions(db, options, false)
+	tx = buildGetProblemTXByOptions(tx, options, false)
 	err = tx.Find(&problemList).Error
 	if err != nil {
 		return nil, 0, err

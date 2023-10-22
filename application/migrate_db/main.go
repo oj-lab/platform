@@ -1,21 +1,21 @@
 package main
 
 import (
-	"github.com/OJ-lab/oj-lab-services/core/agent/gorm"
+	"github.com/OJ-lab/oj-lab-services/core"
+	gormAgent "github.com/OJ-lab/oj-lab-services/core/agent/gorm"
 	"github.com/OJ-lab/oj-lab-services/service/mapper"
 	"github.com/OJ-lab/oj-lab-services/service/model"
-	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	db := gorm.GetDefaultDB()
-	err := db.AutoMigrate(&model.User{}, &model.Problem{})
+	db := gormAgent.GetDefaultDB()
+	err := db.AutoMigrate(&model.User{}, &model.Problem{}, &model.JudgeTaskSubmission{}, &model.Judger{})
 	if err != nil {
 		panic("failed to migrate database")
 	}
 
 	description := `Write a program that prints "Hello World!".`
-	mapper.CreateProblem(model.Problem{
+	mapper.CreateProblem(db, model.Problem{
 		Slug:        "hello-world",
 		Title:       "Hello World!",
 		Description: &description,
@@ -25,7 +25,7 @@ func main() {
 	})
 
 	description = `Calculate A + B, print the result.`
-	mapper.CreateProblem(model.Problem{
+	mapper.CreateProblem(db, model.Problem{
 		Slug:        "a-plus-b",
 		Title:       "A + B",
 		Description: &description,
@@ -35,10 +35,28 @@ func main() {
 		},
 	})
 
-	mapper.CreateUser(model.User{
+	mapper.CreateUser(db, model.User{
 		Account:  "admin",
 		Password: func() *string { s := "admin"; return &s }(),
 	})
 
-	logrus.Info("migrate tables success")
+	mapper.CreateSubmission(db, model.JudgeTaskSubmission{
+		UserAccount: "admin",
+		ProblemSlug: "hello-world",
+		Language:    model.SubmissionLanguageCpp,
+		Code:        "#include <iostream>\nint main() { std::cout << \"Hello World!\" << std::endl; return 0; }",
+	})
+
+	mapper.CreateSubmission(db, model.JudgeTaskSubmission{
+		UserAccount: "admin",
+		ProblemSlug: "hello-world",
+		Language:    model.SubmissionLanguageCpp,
+		Code:        "#include <iostream>\nint main() { std::cout << \"Hello World!\" << std::endl; return 0; }",
+	})
+
+	mapper.CreateJudger(db, model.Judger{
+		Host: "http://localhost:8000",
+	})
+
+	core.AppLogger().Info("migrate tables success")
 }

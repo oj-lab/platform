@@ -1,6 +1,7 @@
-package test
+package core_test
 
 import (
+	"fmt"
 	"io/fs"
 	"log"
 	"path/filepath"
@@ -32,8 +33,11 @@ func TestMinio(T *testing.T) {
 	}
 
 	// Upload package files
-	packagePath := "../test-collection/packages/icpc/hello_world"
+	packagePath := "../../test-collection/packages/icpc/hello_world"
 	filepath.Walk(packagePath, func(path string, info fs.FileInfo, err error) error {
+		if info == nil {
+			return fmt.Errorf("file info is nil")
+		}
 		if info.IsDir() {
 			return nil
 		}

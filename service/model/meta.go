@@ -9,3 +9,16 @@ type MetaFields struct {
 }
 
 var MetaFieldsSelection = []string{"create_at", "update_at", "deleted_at"}
+
+type OrderByColumnOption struct {
+	Column string
+	Desc   bool
+}
+
+func NewMetaFields() MetaFields {
+	now := time.Now()
+	return MetaFields{
+		CreateAt: &now,
+		UpdateAt: &now,
+	}
+}
