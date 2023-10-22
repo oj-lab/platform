@@ -16,6 +16,7 @@ func CreateSubmission(tx *gorm.DB, submission model.JudgeTaskSubmission) (*model
 
 type GetSubmissionOptions struct {
 	Selection      []string
+	Statuses       []model.SubmissionStatus
 	UserAccount    *string
 	ProblemSlug    *string
 	Offset         *int
@@ -23,7 +24,7 @@ type GetSubmissionOptions struct {
 	OrderByColumns []model.OrderByColumnOption
 }
 
-func buildGetSubmissionTXByOptions(tx *gorm.DB, options GetSubmissionOptions, isCount bool) *gorm.DB {
+func BuildGetSubmissionTXByOptions(tx *gorm.DB, options GetSubmissionOptions, isCount bool) *gorm.DB {
 	tx = tx.Model(&model.JudgeTaskSubmission{}).Preload("User").Preload("Problem")
 	if len(options.Selection) > 0 {
 		tx = tx.Select(options.Selection)
@@ -33,6 +34,9 @@ func buildGetSubmissionTXByOptions(tx *gorm.DB, options GetSubmissionOptions, is
 	}
 	if options.ProblemSlug != nil {
 		tx = tx.Where("problem_slug = ?", *options.ProblemSlug)
+	}
+	if len(options.Statuses) > 0 {
+		tx = tx.Where("status IN ?", options.Statuses)
 	}
 	if options.Offset != nil {
 		tx = tx.Offset(*options.Offset)
@@ -51,14 +55,14 @@ func buildGetSubmissionTXByOptions(tx *gorm.DB, options GetSubmissionOptions, is
 }
 
 func GetSubmissionListByOptions(tx *gorm.DB, options GetSubmissionOptions) ([]*model.JudgeTaskSubmission, int64, error) {
-	tx = buildGetSubmissionTXByOptions(tx, options, false)
+	tx = BuildGetSubmissionTXByOptions(tx, options, false)
 	var submissions []*model.JudgeTaskSubmission
 	err := tx.Find(&submissions).Error
 	if err != nil {
 		return nil, 0, err
 	}
 
-	tx = buildGetSubmissionTXByOptions(tx, options, true)
+	tx = BuildGetSubmissionTXByOptions(tx, options, true)
 	var count int64
 	err = tx.Count(&count).Error
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/OJ-lab/oj-lab-services/service"
 	"github.com/OJ-lab/oj-lab-services/service/mapper"
+	"github.com/OJ-lab/oj-lab-services/service/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -79,8 +80,8 @@ func putProblemPackage(ginCtx *gin.Context) {
 }
 
 type PostSubmissionBody struct {
-	Code     string `json:"code" binding:"required"`
-	Language string `json:"language" binding:"required"`
+	Code     string                   `json:"code" binding:"required"`
+	Language model.SubmissionLanguage `json:"language" binding:"required"`
 }
 
 // postSubmission

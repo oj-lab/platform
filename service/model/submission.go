@@ -11,17 +11,26 @@ const (
 	SubmissionStatusFinished SubmissionStatus = "finished"
 )
 
+type SubmissionLanguage string
+
+const (
+	SubmissionLanguageCpp    SubmissionLanguage = "Cpp"
+	SubmissionLanguageRust   SubmissionLanguage = "Rust"
+	SubmissionLanguagePython SubmissionLanguage = "Python"
+)
+
 // Using relationship according to https://gorm.io/docs/belongs_to.html
 type JudgeTaskSubmission struct {
 	MetaFields
-	UID         uuid.UUID        `gorm:"primaryKey" json:"uid"`
-	UserAccount string           `gorm:"not null" json:"userAccount"`
-	User        User             `json:"user"`
-	ProblemSlug string           `gorm:"not null" json:"problemSlug"`
-	Problem     Problem          `json:"problem"`
-	Code        string           `gorm:"not null" json:"code"`
-	Language    string           `gorm:"not null" json:"language"`
-	Status      SubmissionStatus `gorm:"not null" json:"status"`
+	UID         uuid.UUID          `gorm:"primaryKey" json:"uid"`
+	UserAccount string             `gorm:"not null" json:"userAccount"`
+	User        User               `json:"user"`
+	ProblemSlug string             `gorm:"not null" json:"problemSlug"`
+	Problem     Problem            `json:"problem"`
+	Code        string             `gorm:"not null" json:"code"`
+	Language    SubmissionLanguage `gorm:"not null" json:"language"`
+	Status      SubmissionStatus   `gorm:"default:pending" json:"status"`
+	VerdictJson string             `json:"verdictJson"`
 }
 
 type JudgeTaskSubmissionSortByColumn string
@@ -35,7 +44,7 @@ func NewSubmission(
 	userAccount string,
 	problemSlug string,
 	code string,
-	language string,
+	language SubmissionLanguage,
 ) JudgeTaskSubmission {
 	return JudgeTaskSubmission{
 		UserAccount: userAccount,

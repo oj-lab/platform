@@ -37,7 +37,9 @@ func PutProblemPackage(ctx context.Context, slug, zipFile string) error {
 	return nil
 }
 
-func PostSubmission(ctx context.Context, problemSlug, code, language string) (*model.JudgeTaskSubmission, error) {
+func PostSubmission(
+	ctx context.Context, problemSlug, code string, language model.SubmissionLanguage,
+) (*model.JudgeTaskSubmission, error) {
 	submission := model.NewSubmission("", problemSlug, code, language)
 	db := gormAgent.GetDefaultDB()
 	result, err := mapper.CreateSubmission(db, submission)

@@ -43,14 +43,14 @@ func main() {
 	mapper.CreateSubmission(db, model.JudgeTaskSubmission{
 		UserAccount: "admin",
 		ProblemSlug: "hello-world",
-		Language:    "cpp",
+		Language:    model.SubmissionLanguageCpp,
 		Code:        "#include <iostream>\nint main() { std::cout << \"Hello World!\" << std::endl; return 0; }",
 	})
 
 	mapper.CreateSubmission(db, model.JudgeTaskSubmission{
 		UserAccount: "admin",
 		ProblemSlug: "hello-world",
-		Language:    "cpp",
+		Language:    model.SubmissionLanguageCpp,
 		Code:        "#include <iostream>\nint main() { std::cout << \"Hello World!\" << std::endl; return 0; }",
 	})
 
