@@ -8,7 +8,7 @@ import (
 func main() {
 	asynqAgent.RunSecheduler(
 		asynqAgent.ScheduleTask{
-			Cronspec: "@every 5s",
+			Cronspec: "@every 1s",
 			Task:     business.NewTaskJudgerTrackAllState(),
 		},
 	)

@@ -70,8 +70,8 @@ run-server: build check
 run-rpc-server: build check
 	./bin/rpc_server
 
-.PHONY: run-backgroud
-run-backgroud: build check
+.PHONY: run-background
+run-background: build check
 	make -j run-task-worker run-schedule
 
 .PHONY: run-all

@@ -139,14 +139,23 @@ func handleTaskJudgerHandleSubmission(ctx context.Context, task *asynq.Task) err
 		return err
 	}
 
-	err := db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("host = ?", judger.Host).First(&judger).Error; err != nil {
-			return err
-		}
-		var submission model.JudgeTaskSubmission
+	judgerClient := judgerAgent.JudgerClient{
+		Host: judger.Host,
+	}
+	judgerStateString, err := judgerClient.GetState()
+	if err != nil {
+		return err
+	}
+	judgerState := model.StringToJudgerState(judgerStateString)
+	if judgerState != model.JudgerStateIdle {
+		core.AppLogger().Debugf("Judger %v is not idle, ignoring this task", judgerClient.Host)
+		return nil
+	}
+
+	var submission model.JudgeTaskSubmission
+	err = db.Transaction(func(tx *gorm.DB) error {
 		if err := mapper.BuildGetSubmissionTXByOptions(tx.Clauses(clause.Locking{
 			Strength: "UPDATE",
-			Options:  "NOWAIT",
 		}), mapper.GetSubmissionOptions{
 			Statuses: []model.SubmissionStatus{
 				model.SubmissionStatusPending,
@@ -155,42 +164,43 @@ func handleTaskJudgerHandleSubmission(ctx context.Context, task *asynq.Task) err
 				limit := 1
 				return &limit
 			}(),
+			OrderByColumns: []model.OrderByColumnOption{
+				{
+					Column: "create_at",
+					Desc:   true,
+				},
+			},
 		}, false).First(&submission).Error; err != nil {
-			if err == gorm.ErrRecordNotFound {
-				core.AppLogger().Debugf("No submission to handle, ignoring this task")
-				return nil
-			}
-			core.AppLogger().Errorf("failed to get submission: %v", err)
+			core.AppLogger().Errorf("Failed to get submission: %v", err)
 			return err
 		}
-
-		judgerClient := judgerAgent.JudgerClient{
-			Host: judger.Host,
-		}
-		judgerStateString, err := judgerClient.GetState()
-		if err != nil {
-			return err
-		}
-		judgerState := model.StringToJudgerState(judgerStateString)
-		if judgerState != model.JudgerStateIdle {
-			core.AppLogger().Debugf("Judger %v is not idle, ignoring this task", judgerClient.Host)
-			return nil
-		}
-		core.AppLogger().Debugf("Get Judger %v state=%v", judgerClient.Host, judgerState)
-		judger.State = model.JudgerStateBusy
-		err = tx.Model(&judger).Update("state", judger.State).Error
-		if err != nil {
-			core.AppLogger().Errorf("failed to update judger state: %v", err)
-			return err
-		}
-
+		core.AppLogger().Debugf("Get submission %v", submission.UID)
 		submission.Status = model.SubmissionStatusRunning
 		err = tx.Model(&submission).Update("status", submission.Status).Error
 		if err != nil {
-			core.AppLogger().Errorf("failed to update submission status: %v", err)
+			core.AppLogger().Errorf("Failed to update submission status: %v", err)
 			return err
 		}
-		core.AppLogger().Debugf("Judger %v is busy, start to handle submission %v", judgerClient.Host, submission.UID)
+
+		return nil
+	})
+
+	if err != nil {
+		core.AppLogger().Errorf("Failed to select submission: %v", err)
+		return err
+	}
+
+	err = db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("host = ?", judger.Host).First(&judger).Error; err != nil {
+			return err
+		}
+		judger.State = model.JudgerStateBusy
+		err = tx.Model(&judger).Update("state", judger.State).Error
+		if err != nil {
+			return err
+		}
+
+		core.AppLogger().Debugf("Judger %v start to handle submission %v", judgerClient.Host, submission.UID)
 		judgeVerdict, err := judgerClient.PostJudgeSync(
 			submission.ProblemSlug,
 			judgerAgent.JudgeRequest{
@@ -199,7 +209,7 @@ func handleTaskJudgerHandleSubmission(ctx context.Context, task *asynq.Task) err
 			},
 		)
 		if err != nil {
-			core.AppLogger().Errorf("failed to judge submission: %v", err)
+			core.AppLogger().Errorf("Failed to judge submission: %v", err)
 			return err
 		}
 		core.AppLogger().Debugf("Get Judger %v verdict=%v", judgerClient.Host, judgeVerdict)
@@ -207,7 +217,7 @@ func handleTaskJudgerHandleSubmission(ctx context.Context, task *asynq.Task) err
 		submission.Status = model.SubmissionStatusFinished
 		verdictBytes, err := json.Marshal(judgeVerdict)
 		if err != nil {
-			core.AppLogger().Errorf("failed to marshal verdict: %v", err)
+			core.AppLogger().Errorf("Failed to marshal verdict: %v", err)
 			return err
 		}
 		err = tx.Model(&submission).Updates(map[string]interface{}{
@@ -217,6 +227,7 @@ func handleTaskJudgerHandleSubmission(ctx context.Context, task *asynq.Task) err
 		if err != nil {
 			return err
 		}
+
 		judger.State = model.JudgerStateIdle
 		err = tx.Model(&judger).Update("state", judger.State).Error
 		if err != nil {
@@ -227,6 +238,12 @@ func handleTaskJudgerHandleSubmission(ctx context.Context, task *asynq.Task) err
 	})
 
 	if err != nil {
+		core.AppLogger().Errorf("Failed to handle submission: %v", err)
+		err = db.Model(&submission).Update("status", model.SubmissionStatusPending).Error
+		if err != nil {
+			core.AppLogger().Errorf("failed to update submission status: %v", err)
+		}
+
 		return err
 	}
 	return nil

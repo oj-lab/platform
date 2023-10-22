@@ -58,5 +58,9 @@ func main() {
 		Host: "http://localhost:8000",
 	})
 
+	mapper.CreateJudger(db, model.Judger{
+		Host: "http://localhost:8001",
+	})
+
 	core.AppLogger().Info("migrate tables success")
 }
