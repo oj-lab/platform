@@ -21,7 +21,7 @@ func RunSecheduler(scheduleTasks ...ScheduleTask) {
 		if err != nil {
 			panic(err)
 		}
-		core.GetAppLogger().Infof(
+		core.AppLogger().Infof(
 			"setup schedule task: %s, cronspec: %s, entryID: %s",
 			scheduleTask.Task.Type(), scheduleTask.Cronspec, entryID,
 		)

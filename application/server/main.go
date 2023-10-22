@@ -46,13 +46,13 @@ func main() {
 
 	baseRouter := r.Group("/")
 	if serveFrontend {
-		core.GetAppLogger().Info("Serving frontend...")
+		core.AppLogger().Info("Serving frontend...")
 		r.LoadHTMLFiles("./frontend/dist/index.html")
 		handler.SetupFrontendRoute(baseRouter)
 	}
 
 	if swaggerOn {
-		core.GetAppLogger().Info("Serving swagger Doc...")
+		core.AppLogger().Info("Serving swagger Doc...")
 		handler.SetupSwaggoRouter(baseRouter)
 	}
 

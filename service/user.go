@@ -31,7 +31,7 @@ func CheckUserExist(ctx context.Context, account string) (bool, error) {
 	}
 
 	if count > 1 {
-		core.GetAppLogger().Warnf("user %s has %d records", account, count)
+		core.AppLogger().Warnf("user %s has %d records", account, count)
 	}
 
 	return count > 0, nil

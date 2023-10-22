@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	core.GetAppLogger().Info("Starting task server...")
+	core.AppLogger().Info("Starting task server...")
 	config := asynqAgent.AsynqServerConfig{
 		Concurrency: 10,
 		UsePriority: true,

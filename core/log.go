@@ -9,7 +9,7 @@ import (
 
 const logLevelProp = "log.level"
 
-func GetAppLogger() *logrus.Entry {
+func AppLogger() *logrus.Entry {
 	return logrus.WithFields(logrus.Fields{
 		"CALLER": func() string {
 			pc := make([]uintptr, 1)

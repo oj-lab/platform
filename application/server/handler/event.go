@@ -34,7 +34,7 @@ func Stream(ginCtx *gin.Context) {
 	ginCtx.Stream(func(w io.Writer) bool {
 		// With event type
 		message := fmt.Sprintf("event: %s\ndata: %s\n\n", "eventType", time.Now().String())
-		core.GetAppLogger().Infof("Send message:\n%s", message)
+		core.AppLogger().Infof("Send message:\n%s", message)
 		fmt.Fprint(w, message)
 		time.Sleep(1 * time.Second)
 		counter++

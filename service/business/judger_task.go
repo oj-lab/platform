@@ -37,6 +37,7 @@ func NewTaskJudgerGetState(judger model.Judger) *asynq.Task {
 
 func GetAsynqMuxJudger() asynqAgent.AsynqMux {
 	serveMux := asynq.NewServeMux()
+	serveMux.Use(asynqAgent.LoggingMiddleware)
 	serveMux.HandleFunc(TaskNameJudgerTrackAllState, handleTaskJudgerTrackAllState)
 	serveMux.HandleFunc(TaskNameJudgerGetState, handleTaskJudgerGetState)
 	serveMux.HandleFunc(TaskNameJudgerHandleSubmission, handleTaskJudgerHandleSubmission)
@@ -48,13 +49,12 @@ func GetAsynqMuxJudger() asynqAgent.AsynqMux {
 }
 
 func handleTaskJudgerTrackAllState(ctx context.Context, task *asynq.Task) error {
-	core.GetAppLogger().Info("handleTaskJudgerTrackAllState")
 	db := gormAgent.GetDefaultDB()
 	judgerList, err := mapper.GetJudgerList(db)
 	if err != nil {
 		return err
 	}
-	core.GetAppLogger().Infof("judger list: %v", judgerList)
+	core.AppLogger().Infof("judger list: %v", judgerList)
 
 	asynqClient := asynqAgent.GetDefaultTaskClient()
 	for _, judger := range judgerList {
@@ -63,7 +63,7 @@ func handleTaskJudgerTrackAllState(ctx context.Context, task *asynq.Task) error 
 			asynq.TaskID(fmt.Sprintf("%s:%s", TaskNameJudgerGetState, judger.Host)),
 		)
 		if err != nil {
-			core.GetAppLogger().Errorf("failed to enqueue task %s: %v", TaskNameJudgerGetState, err)
+			core.AppLogger().Errorf("failed to enqueue task %s: %v", TaskNameJudgerGetState, err)
 		}
 	}
 
@@ -90,22 +90,22 @@ func handleTaskJudgerGetState(ctx context.Context, task *asynq.Task) error {
 			return err
 		}
 		judgerState := model.StringToJudgerState(judgerStateString)
-		core.GetAppLogger().Debugf("Get Judger %v state=%v", judgerClient.Host, judgerState)
+		core.AppLogger().Debugf("Get Judger %v state=%v", judgerClient.Host, judgerState)
 
 		if judgerState == model.JudgerStateIdle {
-			core.GetAppLogger().Debugf("Judger %v is idle, try find submission to handle", judgerClient.Host)
+			core.AppLogger().Debugf("Judger %v is idle, try find submission to handle", judgerClient.Host)
 			asynqClient := asynqAgent.GetDefaultTaskClient()
 			err := asynqClient.EnqueueTask(
 				NewTaskJudgerHandleSubmission(judger),
 				asynq.TaskID(fmt.Sprintf("%s:%s", TaskNameJudgerHandleSubmission, judger.Host)),
 			)
 			if err != nil {
-				core.GetAppLogger().Errorf("failed to enqueue task %s: %v", TaskNameJudgerHandleSubmission, err)
+				core.AppLogger().Errorf("failed to enqueue task %s: %v", TaskNameJudgerHandleSubmission, err)
 			}
 		}
 
 		if !judger.State.CanUpdate(model.JudgerStateIdle) {
-			core.GetAppLogger().Debugf("Judger state is invalid or don't need update, ignoring this state update")
+			core.AppLogger().Debugf("Judger state is invalid or don't need update, ignoring this state update")
 			return nil
 		}
 		judger.State = judgerState
@@ -121,7 +121,6 @@ func handleTaskJudgerGetState(ctx context.Context, task *asynq.Task) error {
 	if err != nil {
 		return err
 	}
-	core.GetAppLogger().Debugf("Successfully handled task %s", task.Type())
 	return nil
 }
 
@@ -139,7 +138,6 @@ func handleTaskJudgerHandleSubmission(ctx context.Context, task *asynq.Task) err
 	if err := json.Unmarshal(task.Payload(), &judger); err != nil {
 		return err
 	}
-	core.GetAppLogger().Debugf("handleTaskJudgerHandleSubmission judger=%v", judger)
 
 	err := db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("host = ?", judger.Host).First(&judger).Error; err != nil {
@@ -159,10 +157,10 @@ func handleTaskJudgerHandleSubmission(ctx context.Context, task *asynq.Task) err
 			}(),
 		}, false).First(&submission).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
-				core.GetAppLogger().Debugf("No submission to handle, ignoring this task")
+				core.AppLogger().Debugf("No submission to handle, ignoring this task")
 				return nil
 			}
-			core.GetAppLogger().Errorf("failed to get submission: %v", err)
+			core.AppLogger().Errorf("failed to get submission: %v", err)
 			return err
 		}
 
@@ -175,24 +173,24 @@ func handleTaskJudgerHandleSubmission(ctx context.Context, task *asynq.Task) err
 		}
 		judgerState := model.StringToJudgerState(judgerStateString)
 		if judgerState != model.JudgerStateIdle {
-			core.GetAppLogger().Debugf("Judger %v is not idle, ignoring this task", judgerClient.Host)
+			core.AppLogger().Debugf("Judger %v is not idle, ignoring this task", judgerClient.Host)
 			return nil
 		}
-		core.GetAppLogger().Debugf("Get Judger %v state=%v", judgerClient.Host, judgerState)
+		core.AppLogger().Debugf("Get Judger %v state=%v", judgerClient.Host, judgerState)
 		judger.State = model.JudgerStateBusy
 		err = tx.Model(&judger).Update("state", judger.State).Error
 		if err != nil {
-			core.GetAppLogger().Errorf("failed to update judger state: %v", err)
+			core.AppLogger().Errorf("failed to update judger state: %v", err)
 			return err
 		}
 
 		submission.Status = model.SubmissionStatusRunning
 		err = tx.Model(&submission).Update("status", submission.Status).Error
 		if err != nil {
-			core.GetAppLogger().Errorf("failed to update submission status: %v", err)
+			core.AppLogger().Errorf("failed to update submission status: %v", err)
 			return err
 		}
-		core.GetAppLogger().Debugf("Judger %v is busy, start to handle submission %v", judgerClient.Host, submission.UID)
+		core.AppLogger().Debugf("Judger %v is busy, start to handle submission %v", judgerClient.Host, submission.UID)
 		judgeVerdict, err := judgerClient.PostJudgeSync(
 			submission.ProblemSlug,
 			judgerAgent.JudgeRequest{
@@ -201,15 +199,15 @@ func handleTaskJudgerHandleSubmission(ctx context.Context, task *asynq.Task) err
 			},
 		)
 		if err != nil {
-			core.GetAppLogger().Errorf("failed to judge submission: %v", err)
+			core.AppLogger().Errorf("failed to judge submission: %v", err)
 			return err
 		}
-		core.GetAppLogger().Debugf("Get Judger %v verdict=%v", judgerClient.Host, judgeVerdict)
+		core.AppLogger().Debugf("Get Judger %v verdict=%v", judgerClient.Host, judgeVerdict)
 
 		submission.Status = model.SubmissionStatusFinished
 		verdictBytes, err := json.Marshal(judgeVerdict)
 		if err != nil {
-			core.GetAppLogger().Errorf("failed to marshal verdict: %v", err)
+			core.AppLogger().Errorf("failed to marshal verdict: %v", err)
 			return err
 		}
 		err = tx.Model(&submission).Updates(map[string]interface{}{
@@ -231,6 +229,5 @@ func handleTaskJudgerHandleSubmission(ctx context.Context, task *asynq.Task) err
 	if err != nil {
 		return err
 	}
-	core.GetAppLogger().Debugf("Successfully handled task %s", task.Type())
 	return nil
 }

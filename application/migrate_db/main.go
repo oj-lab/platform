@@ -58,5 +58,5 @@ func main() {
 		Host: "http://localhost:8000",
 	})
 
-	core.GetAppLogger().Info("migrate tables success")
+	core.AppLogger().Info("migrate tables success")
 }
