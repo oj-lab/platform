@@ -6,7 +6,6 @@ import (
 	"github.com/OJ-lab/oj-lab-services/core"
 	"github.com/OJ-lab/oj-lab-services/service"
 	"github.com/OJ-lab/oj-lab-services/service/mapper"
-	"github.com/OJ-lab/oj-lab-services/service/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,11 +14,6 @@ func SetupSubmissionRouter(baseRoute *gin.RouterGroup) {
 	{
 		g.GET("", getSubmissionList)
 	}
-}
-
-type getSubmissionResponseBody struct {
-	Total int64                        `json:"total"`
-	Data  []*model.JudgeTaskSubmission `json:"data"`
 }
 
 // Get Submission List
@@ -64,8 +58,8 @@ func getSubmissionList(ginCtx *gin.Context) {
 		return
 	}
 
-	ginCtx.JSON(200, getSubmissionResponseBody{
-		Total: total,
-		Data:  submissions,
+	ginCtx.JSON(200, gin.H{
+		"total": total,
+		"list":  submissions,
 	})
 }
