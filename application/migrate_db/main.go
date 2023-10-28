@@ -44,6 +44,15 @@ func main() {
 		},
 	})
 
+	mapper.CreateUser(db, model.User{
+		Name:     "anonymous",
+		Account:  "anonymous",
+		Password: func() *string { s := "anonymous"; return &s }(),
+		Roles: []*model.Role{
+			{Name: "anonymous"},
+		},
+	})
+
 	mapper.CreateSubmission(db, model.JudgeTaskSubmission{
 		UserAccount: "admin",
 		ProblemSlug: "hello-world",

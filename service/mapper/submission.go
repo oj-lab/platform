@@ -10,6 +10,9 @@ import (
 func CreateSubmission(tx *gorm.DB, submission model.JudgeTaskSubmission) (*model.JudgeTaskSubmission, error) {
 	submission.UID = uuid.New()
 	submission.MetaFields = model.NewMetaFields()
+	if submission.UserAccount == "" {
+		submission.UserAccount = "anonymous"
+	}
 
 	return &submission, tx.Create(&submission).Error
 }
