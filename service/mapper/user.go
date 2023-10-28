@@ -14,6 +14,7 @@ func CreateUser(tx *gorm.DB, user model.User) error {
 	}
 
 	User := model.User{
+		Name:           user.Name,
 		Account:        user.Account,
 		HashedPassword: hashedPassword,
 		Roles:          user.Roles,

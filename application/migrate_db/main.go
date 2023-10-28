@@ -36,6 +36,7 @@ func main() {
 	})
 
 	mapper.CreateUser(db, model.User{
+		Name:     "admin",
 		Account:  "admin",
 		Password: func() *string { s := "admin"; return &s }(),
 		Roles: []*model.Role{
