@@ -87,4 +87,34 @@ func TestRedis(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+
+	sId := rdb.XAdd(ctx, &redis.XAddArgs{
+		Stream: "oj-lab-judge-test",
+		Values: map[string]interface{}{
+			"key1": "value1",
+			"key2": "value2",
+		},
+	}).Val()
+	println("sId: ", sId)
+	rdb.XGroupCreate(ctx, "oj-lab-judge-test", "oj-lab-judge-test-group", "0")
+	ack := rdb.XAck(ctx, "oj-lab-judge-test", "oj-lab-judge-test-group", sId).Val()
+	if ack == 1 {
+		panic("should not ack")
+	}
+	rdb.XGroupCreateConsumer(ctx, "oj-lab-judge-test", "oj-lab-judge-test-group", "oj-lab-judge-test-consumer-1")
+	sSlice := rdb.XReadGroup(ctx, &redis.XReadGroupArgs{
+		Group:    "oj-lab-judge-test-group",
+		Consumer: "oj-lab-judge-test-consumer-1",
+		Streams:  []string{"oj-lab-judge-test", ">"},
+		Count:    1,
+		Block:    0,
+	}).Val()
+	sVal := sSlice[0].Messages[0].Values
+	for k, v := range sVal {
+		fmt.Printf("k: %s, v: %s\n", k, v)
+	}
+	ack = rdb.XAck(ctx, "oj-lab-judge-test", "oj-lab-judge-test-group", sSlice[0].Messages[0].ID).Val()
+	if ack != 1 {
+		panic("failed to ack")
+	}
 }
