@@ -31,13 +31,13 @@ services:
       - "6379:6379"
 
   judger-1:
-    image: ghcr.io/oj-lab/judger/judge-server:main
+    image: ghcr.io/oj-lab/judger/judger-server:main
     restart: always
     ports:
       - "8000:8000"
 
   judger-2:
-    image: ghcr.io/oj-lab/judger/judge-server:main
+    image: ghcr.io/oj-lab/judger/judger-server:main
     restart: always
     ports:
       - "8001:8000"
