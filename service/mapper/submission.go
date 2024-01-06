@@ -1,6 +1,8 @@
 package mapper
 
 import (
+	"fmt"
+
 	"github.com/OJ-lab/oj-lab-services/service/model"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -76,4 +78,33 @@ func GetSubmissionListByOptions(tx *gorm.DB, options GetSubmissionOptions) ([]*m
 	}
 
 	return submissions, count, nil
+}
+
+func UpdateSubmission(tx *gorm.DB, submission model.JudgeTaskSubmission) error {
+	updatingSubmission := model.JudgeTaskSubmission{}
+	if submission.UID != uuid.Nil {
+		err := tx.Where("uid = ?", submission.UID).First(&updatingSubmission).Error
+		if err != nil {
+			return err
+		}
+	} else if submission.RedisStreamID != "" {
+		err := tx.Where("redis_stream_id = ?", submission.RedisStreamID).First(&updatingSubmission).Error
+		if err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("submission uid and redis stream id are both empty")
+	}
+
+	if submission.Status != "" {
+		updatingSubmission.Status = submission.Status
+	}
+	if submission.VerdictJson != "" {
+		updatingSubmission.VerdictJson = submission.VerdictJson
+	}
+	if submission.RedisStreamID != "" {
+		updatingSubmission.RedisStreamID = submission.RedisStreamID
+	}
+
+	return tx.Model(&updatingSubmission).Updates(updatingSubmission).Error
 }

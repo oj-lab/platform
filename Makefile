@@ -72,11 +72,11 @@ run-rpc-server: build check
 
 .PHONY: run-background
 run-background: build check
-	make -j run-task-worker run-schedule
+	make -j run-schedule
 
 .PHONY: run-all
 run-all: build check
-	make -j run-task-worker run-server run-schedule
+	make -j run-server run-schedule
 
 .PHONY: help
 help:
