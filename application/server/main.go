@@ -61,6 +61,7 @@ func main() {
 	handler.SetupProblemRoute(apiRouter)
 	handler.SetupEventRouter(apiRouter)
 	handler.SetupSubmissionRouter(apiRouter)
+	handler.SetupJudgeRoute(apiRouter)
 
 	err := r.Run(servicePort)
 	if err != nil {

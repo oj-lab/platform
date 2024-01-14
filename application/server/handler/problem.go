@@ -100,11 +100,12 @@ func postSubmission(ginCtx *gin.Context) {
 		return
 	}
 
-	submission, err := service.PostSubmission(ginCtx, slug, body.Code, body.Language)
-	if err != nil {
-		ginCtx.Error(err)
+	submission := model.NewSubmission("", slug, body.Code, body.Language)
+	result, svcErr := service.CreateJudgeTaskSubmission(ginCtx, submission)
+	if svcErr != nil {
+		svcErr.AppendToGin(ginCtx)
 		return
 	}
 
-	ginCtx.JSON(200, submission)
+	ginCtx.JSON(200, result)
 }

@@ -2,8 +2,6 @@ package model
 
 import (
 	"strings"
-
-	"github.com/google/uuid"
 )
 
 type JudgerState string
@@ -21,19 +19,28 @@ type Judger struct {
 }
 
 type JudgeTask struct {
-	UID         uuid.UUID `json:"uid"`
-	ProblemSlug string    `json:"problemSlug"`
-	Code        string    `json:"code"`
-	Language    string    `json:"language"`
-	Judger      Judger    `json:"judger"`
+	SubmissionUID string  `json:"submissionUID"`
+	ProblemSlug   string  `json:"problemSlug"`
+	Code          string  `json:"code"`
+	Language      string  `json:"language"`
+	RedisStreamID *string `json:"redisStreamID"`
 }
 
-func NewJudgeTask(problemSlug, code, language string) *JudgeTask {
+func (jt *JudgeTask) ToStringMap() map[string]interface{} {
+	return map[string]interface{}{
+		"submission_uid": jt.SubmissionUID,
+		"problem_slug":   jt.ProblemSlug,
+		"code":           jt.Code,
+		"language":       jt.Language,
+	}
+}
+
+func JudgeTaskFromMap(m map[string]interface{}) *JudgeTask {
 	return &JudgeTask{
-		UID:         uuid.New(),
-		ProblemSlug: problemSlug,
-		Code:        code,
-		Language:    language,
+		SubmissionUID: m["submission_uid"].(string),
+		ProblemSlug:   m["problem_slug"].(string),
+		Code:          m["code"].(string),
+		Language:      m["language"].(string),
 	}
 }
 
