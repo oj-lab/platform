@@ -5,45 +5,24 @@ help:
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  build     - Build the application"
-	@echo "  clear-db  - Clear the database"
-	@echo "  setup-db  - Setup the database"
+	@echo "  build     - Build the application, swagger document will be generated"
 	@echo "  check     - Run go vet"
-	@echo "  test      - Run tests"
-
-.PHONY: get-front
-get-front:
-	./scripts/update-frontend-dist.sh artifacts/oj-lab-front/dist
-
-.PHONY: install-tools
-install-tools:
-	go install github.com/swaggo/swag/cmd/swag@latest
-	@# Referencing https://grpc.io/docs/protoc-installation/
-	@./scripts/install-protoc.sh
-	@# Track https://grpc.io/docs/languages/go/quickstart/ for update
-	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
-
-.PHONY: gen-proto
-gen-proto: install-tools
-	protoc --go_out=. --go_opt=paths=source_relative \
-		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
-		src/service/proto/*.proto
-
-.PHONY: gen-swagger
-gen-swagger: install-tools
-	swag fmt -d src/application/server
-	swag init -d src/application/server,src/service/model -ot go -o src/application/server/swaggo-gen
-
+	@echo "  test      - Run tests, database will be setup"
+	@echo "  run       - Run the application"
+	@echo "  setup-db  - Setup the database"
+	@echo "  clear-db  - Clear the database"
+	
 .PHONY: build
-build: gen-proto gen-swagger
+build: gen-swagger
 	@echo "Building on $(OS)"
 	go mod tidy
 	go build -o artifacts/bin/migrate_db src/application/migrate_db/main.go
 	go build -o artifacts/bin/service src/application/server/main.go
-	go build -o artifacts/bin/asynq_worker src/application/asynq_worker/main.go
-	go build -o artifacts/bin/rpc_server src/application/rpc_server/main.go
 	go build -o artifacts/bin/schedule src/application/schedule/main.go
+
+.PHONY: build-image
+build-image:
+	docker build -f docker/oj-lab-platform.dockerfile -t oj-lab-platform:latest .
 
 .PHONY: clear-db
 clear-db:
@@ -57,6 +36,11 @@ setup-db: clear-db build
 	sleep 10s
 	./artifacts/bin/migrate_db
 
+.PHONY: gen-swagger
+gen-swagger: install-swaggo
+	swag fmt -d src/application/server
+	swag init -d src/application/server,src/service/model -ot go -o src/application/server/swaggo-gen
+
 .PHONY: check
 check: gen-proto
 	go vet ./...
@@ -64,10 +48,6 @@ check: gen-proto
 .PHONY: test
 test: gen-swagger check setup-db
 	go test -cover -v ./...
-
-.PHONY: run-task-worker
-run-task-worker: build check
-	./artifacts/bin/asynq_worker
 
 .PHONY: run-schedule
 run-schedule: build check
@@ -77,18 +57,31 @@ run-schedule: build check
 run-server: build check
 	./artifacts/bin/service
 
-.PHONY: run-rpc-server
-run-rpc-server: build check
-	./artifacts/bin/rpc_server
-
-.PHONY: run-background
-run-background: build check
-	make -j run-schedule
-
-.PHONY: run-all
-run-all: build check
+.PHONY: run
+run: build check
 	make -j run-server run-schedule
 
-.PHONY: build-docker
-build-docker:
-	docker build -f docker/oj-lab-platform.dockerfile -t oj-lab-platform:latest .
+.PHONY: get-front
+get-front:
+	./scripts/update-frontend-dist.sh artifacts/oj-lab-front/dist
+
+.PHONY: install-swaggo
+install-swaggo:
+	go install github.com/swaggo/swag/cmd/swag@latest
+
+
+# Deprecated
+.PHONY: gen-proto
+gen-proto: install-proto
+	protoc --go_out=. --go_opt=paths=source_relative \
+		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
+		src/service/proto/*.proto	
+
+# Deprecated
+.PHONY: install-proto
+install-proto:
+	@# Referencing https://grpc.io/docs/protoc-installation/
+	@./scripts/install-protoc.sh
+	@# Track https://grpc.io/docs/languages/go/quickstart/ for update
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2

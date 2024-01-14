@@ -1,3 +1,5 @@
+// Deprecated currently
+// Keep it for future use
 syntax = "proto3";
 
 package oj_lab_greeting.protos;

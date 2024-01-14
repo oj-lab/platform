@@ -1,3 +1,5 @@
+// Deprecated currently
+// Keep it for future use
 package main
 
 import (
