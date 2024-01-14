@@ -12,7 +12,7 @@ const PROJECT_ROOT_ENV_KEY = "OJ_LAB_PROJECT_ROOT"
 const OVERRIDE_CONFIG_NAME_ENV_KEY = "OJ_LAB_OVERRIDE_CONFIG_NAME"
 
 const DEFAULT_OVERRIDE_CONFIG_NAME = "override"
-const DEFAULT_PROJECT_ROOT = "oj-lab-services"
+const DEFAULT_PROJECT_ROOT = "oj-lab-platform"
 
 type ServiceEnv string
 
