@@ -15,13 +15,12 @@
 # vendor/
 
 *.ini
-!package/config/ini/example.ini
-!package/config/ini/test.ini
+!package/configs/ini/example.ini
+!package/configs/ini/test.ini
 
-config/override.toml
-bin/
+configs/override.toml
+artifacts/
 dist.zip
-frontend/dist/
 
 # Ignore generated files
 *.pb.go

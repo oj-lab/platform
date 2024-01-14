@@ -1,7 +1,4 @@
 .github/
 .vscode/
-test/
-test-collection/
-frontend/
-postman/
-oj-lab-services-structure.drawio
+tests/
+artifacts/
