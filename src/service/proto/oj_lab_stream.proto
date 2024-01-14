@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package oj_lab_stream.protos;
+
+option go_package = "github.com/OJ-lab/oj-lab-services/src/service/proto";
+
+service Streamer {
+    rpc StartStream (StreamRequest) returns (stream StreamResponse) {}
+}
+
+message StreamRequest {
+    string id = 1;
+}
+
+message StreamResponse {
+    oneof body {
+        ServerHealth health = 1;
+        string data = 2;
+    }
+}
+
+message ServerHealth {
+}

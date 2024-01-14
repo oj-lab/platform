@@ -28,7 +28,7 @@ Alternatively, you can use `make run-all` to run all the processes in one termin
 
 Use `make get-front` to get the frontend dist codes.
 You should also set `service.serve_front` to `true` in config file
-(see [override.example.toml](config/override.example.toml) for more information)
+(see [override.example.toml](configs/override.example.toml) for more information)
 
 ### WARNING
 

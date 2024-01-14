@@ -1,14 +1,25 @@
 OS := $(shell uname -s)
 
+.PHONY: help
+help:
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Targets:"
+	@echo "  build     - Build the application"
+	@echo "  clear-db  - Clear the database"
+	@echo "  setup-db  - Setup the database"
+	@echo "  check     - Run go vet"
+	@echo "  test      - Run tests"
+
 .PHONY: get-front
 get-front:
-	./script/update-frontend-dist.sh
+	./scripts/update-frontend-dist.sh artifacts/oj-lab-front/dist
 
 .PHONY: install-tools
 install-tools:
 	go install github.com/swaggo/swag/cmd/swag@latest
 	@# Referencing https://grpc.io/docs/protoc-installation/
-	@./script/install-protoc.sh
+	@./scripts/install-protoc.sh
 	@# Track https://grpc.io/docs/languages/go/quickstart/ for update
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
@@ -17,34 +28,34 @@ install-tools:
 gen-proto: install-tools
 	protoc --go_out=. --go_opt=paths=source_relative \
 		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
-		service/proto/*.proto
+		src/service/proto/*.proto
 
 .PHONY: gen-swagger
 gen-swagger: install-tools
-	swag fmt -d application/server
-	swag init -d application/server,service/model -ot go -o application/server/swaggo-gen
+	swag fmt -d src/application/server
+	swag init -d src/application/server,src/service/model -ot go -o src/application/server/swaggo-gen
 
 .PHONY: build
 build: gen-proto gen-swagger
 	@echo "Building on $(OS)"
 	go mod tidy
-	go build -o bin/migrate_db application/migrate_db/main.go
-	go build -o bin/service application/server/main.go
-	go build -o bin/asynq_worker application/asynq_worker/main.go
-	go build -o bin/rpc_server application/rpc_server/main.go
-	go build -o bin/schedule application/schedule/main.go
+	go build -o artifacts/bin/migrate_db src/application/migrate_db/main.go
+	go build -o artifacts/bin/service src/application/server/main.go
+	go build -o artifacts/bin/asynq_worker src/application/asynq_worker/main.go
+	go build -o artifacts/bin/rpc_server src/application/rpc_server/main.go
+	go build -o artifacts/bin/schedule src/application/schedule/main.go
 
 .PHONY: clear-db
 clear-db:
-	docker-compose stop
-	docker-compose rm -f
+	docker-compose -f environment/docker-compose.yml -p oj-lab-platform stop
+	docker-compose -f environment/docker-compose.yml -p oj-lab-platform rm -f
 
 .PHONY: setup-db
 setup-db: clear-db build
-	docker-compose up -d
+	docker-compose -f environment/docker-compose.yml -p oj-lab-platform up -d
 	@echo "Wait 10 seconds for db setup"
 	sleep 10s
-	./bin/migrate_db
+	./artifacts/bin/migrate_db
 
 .PHONY: check
 check: gen-proto
@@ -56,19 +67,19 @@ test: gen-swagger check setup-db
 
 .PHONY: run-task-worker
 run-task-worker: build check
-	./bin/asynq_worker
+	./artifacts/bin/asynq_worker
 
 .PHONY: run-schedule
 run-schedule: build check
-	./bin/schedule
+	./artifacts/bin/schedule
 
 .PHONY: run-server
 run-server: build check
-	./bin/service
+	./artifacts/bin/service
 
 .PHONY: run-rpc-server
 run-rpc-server: build check
-	./bin/rpc_server
+	./artifacts/bin/rpc_server
 
 .PHONY: run-background
 run-background: build check
@@ -78,13 +89,6 @@ run-background: build check
 run-all: build check
 	make -j run-server run-schedule
 
-.PHONY: help
-help:
-	@echo "Usage: make [target]"
-	@echo ""
-	@echo "Targets:"
-	@echo "  build     - Build the application"
-	@echo "  clear-db  - Clear the database"
-	@echo "  setup-db  - Setup the database"
-	@echo "  check     - Run go vet"
-	@echo "  test      - Run tests"
+.PHONY: build-docker
+build-docker:
+	docker build -f docker/oj-lab-platform.dockerfile -t oj-lab-platform:latest .
