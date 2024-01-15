@@ -13,7 +13,7 @@ help:
 	@echo "  clear-db  - Clear the database"
 	
 .PHONY: build
-build: gen-swagger
+build: gen-swagger gen-proto
 	@echo "Building on $(OS)"
 	go mod tidy
 	go build -o artifacts/bin/migrate_db src/application/migrate_db/main.go
@@ -71,6 +71,7 @@ install-swaggo:
 
 
 # Deprecated
+# But still needed to pass the build
 .PHONY: gen-proto
 gen-proto: install-proto
 	protoc --go_out=. --go_opt=paths=source_relative \
@@ -78,6 +79,7 @@ gen-proto: install-proto
 		src/service/proto/*.proto	
 
 # Deprecated
+# But still needed to pass the build
 .PHONY: install-proto
 install-proto:
 	@# Referencing https://grpc.io/docs/protoc-installation/
