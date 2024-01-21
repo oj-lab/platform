@@ -1,31 +1,30 @@
 package core_test
 
 import (
+	"bytes"
 	"fmt"
 	"io/fs"
 	"log"
+	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	minioAgent "github.com/OJ-lab/oj-lab-services/src/core/agent/minio"
 	"github.com/minio/minio-go/v7"
 )
 
 func TestMinio(T *testing.T) {
-	// Initialize minio client object.
 	minioClient := minioAgent.GetMinioClient()
-
-	log.Printf("%#v\n", minioClient) // minioClient is now set up
 	bucketName := minioAgent.GetBucketName()
 
 	err := minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 	if err != nil {
 		// Check to see if we already own this bucket (which happens if you run this twice)
 		exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
-		if errBucketExists == nil && exists {
-			log.Printf("We already own %s\n", bucketName)
-		} else {
+		if errBucketExists != nil && !exists {
 			log.Fatalln(err)
 		}
 	} else {
@@ -33,8 +32,11 @@ func TestMinio(T *testing.T) {
 	}
 
 	// Upload package files
-	packagePath := "tests/data/packages/icpc/hello_world"
-	filepath.Walk(packagePath, func(path string, info fs.FileInfo, err error) error {
+	packagePath := "../data/packages/icpc/hello_world"
+	err = filepath.Walk(packagePath, func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 		if info == nil {
 			return fmt.Errorf("file info is nil")
 		}
@@ -43,13 +45,45 @@ func TestMinio(T *testing.T) {
 		}
 		relativePath := filepath.Join(filepath.Base(packagePath), strings.Replace(path, packagePath, "", 1))
 		println(relativePath)
-		_, minioErr := minioClient.FPutObject(ctx, bucketName,
-			relativePath,
-			path,
-			minio.PutObjectOptions{})
-		if minioErr != nil {
-			log.Fatalln(minioErr)
+		// A presigned URL for uploading objects with PutObject
+		presignedURL, err := minioClient.PresignedPutObject(ctx, bucketName, relativePath, time.Minute*1)
+		if err != nil {
+			return err
 		}
-		return minioErr
+
+		uploadingFile, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		fileInfo, err := uploadingFile.Stat()
+		if err != nil {
+			return err
+		}
+		// Read the file data
+		fileData := make([]byte, fileInfo.Size())
+		_, err = uploadingFile.Read(fileData)
+		if err != nil {
+			return err
+		}
+
+		// Upload the file by presigned URL
+		httpClient := &http.Client{}
+		req, err := http.NewRequest("PUT", presignedURL.String(), bytes.NewBuffer(fileData))
+
+		if err != nil {
+			return err
+		}
+		resp, err := httpClient.Do(req)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			return fmt.Errorf("failed to upload file: %s", resp.Status)
+		}
+		return nil
 	})
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
