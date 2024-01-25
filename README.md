@@ -11,18 +11,9 @@ Using VSCode on either Win/*nix System are avaliabe, try using the Makefile/Dock
 
 ### Run Processes
 
-It's more recommended to use 2 terminals to run the services and background workers seperately.
-In this way you will get a better experience of debugging.
-(background workers will produce a lot of logs, since they are running in a loop)
-
 ```bash
-# Terminal 1
-make run-server
-# Terminal 2
-make run-background
+make run
 ```
-
-Alternatively, you can use `make run-all` to run all the processes in one terminal.
 
 ## Serve Frontend
 
@@ -33,3 +24,12 @@ You should also set `service.serve_front` to `true` in config file
 ### WARNING
 
 You should close `remote.autoForwardPorts` if you are using online VSCode
+
+### Troubleshooting
+
+go bin not included in PATH
+
+```bash
+# You should change .zshrc to .bashrc if you are using bash
+echo 'export PATH=$PATH:$(go env GOPATH)/bin' >> ~/.zshrc
+```
