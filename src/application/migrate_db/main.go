@@ -20,7 +20,7 @@ func main() {
 		Title:       "Hello World!",
 		Description: &description,
 		Tags: []*model.AlgorithmTag{
-			{Slug: "primer", Name: "Primer"},
+			{Name: "Primer"},
 		},
 	})
 
@@ -30,8 +30,8 @@ func main() {
 		Title:       "A + B",
 		Description: &description,
 		Tags: []*model.AlgorithmTag{
-			{Slug: "primer", Name: "Primer"},
-			{Slug: "math", Name: "Math"},
+			{Name: "Primer"},
+			{Name: "Math"},
 		},
 	})
 

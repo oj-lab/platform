@@ -10,8 +10,7 @@ type Problem struct {
 
 type AlgorithmTag struct {
 	MetaFields
-	Slug     string     `gorm:"primaryKey" json:"slug"`
-	Name     string     `gorm:"not null" json:"name"`
+	Name     string     `gorm:"primaryKey" json:"name"`
 	Problems []*Problem `gorm:"many2many:problem_algorithm_tags;" json:"problems,omitempty"`
 }
 

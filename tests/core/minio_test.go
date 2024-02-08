@@ -33,7 +33,7 @@ func TestMinio(T *testing.T) {
 	}
 
 	// Upload package files
-	packagePath := "tests/data/packages/icpc/hello_world"
+	packagePath := "../data/packages/icpc/hello-world"
 	filepath.Walk(packagePath, func(path string, info fs.FileInfo, err error) error {
 		if info == nil {
 			return fmt.Errorf("file info is nil")

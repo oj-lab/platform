@@ -17,7 +17,7 @@ func TestProblemMapper(t *testing.T) {
 		Slug:        "a-plus-b-problem",
 		Title:       "A+B Problem",
 		Description: &description,
-		Tags:        []*model.AlgorithmTag{{Slug: "tag1"}, {Slug: "tag2"}},
+		Tags:        []*model.AlgorithmTag{{Name: "tag1"}, {Name: "tag2"}},
 	}
 
 	err := mapper.CreateProblem(db, problem)
@@ -38,7 +38,7 @@ func TestProblemMapper(t *testing.T) {
 
 	problemOption := mapper.GetProblemOptions{
 		Selection: model.ProblemInfoSelection,
-		Tags:      []*model.AlgorithmTag{{Slug: "tag1"}},
+		Tags:      []*model.AlgorithmTag{{Name: "tag1"}},
 		Slug:      &problem.Slug,
 	}
 

@@ -39,7 +39,7 @@ type GetProblemOptions struct {
 func buildGetProblemTXByOptions(tx *gorm.DB, options GetProblemOptions, isCount bool) *gorm.DB {
 	tagsList := []string{}
 	for _, tag := range options.Tags {
-		tagsList = append(tagsList, tag.Slug)
+		tagsList = append(tagsList, tag.Name)
 	}
 	tx = tx.Model(&model.Problem{})
 	if len(options.Selection) > 0 {
@@ -47,7 +47,7 @@ func buildGetProblemTXByOptions(tx *gorm.DB, options GetProblemOptions, isCount 
 	}
 	if len(tagsList) > 0 {
 		tx = tx.Joins("JOIN problem_algorithm_tags ON problem_algorithm_tags.problem_slug = problems.slug").
-			Where("problem_algorithm_tags.algorithm_tag_slug in ?", tagsList)
+			Where("problem_algorithm_tags.algorithm_tag_name in ?", tagsList)
 	}
 	if options.Slug != nil {
 		tx = tx.Where("slug = ?", *options.Slug)
@@ -98,7 +98,7 @@ func GetProblemListByOptions(tx *gorm.DB, options GetProblemOptions) ([]model.Pr
 func GetTagsList(problem model.Problem) []string {
 	tagsList := []string{}
 	for _, tag := range problem.Tags {
-		tagsList = append(tagsList, tag.Slug)
+		tagsList = append(tagsList, tag.Name)
 	}
 	return tagsList
 }

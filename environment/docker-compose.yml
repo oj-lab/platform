@@ -30,14 +30,15 @@ services:
     ports:
       - "6379:6379"
 
-  judger-1:
+  judger:
     image: ghcr.io/oj-lab/judger/judger-server:main
+    pull_policy: always
     restart: always
     ports:
       - "8000:8000"
-
-  judger-2:
-    image: ghcr.io/oj-lab/judger/judger-server:main
-    restart: always
-    ports:
-      - "8001:8000"
+    environment:
+      - BASE_URL=http://host.docker.internal:8080/api/v1/judge
+      - INTERVAL=10
+      - RUST_LOG=DEBUG
+    volumes:
+      - ../environment/rclone-minio.conf:/workspace/data/rclone-minio.conf

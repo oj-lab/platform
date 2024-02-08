@@ -8,5 +8,9 @@
     "postman": "api",
     ".github/workflows": "github",
     "test-collection": "resource"
-  }
+  },
+  "go.testFlags": [
+    "-v",
+    "-count=1"
+  ],
 }
