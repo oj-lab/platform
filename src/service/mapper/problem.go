@@ -3,6 +3,7 @@ package mapper
 import (
 	"github.com/OJ-lab/oj-lab-services/src/service/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func CreateProblem(tx *gorm.DB, problem model.Problem) error {
@@ -19,8 +20,17 @@ func GetProblem(tx *gorm.DB, slug string) (*model.Problem, error) {
 	return &db_problem, nil
 }
 
-func DeleteProblem(tx *gorm.DB, problem model.Problem) error {
-	return tx.Delete(&model.Problem{Slug: problem.Slug}).Error
+func DeleteProblem(tx *gorm.DB, slug string) error {
+	var problem model.Problem
+	if err := tx.Where("slug = ?", slug).First(&problem).Error; err != nil {
+		return err
+	}
+
+	if err := tx.Where("problem_slug = ?", slug).Delete(&model.JudgeTaskSubmission{}).Error; err != nil {
+		return err
+	}
+
+	return tx.Select(clause.Associations).Delete(&problem).Error
 }
 
 func UpdateProblem(tx *gorm.DB, problem model.Problem) error {

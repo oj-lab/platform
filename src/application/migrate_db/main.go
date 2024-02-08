@@ -53,27 +53,5 @@ func main() {
 		},
 	})
 
-	mapper.CreateSubmission(db, model.JudgeTaskSubmission{
-		UserAccount: "admin",
-		ProblemSlug: "hello-world",
-		Language:    model.SubmissionLanguageCpp,
-		Code:        "#include <iostream>\nint main() { std::cout << \"Hello World!\" << std::endl; return 0; }",
-	})
-
-	mapper.CreateSubmission(db, model.JudgeTaskSubmission{
-		UserAccount: "admin",
-		ProblemSlug: "hello-world",
-		Language:    model.SubmissionLanguageCpp,
-		Code:        "#include <iostream>\nint main() { std::cout << \"Hello World!\" << std::endl; return 0; }",
-	})
-
-	mapper.CreateJudger(db, model.Judger{
-		Host: "http://localhost:8000",
-	})
-
-	mapper.CreateJudger(db, model.Judger{
-		Host: "http://localhost:8001",
-	})
-
 	core.AppLogger().Info("migrate tables success")
 }

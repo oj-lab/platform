@@ -4,6 +4,7 @@ import (
 	"github.com/OJ-lab/oj-lab-services/src/service"
 	"github.com/OJ-lab/oj-lab-services/src/service/model"
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 )
 
 func SetupJudgeRoute(baseRoute *gin.RouterGroup) {
@@ -44,6 +45,11 @@ func postPickJudgeTask(ginCtx *gin.Context) {
 	}
 
 	task, err := service.PickJudgeTask(ginCtx, body.Consumer)
+	if err == redis.Nil {
+		ginCtx.Status(204)
+		return
+	}
+
 	if err != nil {
 		ginCtx.Error(err)
 		return

@@ -16,7 +16,10 @@ func SetupProblemRoute(baseRoute *gin.RouterGroup) {
 			c.String(http.StatusOK, "Hello, this is problem service")
 		})
 		g.GET("", getProblemInfoList)
+		g.PUT("", putProblem)
 		g.GET("/:slug", getProblem)
+		g.DELETE("/:slug", deleteProblem)
+		g.GET("/:slug/check", checkProblemSlug)
 		g.PUT("/:slug/package", putProblemPackage)
 		g.POST("/:slug/submission", postSubmission)
 	}
@@ -37,6 +40,30 @@ func getProblem(ginCtx *gin.Context) {
 		"description": problemInfo.Description,
 		"tags":        mapper.GetTagsList(*problemInfo),
 	})
+}
+
+func putProblem(ginCtx *gin.Context) {
+	problem := model.Problem{}
+	if err := ginCtx.ShouldBindJSON(&problem); err != nil {
+		ginCtx.Error(err)
+		return
+	}
+
+	err := service.PutProblem(ginCtx, problem)
+	if err != nil {
+		ginCtx.Error(err)
+		return
+	}
+}
+
+func deleteProblem(ginCtx *gin.Context) {
+	slug := ginCtx.Param("slug")
+
+	err := service.DeleteProblem(ginCtx, slug)
+	if err != nil {
+		ginCtx.Error(err)
+		return
+	}
 }
 
 // getProblemInfoList
@@ -76,6 +103,20 @@ func putProblemPackage(ginCtx *gin.Context) {
 	service.PutProblemPackage(ginCtx, slug, zipFile)
 
 	ginCtx.Done()
+}
+
+func checkProblemSlug(ginCtx *gin.Context) {
+	slug := ginCtx.Param("slug")
+
+	valid, err := service.CheckProblemSlug(ginCtx, slug)
+	if err != nil {
+		ginCtx.Error(err)
+		return
+	}
+
+	ginCtx.JSON(200, gin.H{
+		"valid": valid,
+	})
 }
 
 type PostSubmissionBody struct {
