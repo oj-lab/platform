@@ -2,6 +2,8 @@
 
 Currently the backend server for OJ Lab.
 
+![Preview](oj-lab-preview.gif)
+
 ## Development
 
 🌟 Accept VSCode extension recommandation for complete experience 🌟
