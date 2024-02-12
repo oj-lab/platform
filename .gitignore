@@ -18,7 +18,6 @@
 !package/configs/ini/example.ini
 !package/configs/ini/test.ini
 
-configs/override.toml
 artifacts/
 dist.zip
 
@@ -27,3 +26,4 @@ dist.zip
 **/swaggo-gen/docs.go
 
 environment/rclone-minio.conf
+environment/configs/override.*
