@@ -42,3 +42,5 @@ services:
       - RUST_LOG=DEBUG
     volumes:
       - ../environment/rclone-minio.conf:/workspace/data/rclone-minio.conf
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
