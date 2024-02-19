@@ -19,6 +19,16 @@ func CreateSubmission(tx *gorm.DB, submission model.JudgeTaskSubmission) (*model
 	return &submission, tx.Create(&submission).Error
 }
 
+func GetSubmission(tx *gorm.DB, uid string) (*model.JudgeTaskSubmission, error) {
+	db_submission := model.JudgeTaskSubmission{}
+	err := tx.Model(&model.JudgeTaskSubmission{}).Preload("User").Preload("Problem").Where("UID = ?", uid).First(&db_submission).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &db_submission, nil
+}
+
 type GetSubmissionOptions struct {
 	Selection      []string
 	Statuses       []model.SubmissionStatus

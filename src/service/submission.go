@@ -11,6 +11,17 @@ import (
 	"github.com/OJ-lab/oj-lab-services/src/service/model"
 )
 
+func GetJudgeTaskSubmission(ctx context.Context, uid string) (*model.JudgeTaskSubmission, *core.SeviceError) {
+	db := gormAgent.GetDefaultDB()
+	submission, err := mapper.GetSubmission(db, uid)
+	if err != nil {
+		return nil, core.NewInternalError("failed to get submission by uid")
+	}
+
+	return submission, nil
+}
+
+
 func GetJudgeTaskSubmissionList(
 	ctx context.Context, options mapper.GetSubmissionOptions,
 ) ([]*model.JudgeTaskSubmission, int64, *core.SeviceError) {

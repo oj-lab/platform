@@ -14,7 +14,31 @@ func SetupSubmissionRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/submission")
 	{
 		g.GET("", getSubmissionList)
+		g.GET("/:uid", getSubmission)
 	}
+}
+
+func getSubmission(ginCtx *gin.Context) {
+	uid := ginCtx.Param("uid")
+
+	submission, svcErr := service.GetJudgeTaskSubmission(ginCtx, uid)
+	if svcErr != nil {
+		svcErr.AppendToGin(ginCtx)
+		return
+	}
+
+	ginCtx.JSON(200, gin.H{
+		"uid":           submission.UID,
+		"redisStreamID": submission.RedisStreamID,
+		"userAccount":   submission.UserAccount,
+		"user":          submission.User, // include User metadata, If is needed
+		"problemSlug":   submission.ProblemSlug,
+		"problem":       submission.Problem, // include Problem metadata, If is needed
+		"code":          submission.Code,
+		"language":      submission.Language,
+		"status":        submission.Status,
+		"verdictJson":   submission.VerdictJson,
+	})
 }
 
 type getSubmissionListResponse struct {
