@@ -18,7 +18,6 @@ func SetupSubmissionRouter(baseRoute *gin.RouterGroup) {
 	}
 }
 
-
 func getSubmission(ginCtx *gin.Context) {
 	uid := ginCtx.Param("uid")
 
@@ -29,7 +28,16 @@ func getSubmission(ginCtx *gin.Context) {
 	}
 
 	ginCtx.JSON(200, gin.H{
-		"submission": submission,
+		"uid":           submission.UID,
+		"redisStreamID": submission.RedisStreamID,
+		"userAccount":   submission.UserAccount,
+		"user":          submission.User, // include User metadata, If is needed
+		"problemSlug":   submission.ProblemSlug,
+		"problem":       submission.Problem, // include Problem metadata, If is needed
+		"code":          submission.Code,
+		"language":      submission.Language,
+		"status":        submission.Status,
+		"verdictJson":   submission.VerdictJson,
 	})
 }
 

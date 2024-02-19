@@ -21,7 +21,7 @@ func CreateSubmission(tx *gorm.DB, submission model.JudgeTaskSubmission) (*model
 
 func GetSubmission(tx *gorm.DB, uid string) (*model.JudgeTaskSubmission, error) {
 	db_submission := model.JudgeTaskSubmission{}
-	err := tx.Model(&model.JudgeTaskSubmission{}).Where("UID = ?", uid).First(&db_submission).Error
+	err := tx.Model(&model.JudgeTaskSubmission{}).Preload("User").Preload("Problem").Where("UID = ?", uid).First(&db_submission).Error
 	if err != nil {
 		return nil, err
 	}
