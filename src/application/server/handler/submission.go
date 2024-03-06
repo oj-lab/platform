@@ -28,7 +28,7 @@ func getSubmission(ginCtx *gin.Context) {
 	}
 
 	ginCtx.JSON(200, gin.H{
-		"uid":           submission.UID,
+		"UID":           submission.UID,
 		"redisStreamID": submission.RedisStreamID,
 		"userAccount":   submission.UserAccount,
 		"user":          submission.User, // include User metadata, If is needed
