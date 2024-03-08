@@ -15,7 +15,7 @@ func TestUserMapper(t *testing.T) {
 	user := model.User{
 		Account:  "test",
 		Password: func() *string { s := "test"; return &s }(),
-		Roles:    []*model.Role{{Name: "admin"}},
+		// Roles:    []*model.Role{{Name: ""}}, // If added, foreign key constraint make it can't be delete.
 	}
 	err := mapper.CreateUser(db, user)
 	if err != nil {
@@ -41,4 +41,10 @@ func TestUserMapper(t *testing.T) {
 		t.Error(err)
 	}
 	fmt.Printf("%+v\n", string(publicUserJson))
+
+	err = mapper.DeleteUser(db, user)
+	if err != nil {
+		t.Error(err)
+	}
+
 }

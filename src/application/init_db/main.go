@@ -1,37 +1,30 @@
-package core_test
+package main
 
 import (
-	"testing"
-
+	"github.com/OJ-lab/oj-lab-services/src/core"
 	gormAgent "github.com/OJ-lab/oj-lab-services/src/core/agent/gorm"
-
 	"github.com/OJ-lab/oj-lab-services/src/service/mapper"
 	"github.com/OJ-lab/oj-lab-services/src/service/model"
 )
 
-func TestPG(T *testing.T) {
+func main() {
 	db := gormAgent.GetDefaultDB()
+	err := db.AutoMigrate(&model.User{}, &model.Problem{}, &model.JudgeTaskSubmission{}, &model.Judger{})
+	if err != nil {
+		panic("failed to migrate database")
+	}
 
-	description := `Write a program that prints "Hello World!".` // data migrate to test
-	mapper.CreateProblem(db, model.Problem{
-		Slug:        "hello-world",
-		Title:       "Hello World!",
-		Description: &description,
-		Tags: []*model.AlgorithmTag{
-			{Name: "Primer"},
-		},
-	})
+	// Data init in read_problem
 
-	description = `Calculate A + B, print the result.`
-	mapper.CreateProblem(db, model.Problem{
-		Slug:        "a-plus-b",
-		Title:       "A + B",
-		Description: &description,
-		Tags: []*model.AlgorithmTag{
-			{Name: "Primer"},
-			{Name: "Math"},
-		},
-	})
+	// description := `Write a program that prints "Hello World!".`
+	// mapper.CreateProblem(db, model.Problem{
+	// 	Slug:        "hello-world",
+	// 	Title:       "Hello World!",
+	// 	Description: &description,
+	// 	Tags: []*model.AlgorithmTag{
+	// 		{Name: "Primer"},
+	// 	},
+	// })
 
 	mapper.CreateUser(db, model.User{
 		Name:     "admin",
@@ -50,4 +43,6 @@ func TestPG(T *testing.T) {
 			{Name: "anonymous"},
 		},
 	})
+
+	core.AppLogger().Info("migrate tables ans users success")
 }
