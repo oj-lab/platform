@@ -17,21 +17,24 @@ Use `make get-front` to get the frontend dist codes.
 You should also set `service.serve_front` to `true` in config file
 (see [override.example.toml](environment/configs/override.example.toml) for more information)
 
-### init database
+### Init Database
+
+Check config in `environment/configs`.
+
+```bash
+# To initialize the minio config
+cp environment/rclone-minio.example.conf environment/rclone-minio.conf
+```
 
 Use `make test` to init data both for **Postgresql**(database) and **minio**(problem-package storage).
 
-while `make setup-db` for **no data** but just table init.
+While `make setup-db` for **no data** but just table init.
 
 ### Run Processes
 
 ```bash
 make run
 ```
-
-### WARNING
-
-You should close `remote.autoForwardPorts` if you are using online VSCode
 
 ### Troubleshooting
 
