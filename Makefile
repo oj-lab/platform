@@ -11,14 +11,17 @@ help:
 	@echo "  run       - Run the application"
 	@echo "  setup-db  - Setup the database"
 	@echo "  clear-db  - Clear the database"
-	
+	@echo "  pkg       - Setup the database with problem packages"
+	@echo "  all       - Get front dist, Setup-db, read pkg and Run"
+
 .PHONY: build
 build: gen-swagger gen-proto
 	@echo "Building on $(OS)"
 	go mod tidy
-	go build -o artifacts/bin/migrate_db src/application/migrate_db/main.go
+	go build -o artifacts/bin/init_db src/application/init_db/main.go
 	go build -o artifacts/bin/service src/application/server/main.go
 	go build -o artifacts/bin/schedule src/application/schedule/main.go
+	go build -o artifacts/bin/read_pkg src/application/read_pkg/main.go
 
 .PHONY: build-image
 build-image:
@@ -34,7 +37,7 @@ setup-db: clear-db build
 	docker-compose -f environment/docker-compose.yml -p oj-lab-platform up -d
 	@echo "Wait 10 seconds for db setup"
 	sleep 10s
-	./artifacts/bin/migrate_db
+	./artifacts/bin/init_db
 
 .PHONY: gen-swagger
 gen-swagger: install-swaggo
@@ -49,6 +52,10 @@ check: gen-proto
 test: gen-swagger check setup-db
 	go test -cover -v -count=1 ./...
 
+.PHONY: pkg
+pkg: setup-db
+	./artifacts/bin/read_pkg
+
 .PHONY: run-schedule
 run-schedule: build check
 	./artifacts/bin/schedule
@@ -60,6 +67,10 @@ run-server: build check
 .PHONY: run
 run: build check
 	make -j run-server run-schedule
+
+.PHONY: all
+all: get-front pkg
+	./artifacts/bin/service
 
 .PHONY: get-front
 get-front:
