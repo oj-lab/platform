@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/OJ-lab/oj-lab-services/src/core"
 	gormAgent "github.com/OJ-lab/oj-lab-services/src/core/agent/gorm"
-	"github.com/OJ-lab/oj-lab-services/src/service/mapper"
 	"github.com/OJ-lab/oj-lab-services/src/service/model"
 )
 
@@ -14,44 +13,46 @@ func main() {
 		panic("failed to migrate database")
 	}
 
-	description := `Write a program that prints "Hello World!".`
-	mapper.CreateProblem(db, model.Problem{
-		Slug:        "hello-world",
-		Title:       "Hello World!",
-		Description: &description,
-		Tags: []*model.AlgorithmTag{
-			{Name: "Primer"},
-		},
-	})
+	// data init migrate to test
 
-	description = `Calculate A + B, print the result.`
-	mapper.CreateProblem(db, model.Problem{
-		Slug:        "a-plus-b",
-		Title:       "A + B",
-		Description: &description,
-		Tags: []*model.AlgorithmTag{
-			{Name: "Primer"},
-			{Name: "Math"},
-		},
-	})
+	// description := `Write a program that prints "Hello World!".`
+	// mapper.CreateProblem(db, model.Problem{
+	// 	Slug:        "hello-world",
+	// 	Title:       "Hello World!",
+	// 	Description: &description,
+	// 	Tags: []*model.AlgorithmTag{
+	// 		{Name: "Primer"},
+	// 	},
+	// })
 
-	mapper.CreateUser(db, model.User{
-		Name:     "admin",
-		Account:  "admin",
-		Password: func() *string { s := "admin"; return &s }(),
-		Roles: []*model.Role{
-			{Name: "admin"},
-		},
-	})
+	// description = `Calculate A + B, print the result.`
+	// mapper.CreateProblem(db, model.Problem{
+	// 	Slug:        "a-plus-b",
+	// 	Title:       "A + B",
+	// 	Description: &description,
+	// 	Tags: []*model.AlgorithmTag{
+	// 		{Name: "Primer"},
+	// 		{Name: "Math"},
+	// 	},
+	// })
 
-	mapper.CreateUser(db, model.User{
-		Name:     "anonymous",
-		Account:  "anonymous",
-		Password: func() *string { s := "anonymous"; return &s }(),
-		Roles: []*model.Role{
-			{Name: "anonymous"},
-		},
-	})
+	// mapper.CreateUser(db, model.User{
+	// 	Name:     "admin",
+	// 	Account:  "admin",
+	// 	Password: func() *string { s := "admin"; return &s }(),
+	// 	Roles: []*model.Role{
+	// 		{Name: "admin"},
+	// 	},
+	// })
+
+	// mapper.CreateUser(db, model.User{
+	// 	Name:     "anonymous",
+	// 	Account:  "anonymous",
+	// 	Password: func() *string { s := "anonymous"; return &s }(),
+	// 	Roles: []*model.Role{
+	// 		{Name: "anonymous"},
+	// 	},
+	// })
 
 	core.AppLogger().Info("migrate tables success")
 }
