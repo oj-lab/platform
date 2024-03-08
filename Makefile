@@ -47,7 +47,7 @@ check: gen-proto
 
 .PHONY: test
 test: gen-swagger check setup-db
-	go test -cover -v ./...
+	go test -cover -v -count=1 ./...
 
 .PHONY: run-schedule
 run-schedule: build check

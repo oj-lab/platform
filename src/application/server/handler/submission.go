@@ -77,8 +77,9 @@ func getSubmissionList(ginCtx *gin.Context) {
 	}
 
 	options := mapper.GetSubmissionOptions{
-		Limit:  &limit,
-		Offset: &offset,
+		Limit:          &limit,
+		Offset:         &offset,
+		OrderByColumns: []model.OrderByColumnOption{{Column: "create_at", Desc: true}},
 	}
 
 	submissions, total, svcErr := service.GetJudgeTaskSubmissionList(ginCtx, options)
