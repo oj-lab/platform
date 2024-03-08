@@ -14,7 +14,7 @@ func main() {
 		panic("failed to migrate database")
 	}
 
-	// Data init in read_problem
+	// Data init in read_pkg
 
 	// description := `Write a program that prints "Hello World!".`
 	// mapper.CreateProblem(db, model.Problem{
