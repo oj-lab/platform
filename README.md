@@ -26,15 +26,17 @@ Check config in `environment/configs`.
 cp environment/rclone-minio.example.conf environment/rclone-minio.conf
 ```
 
-Use `make test` to init data both for **Postgresql**(database) and **minio**(problem-package storage).
+Use `make pkg` to init database with **package** data.
 
-While `make setup-db` for **no data** but just table init.
+While `make setup-db` for **no data** but just table and user init.
 
 ### Run Processes
 
 ```bash
 make run
 ```
+
+`make all` do previous things except **config** in one line.
 
 ### Troubleshooting
 
