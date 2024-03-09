@@ -40,13 +40,6 @@ type JudgeTaskSubmission struct {
 	VerdictJson   string             `json:"verdictJson"`
 }
 
-type JudgeTaskSubmissionSortByColumn string
-
-const (
-	JudgeTaskSubmissionSortByColumnCreateAt JudgeTaskSubmissionSortByColumn = "create_at"
-	JudgeTaskSubmissionSortByColumnUpdateAt JudgeTaskSubmissionSortByColumn = "update_at"
-)
-
 func NewSubmission(
 	userAccount string,
 	problemSlug string,
