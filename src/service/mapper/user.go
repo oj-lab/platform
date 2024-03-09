@@ -4,6 +4,7 @@ import (
 	"github.com/OJ-lab/oj-lab-services/src/service/model"
 	"github.com/alexedwards/argon2id"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // Account, Password, Roles will be used to create a new user.
@@ -45,7 +46,7 @@ func GetPublicUser(tx *gorm.DB, account string) (*model.User, error) {
 }
 
 func DeleteUser(tx *gorm.DB, user model.User) error {
-	return tx.Delete(&model.User{Account: user.Account}).Error
+	return tx.Select(clause.Associations).Delete(&model.User{Account: user.Account}).Error
 }
 
 func UpdateUser(tx *gorm.DB, update model.User) error {

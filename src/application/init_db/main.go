@@ -14,18 +14,6 @@ func main() {
 		panic("failed to migrate database")
 	}
 
-	// Data init in read_pkg
-
-	// description := `Write a program that prints "Hello World!".`
-	// mapper.CreateProblem(db, model.Problem{
-	// 	Slug:        "hello-world",
-	// 	Title:       "Hello World!",
-	// 	Description: &description,
-	// 	Tags: []*model.AlgorithmTag{
-	// 		{Name: "Primer"},
-	// 	},
-	// })
-
 	mapper.CreateUser(db, model.User{
 		Name:     "admin",
 		Account:  "admin",
