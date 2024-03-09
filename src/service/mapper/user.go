@@ -46,6 +46,10 @@ func GetPublicUser(tx *gorm.DB, account string) (*model.User, error) {
 }
 
 func DeleteUser(tx *gorm.DB, user model.User) error {
+	if err := tx.Where("user_account = ?", user.Account).Delete(&model.JudgeTaskSubmission{}).Error; err != nil {
+		return err
+	}
+
 	return tx.Select(clause.Associations).Delete(&model.User{Account: user.Account}).Error
 }
 
