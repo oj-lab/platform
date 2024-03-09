@@ -3,14 +3,15 @@ module github.com/OJ-lab/oj-lab-services
 go 1.21
 
 require (
-	github.com/google/uuid v1.3.1
+	github.com/google/uuid v1.6.0
 	github.com/redis/go-redis/v9 v9.1.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.16.0
-	github.com/swaggo/swag v1.16.2
 	gorm.io/driver/postgres v1.5.2
 	gorm.io/gorm v1.25.4
 )
+
+require github.com/swaggo/swag v1.16.2 // indirect
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
