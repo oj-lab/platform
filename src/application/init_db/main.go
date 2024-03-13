@@ -14,27 +14,6 @@ func main() {
 		panic("failed to migrate database")
 	}
 
-	description := `Write a program that prints "Hello World!".`
-	mapper.CreateProblem(db, model.Problem{
-		Slug:        "hello-world",
-		Title:       "Hello World!",
-		Description: &description,
-		Tags: []*model.AlgorithmTag{
-			{Name: "Primer"},
-		},
-	})
-
-	description = `Calculate A + B, print the result.`
-	mapper.CreateProblem(db, model.Problem{
-		Slug:        "a-plus-b",
-		Title:       "A + B",
-		Description: &description,
-		Tags: []*model.AlgorithmTag{
-			{Name: "Primer"},
-			{Name: "Math"},
-		},
-	})
-
 	mapper.CreateUser(db, model.User{
 		Name:     "admin",
 		Account:  "admin",
@@ -53,5 +32,5 @@ func main() {
 		},
 	})
 
-	core.AppLogger().Info("migrate tables success")
+	core.AppLogger().Info("migrate tables ans users success")
 }

@@ -11,21 +11,32 @@ Currently the backend server for OJ Lab.
 For service development, we don't want to make it too complex.
 Using VSCode on either Win/*nix System are avaliabe, try using the Makefile/Dockerfile in the repository.
 
+### Serve Frontend
+
+Use `make get-front` to get the frontend dist codes.
+You should also set `service.serve_front` to `true` in config file
+(see [override.example.toml](environment/configs/override.example.toml) for more information)
+
+### Init Database
+
+Check config in `environment/configs`.
+
+```bash
+# To initialize the minio config
+cp environment/rclone-minio.example.conf environment/rclone-minio.conf
+```
+
+Use `make pkg` to init database with **package** data.
+
+While `make setup-db` for **no data** but just table and user init.
+
 ### Run Processes
 
 ```bash
 make run
 ```
 
-## Serve Frontend
-
-Use `make get-front` to get the frontend dist codes.
-You should also set `service.serve_front` to `true` in config file
-(see [override.example.toml](configs/override.example.toml) for more information)
-
-### WARNING
-
-You should close `remote.autoForwardPorts` if you are using online VSCode
+`make all` do previous things except **config** in one line.
 
 ### Troubleshooting
 

@@ -56,4 +56,10 @@ func TestProblemMapper(t *testing.T) {
 		t.Error(err)
 	}
 	fmt.Printf("%+v\n", string(problemListJson))
+
+	err = mapper.DeleteProblem(db, problem.Slug)
+	if err != nil {
+		t.Error(err)
+	}
+
 }
