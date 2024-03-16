@@ -4,6 +4,45 @@ import (
 	"strings"
 )
 
+// Should contains a pirority definition
+// Ex. ComileError > RuntimeError > TimeLimitExceeded > MemoryLimitExceeded > WrongAnswer > Accepted
+type JudgeVerdict string
+
+const (
+	JudgeVerdictAccepted            JudgeVerdict = "accepted"
+	JudgeVerdictWrongAnswer         JudgeVerdict = "wrong_answer"
+	JudgeVerdictTimeLimitExceeded   JudgeVerdict = "time_limit_exceeded"
+	JudgeVerdictMemoryLimitExceeded JudgeVerdict = "memory_limit_exceeded"
+	JudgeVerdictRuntimeError        JudgeVerdict = "runtime_error"
+	JudgeVerdictCompileError        JudgeVerdict = "compile_error" // Only for main verdict
+	JudgeVerdictCancelled           JudgeVerdict = "cancelled"     // Judge will be cancelled if some point results in Runtime error, Time limit exceeded, Memory limit exceeded
+)
+
+type JudgeResult struct {
+	MainVerdict    JudgeVerdict         `json:"verdict"`        // A merge of all TestPoints' verdict, according to the pirority
+	Detail         string               `json:"detail"`         // A brief description of the result
+	TestPointCount uint64               `json:"testPointCount"` // Won't be stored in database
+	TestPointMap   map[string]TestPoint `json:"testPoints"`     // Won't be stored in database
+	TestPointsJson string               `json:"-"`              // Used to store TestPoints in database
+	AverageTimeMs  uint64               `json:"averageTimeMs"`  // Won't be stored in database
+	MaxTimeMs      uint64               `json:"maxTimeMs"`      // Won't be stored in database
+	AverageMemory  uint64               `json:"averageMemory"`  // Won't be stored in database
+	MaxMemory      uint64               `json:"maxMemory"`      // Won't be stored in database
+}
+
+type TestPoint struct {
+	Index           string       `json:"index"` // The name of *.in/ans file
+	Verdict         JudgeVerdict `json:"verdict"`
+	Diff            *ResultDiff  `json:"diff"` // Required if verdict is wrong_answer
+	TimeUsageMs     uint64       `json:"timeUsageMs"`
+	MemoryUsageByte uint64       `json:"memoryUsageByte"`
+}
+
+type ResultDiff struct {
+	Expected string `json:"expected"`
+	Received string `json:"received"`
+}
+
 type JudgerState string
 
 const (
