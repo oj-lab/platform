@@ -11,7 +11,7 @@ require (
 	gorm.io/gorm v1.25.4
 )
 
-require github.com/swaggo/swag v1.16.2 // indirect
+require github.com/swaggo/swag v1.16.3 // indirect
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
