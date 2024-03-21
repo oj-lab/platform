@@ -21,7 +21,7 @@ build: gen-swagger gen-proto
 	go build -o artifacts/bin/init_db src/application/init_db/main.go
 	go build -o artifacts/bin/service src/application/server/main.go
 	go build -o artifacts/bin/schedule src/application/schedule/main.go
-	go build -o artifacts/bin/read_pkg src/application/read_pkg/main.go
+	go build -o artifacts/bin/problem_package_loader src/application/problem_package_loader/main.go
 
 .PHONY: build-image
 build-image:
@@ -54,7 +54,7 @@ test: gen-swagger check setup-db
 
 .PHONY: pkg
 pkg: setup-db
-	./artifacts/bin/read_pkg
+	./artifacts/bin/problem_package_loader
 
 .PHONY: run-schedule
 run-schedule: build check
