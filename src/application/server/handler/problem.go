@@ -25,6 +25,14 @@ func SetupProblemRoute(baseRoute *gin.RouterGroup) {
 	}
 }
 
+// getProblem
+//
+//	@Router			/problem/{slug} [get]
+//	@Summary		Get a problem
+//	@Description	Get a problem
+//	@Tags			problem
+//	@Accept			json
+//	@Success		200
 func getProblem(ginCtx *gin.Context) {
 	slug := ginCtx.Param("slug")
 
@@ -42,6 +50,13 @@ func getProblem(ginCtx *gin.Context) {
 	})
 }
 
+// putProblem
+//
+//	@Router			/problem [put]
+//	@Summary		Put a problem
+//	@Description	Put a problem
+//	@Tags			problem
+//	@Accept			json
 func putProblem(ginCtx *gin.Context) {
 	problem := model.Problem{}
 	if err := ginCtx.ShouldBindJSON(&problem); err != nil {
@@ -56,6 +71,13 @@ func putProblem(ginCtx *gin.Context) {
 	}
 }
 
+// deleteProblem
+//
+//	@Router			/problem/{slug} [delete]
+//	@Summary		Delete a problem
+//	@Description	Delete a problem
+//	@Tags			problem
+//	@Accept			json
 func deleteProblem(ginCtx *gin.Context) {
 	slug := ginCtx.Param("slug")
 
@@ -87,6 +109,14 @@ func getProblemInfoList(ginCtx *gin.Context) {
 	})
 }
 
+// putProblemPackage
+//
+//	@Router			/problem/{slug}/package [put]
+//	@Summary		Put problem package
+//	@Description	Put problem package
+//	@Tags			problem
+//	@Accept			json
+//	@Param			slug	path	string	true	"problem slug"
 func putProblemPackage(ginCtx *gin.Context) {
 	slug := ginCtx.Param("slug")
 	file, err := ginCtx.FormFile("file")
@@ -105,6 +135,15 @@ func putProblemPackage(ginCtx *gin.Context) {
 	ginCtx.Done()
 }
 
+// checkProblemSlug
+//
+//	@Router			/problem/{slug}/check [get]
+//	@Summary		Check problem slug
+//	@Description	Check problem slug
+//	@Tags			problem
+//	@Accept			json
+//	@Success		200
+//	@Param			slug	path	string	true	"problem slug"
 func checkProblemSlug(ginCtx *gin.Context) {
 	slug := ginCtx.Param("slug")
 
@@ -119,6 +158,11 @@ func checkProblemSlug(ginCtx *gin.Context) {
 	})
 }
 
+// PostSubmissionBody
+// 
+//	@Description	The body of a submission request, containing the code and the language used for the submission.
+//	@Property		code (string) required "The source code of the submission" minlength(1)
+//	@Property		language (SubmissionLanguage) required "The programming language used for the submission"
 type PostSubmissionBody struct {
 	Code     string                   `json:"code" binding:"required"`
 	Language model.SubmissionLanguage `json:"language" binding:"required"`

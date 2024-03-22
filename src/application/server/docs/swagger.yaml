@@ -1,0 +1,169 @@
+definitions:
+  handler.PostSubmissionBody:
+    type: object
+  handler.loginBody:
+    properties:
+      account:
+        example: admin
+        type: string
+      password:
+        example: admin
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /problem:
+    get:
+      consumes:
+      - application/json
+      description: Get problem list
+      responses:
+        "200":
+          description: OK
+      summary: Get problem list
+      tags:
+      - problem
+    put:
+      consumes:
+      - application/json
+      description: Put a problem
+      responses: {}
+      summary: Put a problem
+      tags:
+      - problem
+  /problem/{slug}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a problem
+      responses: {}
+      summary: Delete a problem
+      tags:
+      - problem
+    get:
+      consumes:
+      - application/json
+      description: Get a problem
+      responses:
+        "200":
+          description: OK
+      summary: Get a problem
+      tags:
+      - problem
+  /problem/{slug}/check:
+    get:
+      consumes:
+      - application/json
+      description: Check problem slug
+      parameters:
+      - description: problem slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      summary: Check problem slug
+      tags:
+      - problem
+  /problem/{slug}/package:
+    put:
+      consumes:
+      - application/json
+      description: Put problem package
+      parameters:
+      - description: problem slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      responses: {}
+      summary: Put problem package
+      tags:
+      - problem
+  /problem/{slug}/submission:
+    post:
+      consumes:
+      - application/json
+      description: Post submission
+      parameters:
+      - description: problem slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      - description: judge request
+        in: body
+        name: judgeRequest
+        required: true
+        schema:
+          $ref: '#/definitions/handler.PostSubmissionBody'
+      responses: {}
+      summary: Post submission
+      tags:
+      - problem
+  /submission:
+    get:
+      consumes:
+      - application/json
+      description: Get submission list
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      responses: {}
+      summary: Get submission list
+      tags:
+      - submission
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: A Cookie will be set if login successfully
+      parameters:
+      - description: body
+        in: body
+        name: loginBody
+        required: true
+        schema:
+          $ref: '#/definitions/handler.loginBody'
+      responses:
+        "200":
+          description: OK
+      summary: Login by account and password
+      tags:
+      - user
+  /user/me:
+    get:
+      description: If correctly logined with cookie, return current user
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      summary: Get current user
+      tags:
+      - user
+  /user/stream:
+    get:
+      consumes:
+      - text/event-stream
+      description: Stream
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: 'data: {message}'
+          schema:
+            type: string
+      summary: Stream
+      tags:
+      - user
+swagger: "2.0"
