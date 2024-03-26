@@ -11,7 +11,7 @@ require (
 	gorm.io/gorm v1.25.4
 )
 
-require github.com/swaggo/swag v1.16.3 // indirect
+require github.com/swaggo/swag v1.16.3
 
 require (
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
