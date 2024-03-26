@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/OJ-lab/oj-lab-services/src/core"
@@ -77,7 +76,6 @@ func getSubmissionList(ginCtx *gin.Context) {
 		core.NewInvalidParamError("offset", "invalid offset").AppendToGin(ginCtx)
 		return
 	}
-	fmt.Println(limit)
 
 	options := mapper.GetSubmissionOptions{
 		Limit:          &limit,
