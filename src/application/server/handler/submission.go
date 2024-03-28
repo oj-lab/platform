@@ -38,6 +38,7 @@ func getSubmission(ginCtx *gin.Context) {
 		"language":      submission.Language,
 		"status":        submission.Status,
 		"verdictJson":   submission.VerdictJson,
+		"mainResult":    submission.MainResult,
 	})
 }
 

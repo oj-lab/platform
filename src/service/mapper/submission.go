@@ -115,6 +115,9 @@ func UpdateSubmission(tx *gorm.DB, submission model.JudgeTaskSubmission) error {
 	if submission.RedisStreamID != "" {
 		updatingSubmission.RedisStreamID = submission.RedisStreamID
 	}
+	if submission.MainResult != "" {
+		updatingSubmission.MainResult = submission.MainResult
+	}
 
 	return tx.Model(&updatingSubmission).Updates(updatingSubmission).Error
 }

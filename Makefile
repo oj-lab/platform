@@ -68,6 +68,11 @@ run-server: build check
 run: build check
 	make -j run-server run-schedule
 
+.PHONY: simple
+simple:
+	go build -o artifacts/bin/service src/application/server/main.go
+	./artifacts/bin/service
+
 .PHONY: all
 all: get-front pkg
 	./artifacts/bin/service

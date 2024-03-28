@@ -4,18 +4,19 @@ import (
 	"strings"
 )
 
-// Should contains a pirority definition
-// Ex. ComileError > RuntimeError > TimeLimitExceeded > MemoryLimitExceeded > WrongAnswer > Accepted
+// Should contains a priority definition
+// Ex. CompileError > RuntimeError > TimeLimitExceeded > MemoryLimitExceeded > SystemError > WrongAnswer > Accepted
 type JudgeVerdict string
 
 const (
-	JudgeVerdictAccepted            JudgeVerdict = "accepted"
-	JudgeVerdictWrongAnswer         JudgeVerdict = "wrong_answer"
-	JudgeVerdictTimeLimitExceeded   JudgeVerdict = "time_limit_exceeded"
-	JudgeVerdictMemoryLimitExceeded JudgeVerdict = "memory_limit_exceeded"
-	JudgeVerdictRuntimeError        JudgeVerdict = "runtime_error"
-	JudgeVerdictCompileError        JudgeVerdict = "compile_error" // Only for main verdict
-	JudgeVerdictCancelled           JudgeVerdict = "cancelled"     // Judge will be cancelled if some point results in Runtime error, Time limit exceeded, Memory limit exceeded
+	JudgeVerdictCompileError        JudgeVerdict = "CompileError" // Only for main verdict
+	JudgeVerdictRuntimeError        JudgeVerdict = "RuntimeError"
+	JudgeVerdictTimeLimitExceeded   JudgeVerdict = "TimeLimitExceeded"
+	JudgeVerdictMemoryLimitExceeded JudgeVerdict = "MemoryLimitExceeded"
+	JudgeVerdictSystemError         JudgeVerdict = "SystemError" // Some runtime unknown error ?
+	JudgeVerdictWrongAnswer         JudgeVerdict = "WrongAnswer"
+	JudgeVerdictAccepted            JudgeVerdict = "Accepted"
+	JudgeVerdictCancelled           JudgeVerdict = "cancelled" // Judge will be cancelled if some point results in Runtime error, Time limit exceeded, Memory limit exceeded
 )
 
 type JudgeResult struct {

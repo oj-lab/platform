@@ -38,6 +38,7 @@ type JudgeTaskSubmission struct {
 	Language      SubmissionLanguage `gorm:"not null" json:"language"`
 	Status        SubmissionStatus   `gorm:"default:pending" json:"status"`
 	VerdictJson   string             `json:"verdictJson"`
+	MainResult    JudgeVerdict       `json:"mainResult"`
 }
 
 func NewSubmission(
