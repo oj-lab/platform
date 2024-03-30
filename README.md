@@ -1,8 +1,9 @@
 # oj-lab-services
 
-Currently the backend server for OJ Lab.
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/OJ-lab/oj-lab-platform/build-and-test.yaml?logo=github&label=Tests)
+![Codespace Supported](https://img.shields.io/badge/Codespace_Supported-000000?style=flat&logo=github)
 
-![Preview](oj-lab-preview.gif)
+Currently the backend server for OJ Lab.
 
 ## Development
 
