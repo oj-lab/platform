@@ -6,9 +6,11 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
+	"github.com/OJ-lab/oj-lab-services/src/core"
 	gormAgent "github.com/OJ-lab/oj-lab-services/src/core/agent/gorm"
 	minioAgent "github.com/OJ-lab/oj-lab-services/src/core/agent/minio"
 	"github.com/OJ-lab/oj-lab-services/src/service/mapper"
@@ -33,7 +35,7 @@ func main() {
 	//    parse problem.md as description.
 	// 2. insert object into minio storage.
 	var (
-		packagePath string = "tests/data/packages/icpc"
+		packagePath string = path.Join(core.Workdir, "problem_packages")
 		title       string
 		slug        string
 	)

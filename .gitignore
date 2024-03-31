@@ -25,5 +25,5 @@ dist.zip
 *.pb.go
 **/swaggo-gen/docs.go
 
-environment/rclone-minio.conf
-environment/configs/override.*
+bin/
+__debug_bin**
