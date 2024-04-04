@@ -1,12 +1,10 @@
 {
   "recommendations": [
     "golang.go",
-    // I don't like this extension for it requires purechase for pro,
-    // need to find another elegant way for operating & debug with redis
-    // "cweijan.vscode-redis-client",
     "ms-azuretools.vscode-docker",
     "ms-vscode.makefile-tools",
     "tamasfe.even-better-toml",
     "pkief.material-icon-theme",
+    "bierner.markdown-preview-github-styles",
   ]
 }
