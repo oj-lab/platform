@@ -46,6 +46,12 @@ The following environment variables are available to modify the behavior of the 
 - OJ_LAB_WORKDIR: Directly set the path of the workdir, application will automatically locate the workdir if not set
 (it will be set to `workdirs/<service_env>` in this project by default)
 
+#### Manage DB data
+
+Along with the `make setup-dependencies`, we provide `adminer` to access PostgreSQL & MinIO with its web interface.
+
+> Remember to set the type of the database to `PostgreSQL` when login to adminer.
+
 ## Troubleshooting
 
 go bin not included in PATH

@@ -1,8 +1,8 @@
-version: '3.1'
-
 services:
   judger:
     image: ghcr.io/oj-lab/judger:main
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       - ENABLE_RCLONE=true
     ports:
