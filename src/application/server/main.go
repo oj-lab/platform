@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"path/filepath"
 	"runtime"
 
@@ -12,20 +13,23 @@ import (
 )
 
 const (
-	servicePortProp  = "service.port"
-	serviceModeProp  = "service.mode"
-	swaggerOnProp    = "service.swagger_on"
-	frontendDistProp = "service.frontend_dist"
+	serviceForceConsoleColorProp = "service.force_console_color"
+	servicePortProp              = "service.port"
+	serviceModeProp              = "service.mode"
+	swaggerOnProp                = "service.swagger_on"
+	frontendDistProp             = "service.frontend_dist"
 )
 
 var (
-	servicePort  string
-	serviceMode  string
-	swaggerOn    bool
-	frontendDist string
+	serviceForceConsoleColor bool
+	servicePort              string
+	serviceMode              string
+	swaggerOn                bool
+	frontendDist             string
 )
 
 func init() {
+	serviceForceConsoleColor = core.AppConfig.GetBool(serviceForceConsoleColorProp)
 	servicePort = core.AppConfig.GetString(servicePortProp)
 	serviceMode = core.AppConfig.GetString(serviceModeProp)
 	swaggerOn = core.AppConfig.GetBool(swaggerOnProp)
@@ -40,15 +44,23 @@ func GetProjectDir() string {
 }
 
 func main() {
+	if serviceForceConsoleColor {
+		gin.ForceConsoleColor()
+	}
 	r := gin.Default()
 	r.Use(middleware.HandleError)
 	gin.SetMode(serviceMode)
 
 	baseRouter := r.Group("/")
 	if frontendDist != "" {
-		core.AppLogger().Info("Serving frontend...")
-		r.LoadHTMLFiles(frontendDist + "/index.html")
-		handler.SetupFrontendRoute(baseRouter, frontendDist)
+		// If dist folder is not empty, serve frontend
+		if _, err := os.Stat(frontendDist); os.IsNotExist(err) {
+			core.AppLogger().Warn("Frontend dist is set but folder not found")
+		} else {
+			core.AppLogger().Info("Serving frontend...")
+			r.LoadHTMLFiles(frontendDist + "/index.html")
+			handler.SetupFrontendRoute(baseRouter, frontendDist)
+		}
 	}
 
 	if swaggerOn {

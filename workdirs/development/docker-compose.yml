@@ -1,20 +1,32 @@
 version: '3.1'
 
 services:
-
   # https://hub.docker.com/_/postgres
   postgres:
     image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: development
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: oj_lab
     ports:
       - 5432:5432
-  
+
+  adminer:
+    image: adminer
+    restart: always
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    environment:
+      - ADMINER_DEFAULT_SERVER=postgres
+    ports:
+      - 7070:8080
+
   # https://hub.docker.com/r/bitnami/minio
   minio:
     image: 'bitnami/minio:latest'
+    restart: always
     privileged: true
     ports:
       - '9000:9000'
@@ -29,18 +41,3 @@ services:
     restart: always
     ports:
       - "6379:6379"
-
-  judger:
-    image: ghcr.io/oj-lab/judger/judger-server:main
-    pull_policy: always
-    restart: always
-    ports:
-      - "8000:8000"
-    environment:
-      - BASE_URL=http://host.docker.internal:8080/api/v1/judge
-      - INTERVAL=10
-      - RUST_LOG=DEBUG
-    volumes:
-      - ../environment/rclone-minio.conf:/workspace/data/rclone-minio.conf
-    extra_hosts:
-      - "host.docker.internal:host-gateway"

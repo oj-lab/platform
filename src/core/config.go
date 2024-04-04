@@ -1,63 +1,62 @@
 package core
 
 import (
+	"fmt"
 	"os"
 	"path"
 
 	"github.com/spf13/viper"
 )
 
-const SERVICE_ENV_KEY = "OJ_LAB_SERVICE_ENV"
-const PROJECT_ROOT_ENV_KEY = "OJ_LAB_PROJECT_ROOT"
-const OVERRIDE_CONFIG_NAME_ENV_KEY = "OJ_LAB_OVERRIDE_CONFIG_NAME"
+const serviceEnvEnvKey = "OJ_LAB_SERVICE_ENV"
+const workdirEnvKey = "OJ_LAB_WORKDIR"
 
-const DEFAULT_OVERRIDE_CONFIG_NAME = "override"
-const DEFAULT_PROJECT_ROOT = "oj-lab-platform"
+const defaultConfigName = "config"
+const defaultOverrideConfigName = "override"
+const defaultProjectRootName = "oj-lab-platform"
+const defaultProjectWorkdirFolder = "workdirs"
 
 type ServiceEnv string
 
 const (
-	DEV_SERVICE_ENV ServiceEnv = "development"
-	PRD_SERVICE_ENV ServiceEnv = "production"
+	serviceEnvDev ServiceEnv = "development"
+	serviceEnvPrd ServiceEnv = "production"
 )
 
 var serviceEnv ServiceEnv
+var Workdir string
 var AppConfig *viper.Viper
 
 func (se ServiceEnv) isValid() bool {
-	if se == DEV_SERVICE_ENV || se == PRD_SERVICE_ENV {
+	if se == serviceEnvDev || se == serviceEnvPrd {
 		return true
 	}
 	return false
 }
 
 func IsDevEnv() bool {
-	return serviceEnv == DEV_SERVICE_ENV
+	return serviceEnv == serviceEnvDev
 }
 
-func loadConfig(basePath string) error {
-	viper.AddConfigPath(basePath)
-
-	serviceEnv = DEV_SERVICE_ENV
-	env := os.Getenv(SERVICE_ENV_KEY)
+func loadServiceEnv() {
+	serviceEnv = serviceEnvDev
+	env := os.Getenv(serviceEnvEnvKey)
 	if ServiceEnv(env).isValid() {
 		serviceEnv = ServiceEnv(env)
 	}
 	println("Env:", serviceEnv)
-	viper.SetConfigName(string(serviceEnv))
+}
 
+func loadConfig() error {
+	viper.AddConfigPath(Workdir)
+
+	viper.SetConfigName(defaultConfigName)
 	err := viper.ReadInConfig()
 	if err != nil {
 		return err
 	}
 
-	overrideConfigName := os.Getenv(OVERRIDE_CONFIG_NAME_ENV_KEY)
-	if overrideConfigName == "" {
-		overrideConfigName = DEFAULT_OVERRIDE_CONFIG_NAME
-	}
-	println("Set override config name:", overrideConfigName)
-
-	viper.SetConfigName(overrideConfigName)
+	viper.SetConfigName(defaultOverrideConfigName)
 	err = viper.MergeInConfig()
 	if err == nil {
 		println("Found override config, merged")
@@ -67,30 +66,36 @@ func loadConfig(basePath string) error {
 	return nil
 }
 
-func GetProjectRoot() string {
-	projectRoot := os.Getenv(PROJECT_ROOT_ENV_KEY)
-	if projectRoot == "" {
-		projectRoot = DEFAULT_PROJECT_ROOT
+func loadWorkdir() {
+	Workdir = os.Getenv(workdirEnvKey)
+	if Workdir != "" {
+		return
 	}
 
+	// Try to locate project root, then find the workdir
 	wd, err := os.Getwd()
 	if err != nil {
-		panic("Cannot find working dir")
+		panic("Cannot get cwd")
 	}
-	isRoot := path.Base(wd) == projectRoot
-	for !isRoot && wd != "/" {
+	println("Checking workdir from cwd:", wd)
+	isProjectRoot := path.Base(wd) == defaultProjectRootName
+	for !isProjectRoot && wd != "/" {
 		wd = path.Dir(wd)
-		isRoot = path.Base(wd) == projectRoot
+		isProjectRoot = path.Base(wd) == defaultProjectRootName
 	}
 	if wd == "/" {
-		panic("Cannot find project root folder")
+		panic("Cannot find projectRoot")
 	}
-	return wd
+	Workdir = path.Join(wd, defaultProjectWorkdirFolder, string(serviceEnv))
 }
 
 func init() {
-	projectRoot := GetProjectRoot()
-	println("Initing config with project root:", projectRoot)
-	loadConfig(path.Join(projectRoot, "environment/configs"))
+	loadServiceEnv()
+	loadWorkdir()
+	if _, err := os.Stat(Workdir); err != nil {
+		panic(fmt.Sprintf("Set workdir %s with error: %v", Workdir, err))
+	}
+	println("Workdir:", Workdir)
+	loadConfig()
 	setupLog()
 }
