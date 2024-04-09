@@ -22,7 +22,7 @@ WORKDIR /workdir
 COPY --from=build /oj-lab-platform-build/bin/service /usr/local/bin/oj-lab-service
 COPY --from=build /oj-lab-platform-build/frontend_dist /workdir/frontend_dist
 
-COPY workdirs/production/config.toml /workdir/config.toml
+COPY workdirs/docker/config.toml /workdir/config.toml
 
 ENV OJ_LAB_SERVICE_ENV=production
 ENV OJ_LAB_WORKDIR=/workdir
