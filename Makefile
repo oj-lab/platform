@@ -11,14 +11,14 @@ help:
 	@echo ""
 	@echo "Targets:"
 	@echo "  build     		- Build the application, swagger document will be generated"
-	@echo "  gen-swagger 		- Generate swagger document"
-	@echo ""
-	@echo "Targets for development:"
-	@echo "  setup-dependencies  		- Setup the dependencies docker image"
-	@echo "  unset-dependencies 		- Unset the dependencies docker image"
-	@echo "  get-front 		- Get the frontend files"
+	@echo "  run       		- Run the application"
+	@echo "  clean    		- Clean the build"
 	@echo "  check     		- Run go vet"
 	@echo "  test      		- Run tests, database will be setup"
+	@echo "  gen-swagger 		- Generate swagger document"
+	@echo "  setup-dependencies  	- Setup the dependencies docker image"
+	@echo "  unset-dependencies 	- Unset the dependencies docker image"
+	@echo "  get-front 		- Get the frontend files"
 
 .PHONY: build
 build: gen-swagger gen-proto
@@ -28,6 +28,15 @@ build: gen-swagger gen-proto
 	go build -o bin/service src/application/server/main.go
 	go build -o bin/schedule src/application/schedule/main.go
 	go build -o bin/problem_package_loader src/application/problem_package_loader/main.go
+
+.PHONY: run
+run: build
+	./bin/service
+
+.PHONY: clean
+clean:
+	rm -rf bin
+	rm -rf src/application/server/swaggo-gen
 
 .PHONY: gen-swagger
 gen-swagger: install-swaggo
