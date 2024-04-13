@@ -20,3 +20,9 @@ jobs:
     - name: Test All
       run: |
         make test
+    - name: Run golangci-lint
+      uses: golangci/golangci-lint-action@v4.0.0
+      with:
+        only-new-issues: true
+        skip-pkg-cache: true
+        skip-build-cache: true
