@@ -85,7 +85,7 @@ func checkUserExist(ginCtx *gin.Context) {
 
 	exist, err := service.CheckUserExist(ginCtx, account)
 	if err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 

@@ -75,11 +75,11 @@ get-front:
 	./scripts/update-frontend-dist.sh $(FRONTEND_DIST_DIR)
 
 .PHONY: check
-check: gen-proto
-	go vet ./...
+check: gen-proto install-cilint
+	golangci-lint run
 
 .PHONY: test
-test: gen-swagger check setup-dependencies
+test: gen-swagger setup-dependencies
 	go test -cover -v -count=1 ./...
 
 # Dependent targets
@@ -87,6 +87,14 @@ test: gen-swagger check setup-dependencies
 .PHONY: install-swaggo
 install-swaggo:
 	go install github.com/swaggo/swag/cmd/swag@latest
+
+# See more: https://golangci-lint.run/welcome/install/#local-installation
+.PHONY: install-cilint
+install-cilint:
+	@if [ -z $(shell which golangci-lint) ]; then \
+		echo "Installing golangci-lint"; \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest; \
+	fi
 
 # Deprecated
 # But still needed to pass the build

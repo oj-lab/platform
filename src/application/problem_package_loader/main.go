@@ -39,7 +39,7 @@ func main() {
 		title       string
 		slug        string
 	)
-	filepath.Walk(packagePath, func(path string, info fs.FileInfo, err error) error {
+	err := filepath.Walk(packagePath, func(path string, info fs.FileInfo, err error) error {
 		if info == nil {
 			return fmt.Errorf("file info is nil")
 		}
@@ -73,7 +73,7 @@ func main() {
 			}
 			description := string(content)
 			println("description: ", description)
-			mapper.CreateProblem(db, model.Problem{
+			err = mapper.CreateProblem(db, model.Problem{
 				Slug:        slug,
 				Title:       title,
 				Description: &description,
@@ -81,6 +81,9 @@ func main() {
 					{Name: "to-be-add"},
 				},
 			})
+			if err != nil {
+				return err
+			}
 		}
 
 		_, minioErr := minioClient.FPutObject(ctx, minioAgent.GetBucketName(),
@@ -92,6 +95,9 @@ func main() {
 		}
 		return err
 	})
+	if err != nil {
+		panic(err)
+	}
 
 	log.Println("Read Problem Success!")
 }

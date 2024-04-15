@@ -29,7 +29,7 @@ func PutLocalObjects(ctx context.Context, rootName, localPath string) error {
 		}
 	}
 
-	filepath.Walk(localPath, func(path string, info fs.FileInfo, err error) error {
+	err := filepath.Walk(localPath, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -48,6 +48,9 @@ func PutLocalObjects(ctx context.Context, rootName, localPath string) error {
 
 		return nil
 	})
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

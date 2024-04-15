@@ -19,12 +19,12 @@ func SetupJudgeRoute(baseRoute *gin.RouterGroup) {
 func postJudger(ginCtx *gin.Context) {
 	judger := model.Judger{}
 	if err := ginCtx.ShouldBindJSON(&judger); err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 
 	if err := service.AddJudger(ginCtx, judger); err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 
@@ -40,7 +40,7 @@ type PickJudgeTaskBody struct {
 func postPickJudgeTask(ginCtx *gin.Context) {
 	body := PickJudgeTaskBody{}
 	if err := ginCtx.ShouldBindJSON(&body); err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 
@@ -51,7 +51,7 @@ func postPickJudgeTask(ginCtx *gin.Context) {
 	}
 
 	if err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 
@@ -69,12 +69,12 @@ type ReportJudgeTaskResultBody struct {
 func postReportJudgeTaskResult(ginCtx *gin.Context) {
 	body := ReportJudgeTaskResultBody{}
 	if err := ginCtx.ShouldBindJSON(&body); err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 
 	if err := service.ReportJudgeTaskResult(ginCtx, body.Consumer, body.StreamID, body.VerdictJson); err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 

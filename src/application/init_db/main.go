@@ -14,7 +14,7 @@ func main() {
 		panic("failed to migrate database")
 	}
 
-	mapper.CreateUser(db, model.User{
+	err = mapper.CreateUser(db, model.User{
 		Name:     "admin",
 		Account:  "admin",
 		Password: func() *string { s := "admin"; return &s }(),
@@ -22,8 +22,11 @@ func main() {
 			{Name: "admin"},
 		},
 	})
+	if err != nil {
+		panic("failed to create admin user")
+	}
 
-	mapper.CreateUser(db, model.User{
+	err = mapper.CreateUser(db, model.User{
 		Name:     "anonymous",
 		Account:  "anonymous",
 		Password: func() *string { s := "anonymous"; return &s }(),
@@ -31,6 +34,9 @@ func main() {
 			{Name: "anonymous"},
 		},
 	})
+	if err != nil {
+		panic("failed to create anonymous user")
+	}
 
 	core.AppLogger().Info("migrate tables ans users success")
 }

@@ -66,9 +66,10 @@ func GetTaskFromStream(ctx context.Context, consumer string) (*model.JudgeTask, 
 
 func AckTaskFromStream(ctx context.Context, consumer string, streamID string) error {
 	redisAgent := redisAgent.GetDefaultRedisClient()
-	if consumer == "" {
-		consumer = defaultConsumerName
-	}
+	// TODO: Some ineffectual assignment here, need to find out why
+	// if consumer == "" {
+	// 	consumer = defaultConsumerName
+	// }
 	_, err := redisAgent.XAck(ctx, streamName, consumerGroupName, streamID).Result()
 	if err != nil {
 		return err

@@ -29,7 +29,10 @@ func UnzipProblemPackage(ctx context.Context, zipFile, targetDir string) error {
 
 		path := filepath.Join(targetDir, f.Name)
 		if f.FileInfo().IsDir() {
-			os.MkdirAll(path, os.ModePerm)
+			err := os.MkdirAll(path, os.ModePerm)
+			if err != nil {
+				return err
+			}
 		} else {
 			if err := os.MkdirAll(filepath.Dir(path), os.ModePerm); err != nil {
 				return err

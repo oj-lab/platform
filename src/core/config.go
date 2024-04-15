@@ -96,6 +96,8 @@ func init() {
 		panic(fmt.Sprintf("Set workdir %s with error: %v", Workdir, err))
 	}
 	println("Workdir:", Workdir)
-	loadConfig()
+	if err := loadConfig(); err != nil {
+		panic(fmt.Sprintf("Load config with error: %v", err))
+	}
 	setupLog()
 }

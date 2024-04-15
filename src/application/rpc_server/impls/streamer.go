@@ -23,9 +23,12 @@ func (s *StreamerServer) StartStream(request *proto.StreamRequest, server proto.
 			return nil
 		}
 
-		server.Send(&proto.StreamResponse{Body: &proto.StreamResponse_Health{
+		err := server.Send(&proto.StreamResponse{Body: &proto.StreamResponse_Health{
 			Health: &proto.ServerHealth{},
 		}})
+		if err != nil {
+			log.Printf("send stream response failed: %v", err)
+		}
 	}
 
 	return nil

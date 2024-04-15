@@ -38,7 +38,7 @@ func getProblem(ginCtx *gin.Context) {
 
 	problemInfo, err := service.GetProblem(ginCtx, slug)
 	if err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 
@@ -60,13 +60,13 @@ func getProblem(ginCtx *gin.Context) {
 func putProblem(ginCtx *gin.Context) {
 	problem := model.Problem{}
 	if err := ginCtx.ShouldBindJSON(&problem); err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 
 	err := service.PutProblem(ginCtx, problem)
 	if err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 }
@@ -83,7 +83,7 @@ func deleteProblem(ginCtx *gin.Context) {
 
 	err := service.DeleteProblem(ginCtx, slug)
 	if err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 }
@@ -99,7 +99,7 @@ func deleteProblem(ginCtx *gin.Context) {
 func getProblemInfoList(ginCtx *gin.Context) {
 	problemInfoList, total, err := service.GetProblemInfoList(ginCtx)
 	if err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 
@@ -121,16 +121,20 @@ func putProblemPackage(ginCtx *gin.Context) {
 	slug := ginCtx.Param("slug")
 	file, err := ginCtx.FormFile("file")
 	if err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 	zipFile := "/tmp/" + slug + ".zip"
 	if err := ginCtx.SaveUploadedFile(file, zipFile); err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 
-	service.PutProblemPackage(ginCtx, slug, zipFile)
+	err = service.PutProblemPackage(ginCtx, slug, zipFile)
+	if err != nil {
+		_ = ginCtx.Error(err)
+		return
+	}
 
 	ginCtx.Done()
 }
@@ -149,7 +153,7 @@ func checkProblemSlug(ginCtx *gin.Context) {
 
 	valid, err := service.CheckProblemSlug(ginCtx, slug)
 	if err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 
@@ -159,7 +163,7 @@ func checkProblemSlug(ginCtx *gin.Context) {
 }
 
 // PostSubmissionBody
-// 
+//
 //	@Description	The body of a submission request, containing the code and the language used for the submission.
 //	@Property		code (string) required "The source code of the submission" minlength(1)
 //	@Property		language (SubmissionLanguage) required "The programming language used for the submission"
@@ -181,7 +185,7 @@ func postSubmission(ginCtx *gin.Context) {
 	slug := ginCtx.Param("slug")
 	body := PostSubmissionBody{}
 	if err := ginCtx.ShouldBindJSON(&body); err != nil {
-		ginCtx.Error(err)
+		_ = ginCtx.Error(err)
 		return
 	}
 
