@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	oj_lab_proto "github.com/OJ-lab/oj-lab-services/src/service/proto"
+	oj_lab_proto "github.com/oj-lab/oj-lab-platform/proto"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/protobuf/proto"
 )

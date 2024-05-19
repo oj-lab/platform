@@ -24,24 +24,24 @@ help:
 build: gen-swagger gen-proto
 	@echo "Building on $(OS)"
 	go mod tidy
-	go build -o bin/init_db src/application/init_db/main.go
-	go build -o bin/service src/application/server/main.go
-	go build -o bin/schedule src/application/schedule/main.go
-	go build -o bin/problem_package_loader src/application/problem_package_loader/main.go
+	go build -o bin/init_db cmd/init_db/main.go
+	go build -o bin/web_server cmd/web_server/main.go
+	go build -o bin/schedule cmd/schedule/main.go
+	go build -o bin/problem_loader cmd/problem_loader/main.go
 
 .PHONY: run
 run: build
-	./bin/service
+	./bin/web_server
 
 .PHONY: clean
 clean:
 	rm -rf bin
-	rm -rf src/application/server/swaggo-gen
+	rm -rf cmd/web_server/swaggo-gen
 
 .PHONY: gen-swagger
 gen-swagger: install-swaggo
-	swag fmt -d src/application/server
-	swag init -d src/application/server,src/service/model -ot go -o src/application/server/swaggo-gen
+	swag fmt -d cmd/web_server
+	swag init -d cmd/web_server,models -ot go -o cmd/web_server/swaggo-gen
 
 # Deprecated
 # But still needed to pass the build
@@ -49,7 +49,7 @@ gen-swagger: install-swaggo
 gen-proto: install-proto
 	protoc --go_out=. --go_opt=paths=source_relative \
 		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
-		src/service/proto/*.proto	
+		proto/*.proto	
 
 
 # Targets for development
@@ -67,7 +67,7 @@ setup-dependencies: unset-dependencies build
 	@echo "Wait 10 seconds for db setup"
 	sleep 10s
 	./bin/init_db
-	./bin/problem_package_loader
+	./bin/problem_loader
 	docker compose -f $(JUDGER_DOCKER_COMPOSE_FILE) -p oj-lab-judger up -d
 
 .PHONY: get-front

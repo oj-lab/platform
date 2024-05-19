@@ -23,6 +23,6 @@ else
   mkdir -p "$FRONTEND_DIST_PATH"
 fi
 
-curl -o dist.zip -L https://github.com/OJ-lab/oj-lab-front/releases/download/v0.0.2/dist.zip
+curl -o dist.zip -L https://github.com/oj-lab/oj-lab-front/releases/download/v0.0.2/dist.zip
 unzip -o dist.zip -d "$FRONTEND_DIST_PATH"
 rm dist.zip

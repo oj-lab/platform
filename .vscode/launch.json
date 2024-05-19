@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "cwd": "${workspaceFolder}",
-            "program": "src/application/server/main.go",
+            "program": "cmd/web_server/main.go",
         }
     ]
 }

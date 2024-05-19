@@ -1,0 +1,19 @@
+// Deprecated currently
+// Keep it for future use
+syntax = "proto3";
+
+package oj_lab_greeting.protos;
+
+option go_package = "github.com/oj-lab/oj-lab-platform/proto";
+
+service Greeter {
+    rpc Greeting (GreetingRequest) returns (GreetingResponse) {}
+}
+
+message GreetingRequest {
+    string name = 1;
+}
+
+message GreetingResponse {
+    string message = 1;
+}

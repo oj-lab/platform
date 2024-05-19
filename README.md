@@ -1,6 +1,6 @@
 # OJ Lab Platform
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/OJ-lab/oj-lab-platform/build-and-test.yaml?logo=github&label=Tests)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/oj-lab/oj-lab-platform/build-and-test.yaml?logo=github&label=Tests)
 ![Codespace Supported](https://img.shields.io/badge/Codespace_Supported-000000?style=flat&logo=github)
 
 ## Development
@@ -14,7 +14,7 @@ OJ Lab Platform depends on several foundational services, including:
 - PostgreSQL (or other SQL database in the future)
 - Redis
 - MinIO
-- [Judger](https://github.com/OJ-lab/judger)
+- [Judger](https://github.com/oj-lab/judger)
 
 This project provides a Makefile to help you quickly set up dependencies & other optional choices.
 Run `make setup-dependencies` to start these services and load the initial data.
