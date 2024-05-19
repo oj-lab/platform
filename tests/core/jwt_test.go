@@ -4,7 +4,7 @@ import (
 	"log"
 	"testing"
 
-	"github.com/OJ-lab/oj-lab-services/src/core/auth"
+	"github.com/oj-lab/oj-lab-platform/modules/auth"
 )
 
 func TestGenerateTokenString(t *testing.T) {
