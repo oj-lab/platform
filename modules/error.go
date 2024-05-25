@@ -59,6 +59,6 @@ func NewInvalidParamError(param string, hints ...string) *SeviceError {
 
 	return &SeviceError{
 		Code: 400,
-		Msg:  fmt.Sprintf("invalid param: %s", param),
+		Msg:  msg,
 	}
 }

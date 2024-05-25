@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 
-	"github.com/google/uuid"
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 	"github.com/oj-lab/oj-lab-platform/modules/auth"
@@ -18,6 +17,20 @@ func GetUser(ctx context.Context, account string) (*user_model.User, error) {
 	}
 
 	return user, nil
+}
+
+func UpdateUser(ctx context.Context, user user_model.User) error {
+	db := gorm_agent.GetDefaultDB()
+	err := user_model.UpdateUser(db, user)
+	if err != nil {
+		return err
+	}
+
+	return auth.UpdateLoginSessionByAccount(ctx,
+		user.Account,
+		auth.LoginSessionData{
+			RoleSet: user.GetRolesStringSet(),
+		})
 }
 
 func CheckUserExist(ctx context.Context, account string) (bool, error) {
@@ -37,21 +50,20 @@ func CheckUserExist(ctx context.Context, account string) (bool, error) {
 	return count > 0, nil
 }
 
-func StartLoginSession(ctx context.Context, account, password string) (*uuid.UUID, error) {
+func StartLoginSession(ctx context.Context, account, password string) (*auth.LoginSession, error) {
 	db := gorm_agent.GetDefaultDB()
 	user, err := user_model.GetUserByAccountPassword(db, account, password)
 	if err != nil {
 		return nil, err
 	}
 
-	loginSession := auth.NewLoginSession(auth.LoginSession{
-		Account: account,
-		Roles:   user.GetRolesStringArray(),
+	ls := auth.NewLoginSession(account, auth.LoginSessionData{
+		RoleSet: user.GetRolesStringSet(),
 	})
-	err = loginSession.SaveToRedis(ctx)
+	err = ls.SaveToRedis(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return &loginSession.Id, nil
+	return ls, nil
 }

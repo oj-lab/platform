@@ -7,41 +7,62 @@ import (
 	"github.com/google/uuid"
 )
 
-type LoginSession struct {
-	Id      uuid.UUID `json:"-"`
-	Account string    `json:"account"`
-	Roles   []string  `json:"roles"`
+type LoginSessionKey struct {
+	Account string
+	Id      uuid.UUID
 }
 
-func (ls LoginSession) GetJsonString() (string, error) {
-	lsBytes, err := json.Marshal(ls)
+type LoginSessionData struct {
+	RoleSet map[string]struct{}
+}
+
+type LoginSession struct {
+	Key  LoginSessionKey
+	Data LoginSessionData
+}
+
+func (data LoginSessionData) HasRoles(roles []string) bool {
+	for _, role := range roles {
+		if _, ok := data.RoleSet[role]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func (data LoginSessionData) GetJsonString() (string, error) {
+	bytes, err := json.Marshal(data)
 	if err != nil {
 		return "", err
 	}
-	lsString := string(lsBytes)
+	dataString := string(bytes)
 
-	return lsString, nil
+	return dataString, nil
 }
 
-func GetLoginSessionFromJsonString(lsString string) (*LoginSession, error) {
-	ls := &LoginSession{}
-	err := json.Unmarshal([]byte(lsString), ls)
+func getLoginSessionDataFromJsonString(dataString string) (*LoginSessionData, error) {
+	data := &LoginSessionData{}
+	err := json.Unmarshal([]byte(dataString), data)
 	if err != nil {
 		return nil, err
 	}
-	return ls, nil
+	return data, nil
 }
 
-func NewLoginSession(ls LoginSession) *LoginSession {
+func NewLoginSession(account string, data LoginSessionData) *LoginSession {
 	return &LoginSession{
-		Id:      uuid.New(),
-		Account: ls.Account,
-		Roles:   ls.Roles,
+		LoginSessionKey{
+			Account: account,
+			Id:      uuid.New(),
+		},
+		LoginSessionData{
+			RoleSet: data.RoleSet,
+		},
 	}
 }
 
 func (ls LoginSession) SaveToRedis(ctx context.Context) error {
-	err := SetLoginSession(ctx, ls)
+	err := SetLoginSession(ctx, ls.Key, ls.Data)
 	if err != nil {
 		return err
 	}

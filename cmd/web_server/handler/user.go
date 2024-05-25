@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	"github.com/oj-lab/oj-lab-platform/modules"
 	"github.com/oj-lab/oj-lab-platform/modules/middleware"
 	user_service "github.com/oj-lab/oj-lab-platform/services/user"
@@ -13,6 +14,7 @@ import (
 func SetupUserRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/user")
 	{
+		g.PUT("", updateUser)
 		g.GET("/health", func(ginCtx *gin.Context) {
 			ginCtx.String(http.StatusOK, "Hello, this is user service")
 		})
@@ -44,12 +46,12 @@ func login(ginCtx *gin.Context) {
 		return
 	}
 
-	lsId, err := user_service.StartLoginSession(ginCtx, body.Account, body.Password)
+	ls, err := user_service.StartLoginSession(ginCtx, body.Account, body.Password)
 	if err != nil {
 		modules.NewInternalError(fmt.Sprintf("failed to login: %v", err)).AppendToGin(ginCtx)
 		return
 	}
-	middleware.SetLoginSessionCookie(ginCtx, lsId.String())
+	middleware.SetLoginSessionKeyCookie(ginCtx, ls.Key)
 
 	ginCtx.Status(http.StatusOK)
 }
@@ -63,12 +65,12 @@ func login(ginCtx *gin.Context) {
 //	@Success		200
 //	@Failure		401
 func me(ginCtx *gin.Context) {
-	ls := middleware.GetLoginSession(ginCtx)
-	if ls == nil {
-		modules.NewUnauthorizedError("not logined").AppendToGin(ginCtx)
+	ls, err := middleware.GetLoginSessionFromGinCtx(ginCtx)
+	if err != nil {
+		modules.NewUnauthorizedError("cannot load login session from cookie").AppendToGin(ginCtx)
 		return
 	}
-	user, err := user_service.GetUser(ginCtx, ls.Account)
+	user, err := user_service.GetUser(ginCtx, ls.Key.Account)
 	if err != nil {
 		modules.NewInternalError(fmt.Sprintf("failed to get user: %v", err)).AppendToGin(ginCtx)
 		return
@@ -93,4 +95,23 @@ func checkUserExist(ginCtx *gin.Context) {
 	ginCtx.JSON(http.StatusOK, gin.H{
 		"exist": exist,
 	})
+}
+
+type updateUserBody struct {
+	User user_model.User `json:"user"`
+}
+
+func updateUser(ginCtx *gin.Context) {
+	body := &updateUserBody{}
+	err := ginCtx.BindJSON(body)
+	if err != nil {
+		modules.NewInvalidParamError("body", err.Error()).AppendToGin(ginCtx)
+		return
+	}
+
+	err = user_service.UpdateUser(ginCtx, body.User)
+	if err != nil {
+		modules.NewInternalError(fmt.Sprintf("failed to update user: %v", err)).AppendToGin(ginCtx)
+		return
+	}
 }

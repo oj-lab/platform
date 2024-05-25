@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -10,46 +11,73 @@ import (
 )
 
 const (
-	loginSessionCookieMaxAge = time.Hour * 24 * 7
-	loginSessionIdCookieName = "LS_ID"
-	loginSessionGinCtxKey    = "login_session"
+	loginSessionCookieMaxAge         = time.Hour * 24 * 7
+	loginSessionKeyIdCookieName      = "LS_KEY_ID"
+	loginSessionKeyAccountCookieName = "LS_KEY_ACCOUNT"
+	loginSessionGinCtxKey            = "login_session"
 )
 
+func BuildHandleRequireLoginWithRoles(roles []string) gin.HandlerFunc {
+	return func(ginCtx *gin.Context) {
+		ls, err := GetLoginSessionFromGinCtx(ginCtx)
+		if err != nil {
+			modules.NewUnauthorizedError("cannot load login session from cookie").AppendToGin(ginCtx)
+			ginCtx.Abort()
+			return
+		}
+		ginCtx.Set(loginSessionGinCtxKey, ls)
+
+		if !ls.Data.HasRoles(roles) {
+			modules.NewUnauthorizedError(fmt.Sprintf("require roles: %v", roles)).AppendToGin(ginCtx)
+			ginCtx.Abort()
+			return
+		}
+
+		ginCtx.Next()
+	}
+}
+
 func HandleRequireLogin(ginCtx *gin.Context) {
-	cookieValue, err := ginCtx.Cookie(loginSessionIdCookieName)
+	ls, err := GetLoginSessionFromGinCtx(ginCtx)
 	if err != nil {
-		modules.NewUnauthorizedError("login session not found").AppendToGin(ginCtx)
+		modules.NewUnauthorizedError("cannot load login session from cookie").AppendToGin(ginCtx)
 		ginCtx.Abort()
 		return
 	}
-	lsId, err := uuid.Parse(cookieValue)
-	if err != nil {
-		modules.NewUnauthorizedError("invalid login session id").AppendToGin(ginCtx)
-		ginCtx.Abort()
-		return
-	}
-
-	ls, err := auth.GetLoginSession(ginCtx, lsId)
-	if err != nil {
-		modules.NewUnauthorizedError("invalid login session").AppendToGin(ginCtx)
-		ginCtx.Abort()
-		return
-	}
-
 	ginCtx.Set(loginSessionGinCtxKey, ls)
 
 	ginCtx.Next()
 }
 
-func GetLoginSession(ginCtx *gin.Context) *auth.LoginSession {
-	ls, exist := ginCtx.Get(loginSessionGinCtxKey)
-	if !exist {
-		return nil
+func GetLoginSessionFromGinCtx(ginCtx *gin.Context) (*auth.LoginSession, error) {
+	lsAccount, err := ginCtx.Cookie(loginSessionKeyAccountCookieName)
+	if err != nil {
+		return nil, err
 	}
-	return ls.(*auth.LoginSession)
+	lsIdString, err := ginCtx.Cookie(loginSessionKeyIdCookieName)
+	if err != nil {
+		return nil, err
+	}
+	lsId, err := uuid.Parse(lsIdString)
+	if err != nil {
+		return nil, err
+	}
+	key := auth.LoginSessionKey{
+		Account: lsAccount,
+		Id:      lsId,
+	}
+
+	ls, err := auth.GetLoginSession(ginCtx, key)
+	if err != nil {
+		return nil, err
+	}
+
+	return ls, nil
 }
 
-func SetLoginSessionCookie(ginCtx *gin.Context, lsId string) {
-	ginCtx.SetCookie(loginSessionIdCookieName, lsId,
+func SetLoginSessionKeyCookie(ginCtx *gin.Context, key auth.LoginSessionKey) {
+	ginCtx.SetCookie(loginSessionKeyAccountCookieName, key.Account,
+		int(loginSessionCookieMaxAge.Seconds()), "/", "", false, true)
+	ginCtx.SetCookie(loginSessionKeyIdCookieName, key.Id.String(),
 		int(loginSessionCookieMaxAge.Seconds()), "/", "", false, true)
 }
