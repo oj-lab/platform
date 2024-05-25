@@ -49,7 +49,7 @@ func login(ginCtx *gin.Context) {
 		modules.NewInternalError(fmt.Sprintf("failed to login: %v", err)).AppendToGin(ginCtx)
 		return
 	}
-	middleware.SetLoginSessionCookie(ginCtx, *lsId)
+	middleware.SetLoginSessionCookie(ginCtx, lsId.String())
 
 	ginCtx.Status(http.StatusOK)
 }

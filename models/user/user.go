@@ -20,3 +20,11 @@ type Role struct {
 	Name  string  `gorm:"primaryKey" json:"name"`
 	Users []*User `gorm:"many2many:user_roles" json:"users,omitempty"`
 }
+
+func (user User) GetRolesStringArray() []string {
+	roles := make([]string, len(user.Roles))
+	for i, role := range user.Roles {
+		roles[i] = role.Name
+	}
+	return roles
+}
