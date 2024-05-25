@@ -5,22 +5,27 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/google/uuid"
 	redisAgent "github.com/oj-lab/oj-lab-platform/modules/agent/redis"
+	"github.com/oj-lab/oj-lab-platform/modules/log"
+	"github.com/redis/go-redis/v9"
 )
 
-const loginSessionKeyFormat = "LS_%s"
-const loginSessionDuration = time.Second * 30
+const loginSessionKeyFormat = "LS_%s_%s" // "LS_<account>_<uuid>"
+const loginSessionDuration = time.Minute * 15
 
-func SetLoginSession(ctx context.Context, ls LoginSession) error {
+func getLoginSessionRedisKey(key LoginSessionKey) string {
+	return fmt.Sprintf(loginSessionKeyFormat, key.Account, key.Id.String())
+}
+
+func SetLoginSession(ctx context.Context, key LoginSessionKey, data LoginSessionData) error {
 	redisClient := redisAgent.GetDefaultRedisClient()
-	key := fmt.Sprintf(loginSessionKeyFormat, ls.Id.String())
-	value, err := ls.GetJsonString()
+
+	value, err := data.GetJsonString()
 	if err != nil {
 		return err
 	}
-
-	err = redisClient.Set(ctx, key, value, loginSessionDuration).Err()
+	// TODO: Watch Redis JSON SET usage, currently not support atomic SETEX
+	err = redisClient.Set(ctx, getLoginSessionRedisKey(key), value, loginSessionDuration).Err()
 	if err != nil {
 		return err
 	}
@@ -28,32 +33,42 @@ func SetLoginSession(ctx context.Context, ls LoginSession) error {
 	return nil
 }
 
-func GetLoginSession(ctx context.Context, id uuid.UUID) (*LoginSession, error) {
+func GetLoginSession(ctx context.Context, key LoginSessionKey) (*LoginSession, error) {
 	redisClient := redisAgent.GetDefaultRedisClient()
-	lsIdString := id.String()
-	key := fmt.Sprintf(loginSessionKeyFormat, lsIdString)
 
-	val, err := redisClient.Get(ctx, key).Result()
+	val, err := redisClient.Get(ctx, getLoginSessionRedisKey(key)).Result()
+	if err != nil {
+		return nil, err
+	}
+	data, err := getLoginSessionDataFromJsonString(val)
 	if err != nil {
 		return nil, err
 	}
 
-	ls, err := GetLoginSessionFromJsonString(val)
-	if err != nil {
-		return nil, err
-	}
-	ls.Id = id
-
-	return ls, nil
+	return &LoginSession{
+		Key:  key,
+		Data: *data,
+	}, nil
 }
 
-func UpdateLoginSession(ctx context.Context, idString, sesionString string) error {
+func UpdateLoginSessionByAccount(ctx context.Context, account string, data LoginSessionData) error {
 	redisClient := redisAgent.GetDefaultRedisClient()
-	key := fmt.Sprintf(loginSessionKeyFormat, idString)
 
-	err := redisClient.Set(ctx, key, sesionString, loginSessionDuration).Err()
+	redisKeys, err := redisClient.Keys(ctx, fmt.Sprintf(loginSessionKeyFormat, account, "*")).Result()
 	if err != nil {
 		return err
+	}
+
+	val, err := data.GetJsonString()
+	if err != nil {
+		return err
+	}
+	for _, redisKey := range redisKeys {
+		// TODO: KeepTTL only works in redis v6+
+		err = redisClient.Set(ctx, redisKey, val, redis.KeepTTL).Err()
+		if err != nil {
+			log.AppLogger().Errorf("failed to update login session: %v", err)
+		}
 	}
 
 	return nil
