@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 
+	"github.com/google/uuid"
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 	"github.com/oj-lab/oj-lab-platform/modules/auth"
@@ -36,17 +37,17 @@ func CheckUserExist(ctx context.Context, account string) (bool, error) {
 	return count > 0, nil
 }
 
-func StartLoginSession(ctx context.Context, account, password string) (*string, error) {
+func StartLoginSession(ctx context.Context, account, password string) (*uuid.UUID, error) {
 	db := gorm_agent.GetDefaultDB()
-	match, err := user_model.CheckUserPassword(db, account, password)
+	user, err := user_model.GetUserByAccountPassword(db, account, password)
 	if err != nil {
 		return nil, err
 	}
-	if !match {
-		return nil, err
-	}
 
-	loginSession := auth.NewLoginSession(account)
+	loginSession := auth.NewLoginSession(auth.LoginSession{
+		Account: account,
+		Roles:   user.GetRolesStringArray(),
+	})
 	err = loginSession.SaveToRedis(ctx)
 	if err != nil {
 		return nil, err

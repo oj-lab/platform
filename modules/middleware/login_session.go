@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/oj-lab/oj-lab-platform/modules"
 	"github.com/oj-lab/oj-lab-platform/modules/auth"
 )
@@ -15,14 +16,20 @@ const (
 )
 
 func HandleRequireLogin(ginCtx *gin.Context) {
-	cookie, err := ginCtx.Cookie(loginSessionIdCookieName)
+	cookieValue, err := ginCtx.Cookie(loginSessionIdCookieName)
 	if err != nil {
 		modules.NewUnauthorizedError("login session not found").AppendToGin(ginCtx)
 		ginCtx.Abort()
 		return
 	}
+	lsId, err := uuid.Parse(cookieValue)
+	if err != nil {
+		modules.NewUnauthorizedError("invalid login session id").AppendToGin(ginCtx)
+		ginCtx.Abort()
+		return
+	}
 
-	ls, err := auth.CheckLoginSession(ginCtx, cookie)
+	ls, err := auth.GetLoginSession(ginCtx, lsId)
 	if err != nil {
 		modules.NewUnauthorizedError("invalid login session").AppendToGin(ginCtx)
 		ginCtx.Abort()

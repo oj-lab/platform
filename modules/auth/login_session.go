@@ -5,49 +5,46 @@ import (
 	"encoding/json"
 
 	"github.com/google/uuid"
-	redisAgent "github.com/oj-lab/oj-lab-platform/modules/agent/redis"
 )
 
 type LoginSession struct {
-	Id      string `json:"-"`
-	Account string `json:"account"`
+	Id      uuid.UUID `json:"-"`
+	Account string    `json:"account"`
+	Roles   []string  `json:"roles"`
 }
 
-func NewLoginSession(account string) *LoginSession {
-	id := uuid.New().String()
-
-	return &LoginSession{
-		Id:      id,
-		Account: account,
-	}
-}
-
-func (ls *LoginSession) SaveToRedis(ctx context.Context) error {
+func (ls LoginSession) GetJsonString() (string, error) {
 	lsBytes, err := json.Marshal(ls)
 	if err != nil {
-		return err
+		return "", err
 	}
 	lsString := string(lsBytes)
 
-	err = redisAgent.SetLoginSession(ctx, ls.Id, lsString)
+	return lsString, nil
+}
+
+func GetLoginSessionFromJsonString(lsString string) (*LoginSession, error) {
+	ls := &LoginSession{}
+	err := json.Unmarshal([]byte(lsString), ls)
+	if err != nil {
+		return nil, err
+	}
+	return ls, nil
+}
+
+func NewLoginSession(ls LoginSession) *LoginSession {
+	return &LoginSession{
+		Id:      uuid.New(),
+		Account: ls.Account,
+		Roles:   ls.Roles,
+	}
+}
+
+func (ls LoginSession) SaveToRedis(ctx context.Context) error {
+	err := SetLoginSession(ctx, ls)
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func CheckLoginSession(ctx context.Context, id string) (*LoginSession, error) {
-	lsString, err := redisAgent.GetLoginSession(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	ls := &LoginSession{}
-	err = json.Unmarshal([]byte(*lsString), ls)
-	if err != nil {
-		return nil, err
-	}
-
-	return ls, nil
 }

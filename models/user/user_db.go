@@ -1,6 +1,8 @@
 package user
 
 import (
+	"fmt"
+
 	"github.com/alexedwards/argon2id"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -125,11 +127,20 @@ func GetUserByOptions(tx *gorm.DB, options GetUserOptions) ([]User, int64, error
 	return db_users, total, nil
 }
 
-func CheckUserPassword(tx *gorm.DB, account string, password string) (bool, error) {
+func GetUserByAccountPassword(tx *gorm.DB, account string, password string) (*User, error) {
 	user := User{}
 	err := tx.Where("account = ?", account).First(&user).Error
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	return argon2id.ComparePasswordAndHash(password, user.HashedPassword)
+
+	match, err := argon2id.ComparePasswordAndHash(password, user.HashedPassword)
+	if err != nil {
+		return nil, err
+	}
+	if !match {
+		return nil, fmt.Errorf("password not match")
+	}
+
+	return &user, nil
 }
