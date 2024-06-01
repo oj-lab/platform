@@ -11,7 +11,7 @@ require (
 	gorm.io/gorm v1.25.10
 )
 
-require github.com/swaggo/swag v1.16.3
+require github.com/swaggo/swag v1.16.3 // indirect
 
 require (
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
@@ -53,8 +53,8 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	golang.org/x/arch v0.4.0 // indirect
 	golang.org/x/tools v0.21.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240227224415-6ceb2ff114de // indirect
-	google.golang.org/grpc v1.63.2
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
+	google.golang.org/grpc v1.64.0
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1 // indirect
