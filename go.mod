@@ -4,14 +4,14 @@ go 1.21
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/redis/go-redis/v9 v9.5.1
+	github.com/redis/go-redis/v9 v9.5.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.18.2
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.10
 )
 
-require github.com/swaggo/swag v1.16.3
+require github.com/swaggo/swag v1.16.3 // indirect
 
 require (
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
