@@ -5,7 +5,7 @@ level = "debug"
 dsn = "user=postgres password=postgres host=localhost port=5432 dbname=oj_lab sslmode=disable TimeZone=Asia/Shanghai"
 
 [redis]
-host = "localhost:6379"
+hosts = ["localhost:6379"]
 
 [jwt]
 secret = "example_secret"
