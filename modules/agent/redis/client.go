@@ -6,24 +6,38 @@ import (
 )
 
 const (
-	redisHostProp = "redis.host"
+	redisHostsProp = "redis.hosts"
 )
 
 var (
-	redisHost string
+	redisHosts []string
 )
 
 func init() {
-	redisHost = config.AppConfig.GetString(redisHostProp)
+	redisHosts = config.AppConfig.GetStringSlice(redisHostsProp)
 }
 
-var redisClient *redis.Client
+type RedisClientInterface interface {
+	Set(key string, value interface{}, expiration int64) *redis.StatusCmd
+}
 
-func GetDefaultRedisClient() *redis.Client {
+var redisClient redis.UniversalClient
+
+func GetDefaultRedisClient() redis.UniversalClient {
 	if redisClient == nil {
-		redisClient = redis.NewClient(&redis.Options{
-			Addr: redisHost,
-		})
+		if len(redisHosts) == 0 {
+			panic("No redis hosts configured")
+		}
+		if len(redisHosts) == 1 {
+			redisClient = redis.NewClient(&redis.Options{
+				Addr: redisHosts[0],
+			})
+		}
+		if len(redisHosts) > 1 {
+			redisClient = redis.NewClusterClient(&redis.ClusterOptions{
+				Addrs: redisHosts,
+			})
+		}
 	}
 	return redisClient
 }
