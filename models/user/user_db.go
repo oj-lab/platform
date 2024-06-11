@@ -36,7 +36,6 @@ func GetUser(tx *gorm.DB, account string) (*User, error) {
 }
 
 func GetPublicUser(tx *gorm.DB, account string) (*User, error) {
-
 	db_user := User{}
 	err := tx.Model(&User{}).Preload("Roles").Select(PublicUserSelection).Where("account = ?", account).First(&db_user).Error
 	if err != nil {

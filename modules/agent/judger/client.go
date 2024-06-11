@@ -1,4 +1,4 @@
-package judgerAgent
+package judger_agent
 
 type JudgerClient struct {
 	Host string

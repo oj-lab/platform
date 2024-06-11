@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
-	gormAgent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
+	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 )
 
-func TestProblemMapper(t *testing.T) {
-	db := gormAgent.GetDefaultDB()
+func TestProblemDB(t *testing.T) {
+	db := gorm_agent.GetDefaultDB()
 	description := "Given two integer A and B, please output the answer of A+B."
 	problem := problem_model.Problem{
 		Slug:        "a-plus-b-problem",
@@ -60,5 +60,4 @@ func TestProblemMapper(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-
 }

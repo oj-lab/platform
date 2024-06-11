@@ -1,4 +1,4 @@
-package redisAgent
+package redis_agent
 
 import (
 	"github.com/oj-lab/oj-lab-platform/modules/config"

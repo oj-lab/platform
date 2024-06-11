@@ -1,4 +1,4 @@
-package user
+package user_service
 
 import (
 	"context"
@@ -44,7 +44,10 @@ func CheckUserExist(ctx context.Context, account string) (bool, error) {
 	}
 
 	if count > 1 {
-		log.AppLogger().Warnf("user %s has %d records", account, count)
+		log.AppLogger().
+			WithField("account", account).
+			WithField("count", count).
+			Warn("user account is not unique")
 	}
 
 	return count > 0, nil

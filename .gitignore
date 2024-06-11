@@ -23,7 +23,7 @@ dist.zip
 
 # Ignore generated files
 *.pb.go
-**/swaggo-gen/docs.go
+**/swaggo_gen/docs.go
 
 bin/
 __debug_bin**

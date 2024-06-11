@@ -1,4 +1,4 @@
-package problem
+package problem_service
 
 import (
 	"archive/zip"
@@ -7,10 +7,10 @@ import (
 	"os"
 	"path/filepath"
 
-	minioAgent "github.com/oj-lab/oj-lab-platform/modules/agent/minio"
+	minio_agent "github.com/oj-lab/oj-lab-platform/modules/agent/minio"
 )
 
-func unzipProblemPackage(ctx context.Context, zipFile, targetDir string) error {
+func unzipProblemPackage(_ context.Context, zipFile, targetDir string) error {
 	err := os.RemoveAll(targetDir)
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func unzipProblemPackage(ctx context.Context, zipFile, targetDir string) error {
 }
 
 func putProblemPackage(ctx context.Context, slug string, pkgDir string) error {
-	err := minioAgent.PutLocalObjects(ctx, slug, pkgDir)
+	err := minio_agent.PutLocalObjects(ctx, slug, pkgDir)
 	if err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-package minioAgent
+package minio_agent
 
 import (
 	"context"

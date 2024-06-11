@@ -1,12 +1,12 @@
-package minioAgent
+package minio_agent
 
 import (
 	"context"
-	"log"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/oj-lab/oj-lab-platform/modules/config"
+	"github.com/oj-lab/oj-lab-platform/modules/log"
 )
 
 const (
@@ -54,17 +54,18 @@ func GetMinioClient() *minio.Client {
 		}
 		ctx := context.Background()
 
+		exists, err := minioClient.BucketExists(ctx, bucketName)
+		if err == nil && exists {
+			log.AppLogger().WithField("bucket", bucketName).Info("Bucket already exists")
+			return minioClient
+		}
+
 		err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 		if err != nil {
-			// Check to see if we already own this bucket (which happens if you run this twice)
-			exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
-			if errBucketExists == nil && exists {
-				log.Printf("We already own %s\n", bucketName)
-			} else {
-				log.Fatalln(err)
-			}
+			log.AppLogger().WithError(err).
+				WithField("bucket", bucketName).Error("Failed to create bucket")
 		} else {
-			log.Printf("Successfully created %s\n", bucketName)
+			log.AppLogger().WithField("bucket", bucketName).Info("Successfully created bucket")
 		}
 	}
 

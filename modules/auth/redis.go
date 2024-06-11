@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	redisAgent "github.com/oj-lab/oj-lab-platform/modules/agent/redis"
+	redis_agent "github.com/oj-lab/oj-lab-platform/modules/agent/redis"
 	"github.com/oj-lab/oj-lab-platform/modules/log"
 	"github.com/redis/go-redis/v9"
 )
@@ -18,7 +18,7 @@ func getLoginSessionRedisKey(key LoginSessionKey) string {
 }
 
 func SetLoginSession(ctx context.Context, key LoginSessionKey, data LoginSessionData) error {
-	redisClient := redisAgent.GetDefaultRedisClient()
+	redisClient := redis_agent.GetDefaultRedisClient()
 
 	value, err := data.GetJsonString()
 	if err != nil {
@@ -34,7 +34,7 @@ func SetLoginSession(ctx context.Context, key LoginSessionKey, data LoginSession
 }
 
 func GetLoginSession(ctx context.Context, key LoginSessionKey) (*LoginSession, error) {
-	redisClient := redisAgent.GetDefaultRedisClient()
+	redisClient := redis_agent.GetDefaultRedisClient()
 
 	val, err := redisClient.Get(ctx, getLoginSessionRedisKey(key)).Result()
 	if err != nil {
@@ -52,7 +52,7 @@ func GetLoginSession(ctx context.Context, key LoginSessionKey) (*LoginSession, e
 }
 
 func UpdateLoginSessionByAccount(ctx context.Context, account string, data LoginSessionData) error {
-	redisClient := redisAgent.GetDefaultRedisClient()
+	redisClient := redis_agent.GetDefaultRedisClient()
 
 	redisKeys, err := redisClient.Keys(ctx, fmt.Sprintf(loginSessionKeyFormat, account, "*")).Result()
 	if err != nil {

@@ -11,7 +11,7 @@ require (
 	gorm.io/gorm v1.25.10
 )
 
-require github.com/swaggo/swag v1.16.3 // indirect
+require github.com/swaggo/swag v1.16.3
 
 require (
 	github.com/bytedance/sonic/loader v0.1.1 // indirect

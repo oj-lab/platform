@@ -1,14 +1,14 @@
-package problem
+package problem_service
 
 import (
 	"context"
 
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
-	gormAgent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
+	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 )
 
-func getProblemInfoList(ctx context.Context) ([]problem_model.ProblemInfo, int64, error) {
-	db := gormAgent.GetDefaultDB()
+func getProblemInfoList(_ context.Context) ([]problem_model.ProblemInfo, int64, error) {
+	db := gorm_agent.GetDefaultDB()
 	getOptions := problem_model.GetProblemOptions{
 		Selection: problem_model.ProblemInfoSelection,
 	}

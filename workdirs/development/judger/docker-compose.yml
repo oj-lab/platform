@@ -1,6 +1,7 @@
 services:
   judger:
     image: ghcr.io/oj-lab/judger:main
+    pull_policy: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:

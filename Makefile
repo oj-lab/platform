@@ -36,12 +36,12 @@ run: build
 .PHONY: clean
 clean:
 	rm -rf bin
-	rm -rf cmd/web_server/swaggo-gen
+	rm -rf cmd/web_server/swaggo_gen
 
 .PHONY: gen-swagger
 gen-swagger: install-swaggo
 	swag fmt -d cmd/web_server
-	swag init -d cmd/web_server,models -ot go -o cmd/web_server/swaggo-gen
+	swag init -d cmd/web_server,models -ot go -o cmd/web_server/swaggo_gen
 
 # Deprecated
 # But still needed to pass the build
@@ -79,7 +79,7 @@ check: gen-proto install-cilint
 	golangci-lint run
 
 .PHONY: test
-test: gen-swagger setup-dependencies
+test: build gen-swagger setup-dependencies
 	go test -cover -v -count=1 ./...
 
 # Dependent targets

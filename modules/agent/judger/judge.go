@@ -1,4 +1,4 @@
-package judgerAgent
+package judger_agent
 
 import (
 	"bytes"

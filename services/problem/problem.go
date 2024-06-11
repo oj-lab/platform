@@ -1,16 +1,16 @@
-package problem
+package problem_service
 
 import (
 	"context"
 
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
-	gormAgent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
+	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 
 	"gorm.io/gorm"
 )
 
 func GetProblem(ctx context.Context, slug string) (*problem_model.Problem, error) {
-	db := gormAgent.GetDefaultDB()
+	db := gorm_agent.GetDefaultDB()
 	problem, err := problem_model.GetProblem(db, slug)
 	if err != nil {
 		return nil, err
@@ -19,7 +19,7 @@ func GetProblem(ctx context.Context, slug string) (*problem_model.Problem, error
 }
 
 func PutProblem(ctx context.Context, problem problem_model.Problem) error {
-	db := gormAgent.GetDefaultDB()
+	db := gorm_agent.GetDefaultDB()
 	err := problem_model.CreateProblem(db, problem)
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func PutProblem(ctx context.Context, problem problem_model.Problem) error {
 }
 
 func DeleteProblem(ctx context.Context, slug string) error {
-	db := gormAgent.GetDefaultDB()
+	db := gorm_agent.GetDefaultDB()
 	err := problem_model.DeleteProblem(db, slug)
 	if err != nil {
 		return err
@@ -37,7 +37,7 @@ func DeleteProblem(ctx context.Context, slug string) error {
 }
 
 func CheckProblemSlug(ctx context.Context, slug string) (bool, error) {
-	db := gormAgent.GetDefaultDB()
+	db := gorm_agent.GetDefaultDB()
 	problem, err := problem_model.GetProblem(db, slug)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

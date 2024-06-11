@@ -1,65 +1,91 @@
 package handler
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/oj-lab/oj-lab-platform/models"
+	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
+	"github.com/oj-lab/oj-lab-platform/modules"
 	judge_service "github.com/oj-lab/oj-lab-platform/services/judge"
-	"github.com/redis/go-redis/v9"
 )
 
-func SetupJudgeRoute(baseRoute *gin.RouterGroup) {
+func SetupJudgeRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/judge")
 	{
-		g.POST("/task/pick", postPickJudgeTask)
-		g.POST("/task/report", postReportJudgeTaskResult)
+		g.GET("", getJudgeList)
+		g.GET("/:uid", getJudge)
 	}
 }
 
-type PickJudgeTaskBody struct {
-	Consumer string `json:"consumer"`
-}
-
-func postPickJudgeTask(ginCtx *gin.Context) {
-	body := PickJudgeTaskBody{}
-	if err := ginCtx.ShouldBindJSON(&body); err != nil {
-		_ = ginCtx.Error(err)
-		return
-	}
-
-	task, err := judge_service.PickJudgeTask(ginCtx, body.Consumer)
-	if err == redis.Nil {
-		ginCtx.Status(204)
-		return
-	}
-
+func getJudge(ginCtx *gin.Context) {
+	uidString := ginCtx.Param("uid")
+	uid, err := uuid.Parse(uidString)
 	if err != nil {
-		_ = ginCtx.Error(err)
+		modules.NewInvalidParamError("uid", "invalid uid").AppendToGin(ginCtx)
 		return
 	}
 
-	ginCtx.JSON(200, gin.H{
-		"task": task,
-	})
+	judge, err := judge_service.GetJudge(ginCtx, uid)
+	if err != nil {
+		modules.NewInternalError(fmt.Sprintf("failed to get judge: %v", err)).AppendToGin(ginCtx)
+		return
+	}
+
+	ginCtx.JSON(200, judge)
 }
 
-type ReportJudgeTaskResultBody struct {
-	Consumer    string `json:"consumer"`
-	StreamID    string `json:"stream_id"`
-	VerdictJson string `json:"verdict_json"`
+type getJudgeListResponse struct {
+	Total int64                `json:"total"`
+	List  []*judge_model.Judge `json:"list"`
 }
 
-func postReportJudgeTaskResult(ginCtx *gin.Context) {
-	body := ReportJudgeTaskResultBody{}
-	if err := ginCtx.ShouldBindJSON(&body); err != nil {
-		_ = ginCtx.Error(err)
+// Get Judge List
+//
+//	@Summary		Get Judge list
+//	@Description	Get Judge list
+//	@Tags			judge
+//	@Accept			json
+//	@Param			limit	query	int	false	"limit"
+//	@Param			offset	query	int	false	"offset"
+//	@Router			/judge [get] getJudgeListResponse
+func getJudgeList(ginCtx *gin.Context) {
+	limitQuery, _ := ginCtx.GetQuery("limit")
+	offsetQuery, _ := ginCtx.GetQuery("offset")
+	if limitQuery == "" {
+		limitQuery = "10"
+	}
+	if offsetQuery == "" {
+		offsetQuery = "0"
+	}
+
+	limit, err := strconv.Atoi(limitQuery)
+	if err != nil {
+		modules.NewInvalidParamError("limit", "invalid limit").AppendToGin(ginCtx)
+		return
+	}
+	offset, err := strconv.Atoi(offsetQuery)
+	if err != nil {
+		modules.NewInvalidParamError("offset", "invalid offset").AppendToGin(ginCtx)
 		return
 	}
 
-	if err := judge_service.ReportJudgeTaskResult(ginCtx, body.Consumer, body.StreamID, body.VerdictJson); err != nil {
-		_ = ginCtx.Error(err)
+	options := judge_model.GetJudgeOptions{
+		Limit:          &limit,
+		Offset:         &offset,
+		OrderByColumns: []models.OrderByColumnOption{{Column: "create_at", Desc: true}},
+	}
+
+	judges, total, err := judge_service.GetJudgeList(ginCtx, options)
+	if err != nil {
+		modules.NewInternalError(fmt.Sprintf("failed to get judge list: %v", err)).AppendToGin(ginCtx)
 		return
 	}
 
-	ginCtx.JSON(200, gin.H{
-		"message": "success",
+	ginCtx.JSON(200, getJudgeListResponse{
+		Total: total,
+		List:  judges,
 	})
 }

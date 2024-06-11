@@ -2,6 +2,7 @@ package modules
 
 import (
 	"fmt"
+	"net/http"
 	"runtime"
 
 	"github.com/gin-gonic/gin"
@@ -39,14 +40,14 @@ func IsServiceError(err interface{}) bool {
 
 func NewInternalError(msg string) *SeviceError {
 	return &SeviceError{
-		Code: 500,
+		Code: http.StatusInternalServerError,
 		Msg:  msg,
 	}
 }
 
 func NewUnauthorizedError(msg string) *SeviceError {
 	return &SeviceError{
-		Code: 401,
+		Code: http.StatusUnauthorized,
 		Msg:  msg,
 	}
 }
@@ -58,7 +59,7 @@ func NewInvalidParamError(param string, hints ...string) *SeviceError {
 	}
 
 	return &SeviceError{
-		Code: 400,
+		Code: http.StatusBadRequest,
 		Msg:  msg,
 	}
 }

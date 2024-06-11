@@ -12,7 +12,7 @@ const logLevelProp = "log.level"
 
 func AppLogger() *logrus.Entry {
 	return logrus.WithFields(logrus.Fields{
-		"CALLER": func() string {
+		"caller": func() string {
 			pc := make([]uintptr, 1)
 			runtime.Callers(3, pc)
 			f := runtime.FuncForPC(pc[0])
@@ -31,6 +31,8 @@ func setupLog() {
 		println("log level:", lvl)
 		logrus.SetLevel(logLevel)
 	}
+	// TODO: control log format in config
+	// logrus.SetFormatter(&logrus.JSONFormatter{})
 }
 
 func init() {

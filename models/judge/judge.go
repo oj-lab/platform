@@ -1,114 +1,70 @@
-package judge
+package judge_model
 
 import (
-	"strings"
-
+	"github.com/google/uuid"
 	"github.com/oj-lab/oj-lab-platform/models"
+	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
+	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 )
 
-// Should contains a priority definition
-// Ex. CompileError > RuntimeError > TimeLimitExceeded > MemoryLimitExceeded > SystemError > WrongAnswer > Accepted
-type JudgeVerdict string
+type JudgeTaskStatus string
 
 const (
-	JudgeVerdictCompileError        JudgeVerdict = "CompileError" // Only for main verdict
-	JudgeVerdictRuntimeError        JudgeVerdict = "RuntimeError"
-	JudgeVerdictTimeLimitExceeded   JudgeVerdict = "TimeLimitExceeded"
-	JudgeVerdictMemoryLimitExceeded JudgeVerdict = "MemoryLimitExceeded"
-	JudgeVerdictSystemError         JudgeVerdict = "SystemError" // Some runtime unknown error ?
-	JudgeVerdictWrongAnswer         JudgeVerdict = "WrongAnswer"
-	JudgeVerdictAccepted            JudgeVerdict = "Accepted"
-	JudgeVerdictCancelled           JudgeVerdict = "cancelled" // Judge will be cancelled if some point results in Runtime error, Time limit exceeded, Memory limit exceeded
+	JudgeTaskStatusPending  JudgeTaskStatus = "pending"
+	JudgeTaskStatusWaiting  JudgeTaskStatus = "waiting"
+	JudgeTaskStatusRunning  JudgeTaskStatus = "running"
+	JudgeTaskStatusFinished JudgeTaskStatus = "finished"
 )
 
-type JudgeResult struct {
-	MainVerdict    JudgeVerdict         `json:"verdict"`        // A merge of all TestPoints' verdict, according to the pirority
-	Detail         string               `json:"detail"`         // A brief description of the result
-	TestPointCount uint64               `json:"testPointCount"` // Won't be stored in database
-	TestPointMap   map[string]TestPoint `json:"testPoints"`     // Won't be stored in database
-	TestPointsJson string               `json:"-"`              // Used to store TestPoints in database
-	AverageTimeMs  uint64               `json:"averageTimeMs"`  // Won't be stored in database
-	MaxTimeMs      uint64               `json:"maxTimeMs"`      // Won't be stored in database
-	AverageMemory  uint64               `json:"averageMemory"`  // Won't be stored in database
-	MaxMemory      uint64               `json:"maxMemory"`      // Won't be stored in database
-}
+type ProgrammingLanguage string
 
-type TestPoint struct {
-	Index           string       `json:"index"` // The name of *.in/ans file
-	Verdict         JudgeVerdict `json:"verdict"`
-	Diff            *ResultDiff  `json:"diff"` // Required if verdict is wrong_answer
-	TimeUsageMs     uint64       `json:"timeUsageMs"`
-	MemoryUsageByte uint64       `json:"memoryUsageByte"`
+func (sl ProgrammingLanguage) String() string {
+	return string(sl)
 }
-
-type ResultDiff struct {
-	Expected string `json:"expected"`
-	Received string `json:"received"`
-}
-
-type JudgerState string
 
 const (
-	JudgerStateIdle    JudgerState = "idle"
-	JudgerStateBusy    JudgerState = "busy"
-	JudgerStateOffline JudgerState = "offline"
+	ProgrammingLanguageCpp    ProgrammingLanguage = "Cpp"
+	ProgrammingLanguageRust   ProgrammingLanguage = "Rust"
+	ProgrammingLanguagePython ProgrammingLanguage = "Python"
 )
 
-type Judger struct {
+// Using relationship according to https://gorm.io/docs/belongs_to.html
+type Judge struct {
 	models.MetaFields
-	Host  string      `gorm:"primaryKey" json:"host"`
-	State JudgerState `gorm:"default:offline" json:"status"`
+	UID           uuid.UUID             `json:"UID" gorm:"primaryKey"`
+	RedisStreamID string                `json:"redisStreamID"`
+	UserAccount   string                `json:"userAccount" gorm:"not null"`
+	User          user_model.User       `json:"user"`
+	ProblemSlug   string                `json:"problemSlug" gorm:"not null"`
+	Problem       problem_model.Problem `json:"problem"`
+	Code          string                `json:"code" gorm:"not null"`
+	Language      ProgrammingLanguage   `json:"language" gorm:"not null"`
+	Status        JudgeTaskStatus       `json:"status" gorm:"default:pending"`
+	ResultCount   uint                  `json:"resultCount"`
+	Results       []JudgeResult         `json:"results" gorm:"foreignKey:JudgeUID"`
+	Verdict       JudgeVerdict          `json:"verdict"`
 }
 
-type JudgeTask struct {
-	SubmissionUID string  `json:"submissionUID"`
-	ProblemSlug   string  `json:"problemSlug"`
-	Code          string  `json:"code"`
-	Language      string  `json:"language"`
-	RedisStreamID *string `json:"redisStreamID"`
-}
-
-func (jt *JudgeTask) ToStringMap() map[string]interface{} {
-	return map[string]interface{}{
-		"submission_uid": jt.SubmissionUID,
-		"problem_slug":   jt.ProblemSlug,
-		"code":           jt.Code,
-		"language":       jt.Language,
+func NewJudge(
+	userAccount string,
+	problemSlug string,
+	code string,
+	language ProgrammingLanguage,
+) Judge {
+	return Judge{
+		UserAccount: userAccount,
+		ProblemSlug: problemSlug,
+		Code:        code,
+		Language:    language,
+		Status:      JudgeTaskStatusPending,
 	}
 }
 
-func JudgeTaskFromMap(m map[string]interface{}) *JudgeTask {
-	return &JudgeTask{
-		SubmissionUID: m["submission_uid"].(string),
-		ProblemSlug:   m["problem_slug"].(string),
-		Code:          m["code"].(string),
-		Language:      m["language"].(string),
-	}
-}
-
-func (js JudgerState) CanUpdate(nextStatus JudgerState) bool {
-	switch js {
-	case JudgerStateOffline:
-		return nextStatus == JudgerStateIdle
-	case JudgerStateIdle:
-		return nextStatus == JudgerStateBusy || nextStatus == JudgerStateOffline
-	case JudgerStateBusy:
-		return nextStatus == JudgerStateIdle || nextStatus == JudgerStateOffline
-	default:
-		return false
-	}
-}
-
-func StringToJudgerState(state string) JudgerState {
-	state = strings.ToLower(state)
-	switch state {
-	case "idle":
-		return JudgerStateIdle
-	case "busy":
-		return JudgerStateBusy
-	case "offline":
-		return JudgerStateOffline
-	default:
-		return JudgerStateOffline
+func (s *Judge) ToJudgeTask() JudgeTask {
+	return JudgeTask{
+		JudgeUID:    s.UID.String(),
+		ProblemSlug: s.ProblemSlug,
+		Code:        s.Code,
+		Language:    s.Language.String(),
 	}
 }

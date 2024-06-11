@@ -11,7 +11,7 @@ import (
 	problem_service "github.com/oj-lab/oj-lab-platform/services/problem"
 )
 
-func SetupProblemRoute(baseRoute *gin.RouterGroup) {
+func SetupProblemRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/problem")
 	{
 		g.GET("/greet", func(c *gin.Context) {
@@ -23,7 +23,7 @@ func SetupProblemRoute(baseRoute *gin.RouterGroup) {
 		g.DELETE("/:slug", deleteProblem)
 		g.GET("/:slug/check", checkProblemSlug)
 		g.PUT("/:slug/package", putProblemPackage)
-		g.POST("/:slug/submission", postSubmission)
+		g.POST("/:slug/judge", postJudge)
 	}
 }
 
@@ -164,35 +164,35 @@ func checkProblemSlug(ginCtx *gin.Context) {
 	})
 }
 
-// PostSubmissionBody
+// PostJudgeBody
 //
-//	@Description	The body of a submission request, containing the code and the language used for the submission.
-//	@Property		code (string) required "The source code of the submission" minlength(1)
-//	@Property		language (SubmissionLanguage) required "The programming language used for the submission"
-type PostSubmissionBody struct {
-	Code     string                         `json:"code" binding:"required"`
-	Language judge_model.SubmissionLanguage `json:"language" binding:"required"`
+//	@Description	The body of a judge request, containing the code and the language used for the judge.
+//	@Property		code (string) required "The source code of the judge" minlength(1)
+//	@Property		language (ProgrammingLanguage) required "The programming language used for the judge"
+type PostJudgeBody struct {
+	Code     string                          `json:"code" binding:"required"`
+	Language judge_model.ProgrammingLanguage `json:"language" binding:"required"`
 }
 
-// postSubmission
+// postJudge
 //
-//	@Router			/problem/{slug}/submission [post]
-//	@Summary		Post submission
-//	@Description	Post submission
+//	@Router			/problem/{slug}/judge [post]
+//	@Summary		Post judge
+//	@Description	Post judge
 //	@Tags			problem
 //	@Accept			json
-//	@Param			slug			path	string				true	"problem slug"
-//	@Param			judgeRequest	body	PostSubmissionBody	true	"judge request"
-func postSubmission(ginCtx *gin.Context) {
+//	@Param			slug			path	string			true	"problem slug"
+//	@Param			judgeRequest	body	PostJudgeBody	true	"judge request"
+func postJudge(ginCtx *gin.Context) {
 	slug := ginCtx.Param("slug")
-	body := PostSubmissionBody{}
+	body := PostJudgeBody{}
 	if err := ginCtx.ShouldBindJSON(&body); err != nil {
 		_ = ginCtx.Error(err)
 		return
 	}
 
-	submission := judge_model.NewSubmission("", slug, body.Code, body.Language)
-	result, err := judge_service.CreateJudgeTaskSubmission(ginCtx, submission)
+	judge := judge_model.NewJudge("", slug, body.Code, body.Language)
+	result, err := judge_service.CreateJudge(ginCtx, judge)
 	if err != nil {
 		modules.NewInternalError(err.Error()).AppendToGin(ginCtx)
 		return

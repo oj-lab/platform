@@ -71,10 +71,11 @@ func main() {
 
 	apiRouter := r.Group("/api/v1")
 	handler.SetupUserRouter(apiRouter)
-	handler.SetupProblemRoute(apiRouter)
+	handler.SetupProblemRouter(apiRouter)
 	handler.SetupEventRouter(apiRouter)
-	handler.SetupSubmissionRouter(apiRouter)
-	handler.SetupJudgeRoute(apiRouter)
+	handler.SetupJudgeRouter(apiRouter)
+	handler.SetupJudgeTaskRouter(apiRouter)
+	handler.SetupJudgeResultRouter(apiRouter)
 
 	err := r.Run(servicePort)
 	if err != nil {

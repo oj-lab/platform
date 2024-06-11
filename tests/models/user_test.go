@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
-	gormAgent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
+	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 )
 
-func TestUserMapper(t *testing.T) {
-	db := gormAgent.GetDefaultDB()
+func TestUserDB(t *testing.T) {
+	db := gorm_agent.GetDefaultDB()
 	user := user_model.User{
 		Account:  "test",
 		Password: func() *string { s := "test"; return &s }(),
@@ -45,5 +45,4 @@ func TestUserMapper(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-
 }

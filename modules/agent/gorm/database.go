@@ -1,4 +1,4 @@
-package gormAgent
+package gorm_agent
 
 import (
 	"github.com/oj-lab/oj-lab-platform/modules/config"
@@ -25,7 +25,9 @@ func GetDefaultDB() *gorm.DB {
 		db, err = gorm.Open(postgres.New(postgres.Config{
 			DSN:                  dsn,
 			PreferSimpleProtocol: true, // disables implicit prepared statement usage
-		}), &gorm.Config{})
+		}), &gorm.Config{
+			Logger: getLogger(),
+		})
 		if err != nil {
 			panic("failed to connect database")
 		}
