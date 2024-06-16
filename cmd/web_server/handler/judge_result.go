@@ -70,10 +70,14 @@ func postReportJudgeResult(ginCtx *gin.Context) {
 		return
 	}
 
-	judge_service.CreateJudgeResult(ginCtx, judge_model.JudgeResult{
+	_, err = judge_service.CreateJudgeResult(ginCtx, judge_model.JudgeResult{
 		JudgeUID:        judgeUID,
 		Verdict:         verdict,
 		TimeUsageMS:     body.TimeUsageMS,
 		MemoryUsageByte: body.MemoryUsageByte,
 	})
+	if err != nil {
+		modules.NewInternalError(err.Error()).AppendToGin(ginCtx)
+		return
+	}
 }
