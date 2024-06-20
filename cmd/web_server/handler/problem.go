@@ -46,7 +46,7 @@ func getProblem(ginCtx *gin.Context) {
 
 	ginCtx.JSON(200, gin.H{
 		"slug":        problemInfo.Slug,
-		"title":       problemInfo.Title,
+		"title":       problemInfo.Info.Title,
 		"description": problemInfo.Description,
 		"tags":        problem_model.GetTagsList(*problemInfo),
 	})

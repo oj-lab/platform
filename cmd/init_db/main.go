@@ -13,6 +13,7 @@ func main() {
 	err := db.AutoMigrate(
 		&user_model.User{},
 		&problem_model.Problem{},
+		&problem_model.ProblemInfo{},
 		&judge_model.Judge{},
 		&judge_model.JudgeResult{},
 	)

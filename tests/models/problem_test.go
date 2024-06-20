@@ -14,12 +14,19 @@ func TestProblemDB(t *testing.T) {
 	description := "Given two integer A and B, please output the answer of A+B."
 	problem := problem_model.Problem{
 		Slug:        "a-plus-b-problem",
-		Title:       "A+B Problem",
 		Description: &description,
-		Tags:        []*problem_model.AlgorithmTag{{Name: "tag1"}, {Name: "tag2"}},
 	}
 
 	err := problem_model.CreateProblem(db, problem)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = problem_model.CreateProblemInfo(db, problem_model.ProblemInfo{
+		ProblemSlug: problem.Slug,
+		Title:       "A+B Problem",
+		Tags:        []*problem_model.ProblemTag{{Name: "tag1"}, {Name: "tag2"}},
+	})
 	if err != nil {
 		t.Error(err)
 	}
@@ -36,12 +43,12 @@ func TestProblemDB(t *testing.T) {
 	fmt.Printf("%+v\n", string(problemJson))
 
 	problemOption := problem_model.GetProblemOptions{
-		Selection: problem_model.ProblemInfoSelection,
-		Tags:      []*problem_model.AlgorithmTag{{Name: "tag1"}},
-		Slug:      &problem.Slug,
+		Tags: []*problem_model.ProblemTag{{Name: "tag1"}},
+		Slug: &problem.Slug,
 	}
 
-	problemList, problemCount, err := problem_model.GetProblemListByOptions(db, problemOption)
+	problemList, problemCount, err :=
+		problem_model.GetProblemInfoListByOptions(db, problemOption)
 	if err != nil {
 		t.Error(err)
 	}
@@ -55,6 +62,11 @@ func TestProblemDB(t *testing.T) {
 		t.Error(err)
 	}
 	fmt.Printf("%+v\n", string(problemListJson))
+
+	err = problem_model.DeleteProblemInfo(db, problem.Slug)
+	if err != nil {
+		t.Error(err)
+	}
 
 	err = problem_model.DeleteProblem(db, problem.Slug)
 	if err != nil {

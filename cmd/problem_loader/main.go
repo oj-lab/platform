@@ -72,11 +72,19 @@ func main() {
 			}
 			description := string(content)
 			log.AppLogger().WithField("description", description).Debug("Read problem.md")
+
 			err = problem_model.CreateProblem(db, problem_model.Problem{
 				Slug:        slug,
-				Title:       title,
 				Description: &description,
-				Tags: []*problem_model.AlgorithmTag{
+			})
+			if err != nil {
+				return err
+			}
+
+			err = problem_model.CreateProblemInfo(db, problem_model.ProblemInfo{
+				ProblemSlug: slug,
+				Title:       title,
+				Tags: []*problem_model.ProblemTag{
 					{Name: "to-be-add"},
 				},
 			})
