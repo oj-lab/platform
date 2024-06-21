@@ -5,6 +5,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/oj-lab/oj-lab-platform/models"
+	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
+	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -22,8 +24,12 @@ func CreateJudge(tx *gorm.DB, judge Judge) (*Judge, error) {
 func GetJudge(tx *gorm.DB, uid uuid.UUID) (*Judge, error) {
 	judge := Judge{}
 	err := tx.Model(&Judge{}).
-		Preload("User").
-		Preload("Problem").
+		Preload("User", func(tx *gorm.DB) *gorm.DB {
+			return tx.Select(user_model.PublicUserSelection)
+		}).
+		Preload("Problem", func(tx *gorm.DB) *gorm.DB {
+			return tx.Select(problem_model.ProblemInfoSelection)
+		}).
 		Preload("Results").
 		Where("UID = ?", uid).First(&judge).Error
 	if err != nil {

@@ -1,4 +1,4 @@
-package user
+package user_model
 
 import "github.com/oj-lab/oj-lab-platform/models"
 

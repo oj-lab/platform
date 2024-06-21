@@ -1,6 +1,7 @@
 package models_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
@@ -40,5 +41,9 @@ func TestJudgeDB(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log(judge)
+	judgeJson, err := json.MarshalIndent(judge, "", "\t")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Logf("%+v\n", string(judgeJson))
 }

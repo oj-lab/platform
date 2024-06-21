@@ -41,7 +41,7 @@ func TestProblemDB(t *testing.T) {
 		Slug:      &problem.Slug,
 	}
 
-	problemList, problemCount, err := problem_model.GetProblemListByOptions(db, problemOption)
+	problemList, problemCount, err := problem_model.GetProblemInfoListByOptions(db, problemOption)
 	if err != nil {
 		t.Error(err)
 	}

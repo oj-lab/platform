@@ -1,4 +1,4 @@
-package problem
+package problem_model
 
 import "github.com/oj-lab/oj-lab-platform/models"
 
@@ -16,20 +16,4 @@ type AlgorithmTag struct {
 	Problems []*Problem `gorm:"many2many:problem_algorithm_tags;" json:"problems,omitempty"`
 }
 
-type ProblemInfo struct {
-	models.MetaFields
-	Slug  string          `json:"slug"`
-	Title string          `json:"title"`
-	Tags  []*AlgorithmTag `json:"tags"`
-}
-
 var ProblemInfoSelection = append([]string{"slug", "title"}, models.MetaFieldsSelection...)
-
-func (p Problem) ToProblemInfo() ProblemInfo {
-	return ProblemInfo{
-		MetaFields: p.MetaFields,
-		Slug:       p.Slug,
-		Title:      p.Title,
-		Tags:       p.Tags,
-	}
-}

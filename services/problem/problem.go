@@ -48,10 +48,6 @@ func CheckProblemSlug(ctx context.Context, slug string) (bool, error) {
 	return problem == nil, nil
 }
 
-func GetProblemInfoList(ctx context.Context) ([]problem_model.ProblemInfo, int64, error) {
-	return getProblemInfoList(ctx)
-}
-
 func PutProblemPackage(ctx context.Context, slug, zipFile string) error {
 	localDir := "/tmp/" + slug
 	err := unzipProblemPackage(ctx, zipFile, localDir)

@@ -1,4 +1,4 @@
-package problem
+package problem_model
 
 import (
 	"gorm.io/gorm"
@@ -82,7 +82,7 @@ func CountProblemByOptions(tx *gorm.DB, options GetProblemOptions) (int64, error
 	return count, err
 }
 
-func GetProblemListByOptions(tx *gorm.DB, options GetProblemOptions) ([]Problem, int64, error) {
+func GetProblemInfoListByOptions(tx *gorm.DB, options GetProblemOptions) ([]Problem, int64, error) {
 	total, err := CountProblemByOptions(tx, options)
 	if err != nil {
 		return nil, 0, err
