@@ -4,21 +4,21 @@ import "github.com/oj-lab/oj-lab-platform/models"
 
 type User struct {
 	models.MetaFields
-	Account        string  `gorm:"primaryKey" json:"account"`
+	Account        string  `json:"account" gorm:"primaryKey"`
 	Name           string  `json:"name"`
-	Password       *string `gorm:"-:all" json:"password,omitempty"`
-	HashedPassword string  `gorm:"not null" json:"-"`
-	Roles          []*Role `gorm:"many2many:user_roles;" json:"roles,omitempty"`
-	Email          *string `gorm:"unique" json:"email,omitempty"`
-	Mobile         *string `gorm:"unique" json:"mobile,omitempty"`
+	Password       *string `json:"password,omitempty" gorm:"-:all"`
+	HashedPassword string  `json:"-" gorm:"not null"`
+	Roles          []*Role `json:"roles,omitempty" gorm:"many2many:user_roles;"`
+	Email          *string `json:"email,omitempty" gorm:"unique"`
+	Mobile         *string `json:"mobile,omitempty" gorm:"unique"`
 }
 
 var PublicUserSelection = append([]string{"account", "name"}, models.MetaFieldsSelection...)
 
 type Role struct {
 	models.MetaFields
-	Name  string  `gorm:"primaryKey" json:"name"`
-	Users []*User `gorm:"many2many:user_roles" json:"users,omitempty"`
+	Name  string  `json:"name" gorm:"primaryKey"`
+	Users []*User `json:"users,omitempty" gorm:"many2many:user_roles"`
 }
 
 func (user User) GetRolesStringSet() map[string]struct{} {
