@@ -10,11 +10,11 @@ const (
 )
 
 var (
-	redisHosts []string
+	RedisHosts []string
 )
 
 func init() {
-	redisHosts = config.AppConfig.GetStringSlice(redisHostsProp)
+	RedisHosts = config.AppConfig.GetStringSlice(redisHostsProp)
 }
 
 type RedisClientInterface interface {
@@ -25,17 +25,17 @@ var redisClient redis.UniversalClient
 
 func GetDefaultRedisClient() redis.UniversalClient {
 	if redisClient == nil {
-		if len(redisHosts) == 0 {
+		if len(RedisHosts) == 0 {
 			panic("No redis hosts configured")
 		}
-		if len(redisHosts) == 1 {
+		if len(RedisHosts) == 1 {
 			redisClient = redis.NewClient(&redis.Options{
-				Addr: redisHosts[0],
+				Addr: RedisHosts[0],
 			})
 		}
-		if len(redisHosts) > 1 {
+		if len(RedisHosts) > 1 {
 			redisClient = redis.NewClusterClient(&redis.ClusterOptions{
-				Addrs: redisHosts,
+				Addrs: RedisHosts,
 			})
 		}
 	}

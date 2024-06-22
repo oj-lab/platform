@@ -5,6 +5,7 @@ import (
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
+	"github.com/oj-lab/oj-lab-platform/modules/auth"
 	"github.com/oj-lab/oj-lab-platform/modules/log"
 )
 
@@ -43,6 +44,10 @@ func main() {
 	if err != nil {
 		panic("failed to create anonymous user")
 	}
-
 	log.AppLogger().Info("migrate tables ans users success")
+
+	err = auth.LoadDefaultCasbinPolicies()
+	if err != nil {
+		panic("failed to load default casbin policies")
+	}
 }
