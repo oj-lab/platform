@@ -14,24 +14,22 @@ import (
 	"github.com/oj-lab/oj-lab-platform/modules/log"
 )
 
-const ABACModelString = `
+const RBACModelString = `
 [request_definition]
-r = sub, obj, act
+r = sub, info, dom, obj, act
 
 [policy_definition]
-p = sub_rule, obj, act, eft
+p = sub, info_rule, dom, obj, act, eft
+
+[role_definition]
+g = _, _
 
 [policy_effect]
-e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
+e = some(where (p.eft == allow))
 
 [matchers]
-m = eval(p.sub_rule) && keyMatch(r.obj, p.obj) && regexMatch(r.act, p.act)
+m = g(r.sub, p.sub) && eval(p.info_rule) && r.dom == p.dom && r.obj == p.obj && regexMatch(r.act, p.act)
 `
-
-type CasbinSubject struct {
-	Age  int
-	Role string
-}
 
 var casbinEnforcer *casbin.SyncedCachedEnforcer
 
@@ -56,7 +54,7 @@ func GetDefaultCasbinEnforcer() *casbin.SyncedCachedEnforcer {
 		if err != nil && adapter == nil {
 			panic(err)
 		}
-		model, err := model.NewModelFromString(ABACModelString)
+		model, err := model.NewModelFromString(RBACModelString)
 		if err != nil {
 			panic(err)
 		}
@@ -83,17 +81,21 @@ func GetDefaultCasbinEnforcer() *casbin.SyncedCachedEnforcer {
 
 func LoadDefaultCasbinPolicies() error {
 	enforcer := GetDefaultCasbinEnforcer()
-	_, err := enforcer.AddPolicy(`r.sub.Age > 18 && r.sub.Age < 60`, `testData`, http.MethodGet, "allow")
+	_, err := enforcer.AddPolicy(`admin`, `true`, `system`, `testData`, http.MethodGet, "allow")
 	if err != nil {
 		return err
 	}
-	_, err = enforcer.AddPolicy(`r.sub.Role == 'admin'`, `adminRequired`,
+	_, err = enforcer.AddPolicy(`admin`, `true`, `system`, `adminRequired`,
 		strings.Join([]string{
 			http.MethodGet,
 			http.MethodPost,
 			http.MethodPut,
 			http.MethodDelete,
 		}, "|"), "allow")
+	if err != nil {
+		return err
+	}
+	_, err = enforcer.AddGroupingPolicy(`test_user`, `admin`)
 	if err != nil {
 		return err
 	}

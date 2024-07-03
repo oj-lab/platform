@@ -15,14 +15,13 @@ func TestCasbin(t *testing.T) {
 		t.Error(err)
 	}
 
-	policies, err := enforcer.GetFilteredPolicy(1, `testData`)
+	policies, err := enforcer.GetFilteredPolicy(3, `testData`)
 	if err != nil {
 		t.Error(err)
 	}
 	t.Logf("Policies: %v", policies)
 
-	subject := auth.CasbinSubject{Age: 30}
-	allow, err := enforcer.Enforce(subject, `testData`, http.MethodGet)
+	allow, err := enforcer.Enforce("admin", "_", `system`, `testData`, http.MethodGet)
 	if err != nil {
 		t.Error(err)
 	}
@@ -30,8 +29,7 @@ func TestCasbin(t *testing.T) {
 		t.Error("Expected to allow")
 	}
 
-	subject = auth.CasbinSubject{Age: 30, Role: "admin"}
-	allow, err = enforcer.Enforce(subject, `adminRequired`, http.MethodDelete)
+	allow, err = enforcer.Enforce("test_user", "_", `system`, `adminRequired`, http.MethodDelete)
 	if err != nil {
 		t.Error(err)
 	}
