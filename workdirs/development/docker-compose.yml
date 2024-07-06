@@ -39,3 +39,13 @@ services:
     restart: always
     ports:
       - "6379:6379"
+  
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    restart: always
+    ports:
+      - "8123:8123"
+      - "9100:9000"
+    environment:
+      - CLICKHOUSE_USER=clickhouse
+      - CLICKHOUSE_PASSWORD=clickhouse
