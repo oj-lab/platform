@@ -1,4 +1,4 @@
-package auth
+package casbin_agent
 
 import (
 	"net/http"
@@ -13,23 +13,6 @@ import (
 	redis_agent "github.com/oj-lab/oj-lab-platform/modules/agent/redis"
 	"github.com/oj-lab/oj-lab-platform/modules/log"
 )
-
-const RBACModelString = `
-[request_definition]
-r = sub, info, dom, obj, act
-
-[policy_definition]
-p = sub, info_rule, dom, obj, act, eft
-
-[role_definition]
-g = _, _
-
-[policy_effect]
-e = some(where (p.eft == allow))
-
-[matchers]
-m = g(r.sub, p.sub) && eval(p.info_rule) && r.dom == p.dom && r.obj == p.obj && regexMatch(r.act, p.act)
-`
 
 var casbinEnforcer *casbin.SyncedCachedEnforcer
 
@@ -54,7 +37,7 @@ func GetDefaultCasbinEnforcer() *casbin.SyncedCachedEnforcer {
 		if err != nil && adapter == nil {
 			panic(err)
 		}
-		model, err := model.NewModelFromString(RBACModelString)
+		model, err := model.NewModelFromString(ExtendedRBACWithDomainModelString)
 		if err != nil {
 			panic(err)
 		}
@@ -73,6 +56,7 @@ func GetDefaultCasbinEnforcer() *casbin.SyncedCachedEnforcer {
 			}
 			log.AppLogger().Info("Casbin enforcer watcher initialized")
 		}
+		casbinEnforcer.AddFunction("keyMatchGin", keyMatchGinFunc)
 		log.AppLogger().Info("Casbin enforcer initialized")
 	}
 
@@ -81,11 +65,12 @@ func GetDefaultCasbinEnforcer() *casbin.SyncedCachedEnforcer {
 
 func LoadDefaultCasbinPolicies() error {
 	enforcer := GetDefaultCasbinEnforcer()
-	_, err := enforcer.AddPolicy(`admin`, `true`, `system`, `testData`, http.MethodGet, "allow")
+	_, err := enforcer.AddPolicy(
+		`test_user`, `r.ext.IsVIP == true`, `system`, `testData`, http.MethodGet, "allow")
 	if err != nil {
 		return err
 	}
-	_, err = enforcer.AddPolicy(`admin`, `true`, `system`, `adminRequired`,
+	_, err = enforcer.AddPolicy(`admin`, `true`, `system`, `adminRequired/*any`,
 		strings.Join([]string{
 			http.MethodGet,
 			http.MethodPost,
@@ -95,7 +80,7 @@ func LoadDefaultCasbinPolicies() error {
 	if err != nil {
 		return err
 	}
-	_, err = enforcer.AddGroupingPolicy(`test_user`, `admin`)
+	_, err = enforcer.AddGroupingPolicy(`test_user`, `admin`, `system`)
 	if err != nil {
 		return err
 	}

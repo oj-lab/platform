@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/oj-lab/oj-lab-platform/cmd/web_server/middleware"
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	"github.com/oj-lab/oj-lab-platform/modules"
-	"github.com/oj-lab/oj-lab-platform/modules/middleware"
 	user_service "github.com/oj-lab/oj-lab-platform/services/user"
 )
 
@@ -15,7 +15,7 @@ func SetupUserRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/user")
 	{
 		g.PUT("", updateUser)
-		g.GET("/health", func(ginCtx *gin.Context) {
+		g.GET("/health/*any", func(ginCtx *gin.Context) {
 			ginCtx.String(http.StatusOK, "Hello, this is user service")
 		})
 		g.POST("/login", login)

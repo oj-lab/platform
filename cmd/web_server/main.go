@@ -6,11 +6,11 @@ import (
 	"runtime"
 
 	"github.com/oj-lab/oj-lab-platform/cmd/web_server/handler"
+	"github.com/oj-lab/oj-lab-platform/cmd/web_server/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/oj-lab/oj-lab-platform/modules/config"
 	"github.com/oj-lab/oj-lab-platform/modules/log"
-	"github.com/oj-lab/oj-lab-platform/modules/middleware"
 )
 
 const (

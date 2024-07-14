@@ -6,8 +6,8 @@ import (
 	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
+	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
-	"github.com/oj-lab/oj-lab-platform/modules/auth"
 	"github.com/oj-lab/oj-lab-platform/modules/log"
 )
 
@@ -60,8 +60,8 @@ func main() {
 	}
 	log.AppLogger().Info("migrate tables ans users success")
 
-	err = auth.LoadDefaultCasbinPolicies()
+	err = casbin_agent.LoadDefaultCasbinPolicies()
 	if err != nil {
-		panic("failed to load default casbin policies")
+		panic(fmt.Sprintf("failed to load default casbin policies: %v", err))
 	}
 }
