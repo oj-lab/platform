@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -61,6 +62,9 @@ func loadConfig() error {
 	if err == nil {
 		println("Found override config, merged")
 	}
+
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	AppConfig = viper.GetViper()
 	return nil

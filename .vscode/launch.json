@@ -11,6 +11,10 @@
             "mode": "auto",
             "cwd": "${workspaceFolder}",
             "program": "cmd/web_server/main.go",
+            "env": {
+                // Config can be overriden here
+                // "LOG_LEVEL": "info",
+            }
         }
     ]
 }
