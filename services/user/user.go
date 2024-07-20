@@ -6,7 +6,7 @@ import (
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 	"github.com/oj-lab/oj-lab-platform/modules/auth"
-	"github.com/oj-lab/oj-lab-platform/modules/log"
+	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
 )
 
 func GetUser(ctx context.Context, account string) (*user_model.User, error) {
@@ -17,6 +17,18 @@ func GetUser(ctx context.Context, account string) (*user_model.User, error) {
 	}
 
 	return user, nil
+}
+
+func GetUserList(
+	ctx context.Context, options user_model.GetUserOptions,
+) ([]user_model.User, int64, error) {
+	db := gorm_agent.GetDefaultDB()
+	users, total, err := user_model.GetUserByOptions(db, options)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return users, total, nil
 }
 
 func UpdateUser(ctx context.Context, user user_model.User) error {
@@ -35,7 +47,7 @@ func UpdateUser(ctx context.Context, user user_model.User) error {
 
 func CheckUserExist(ctx context.Context, account string) (bool, error) {
 	getOptions := user_model.GetUserOptions{
-		Account: account,
+		AccountQuery: account,
 	}
 	db := gorm_agent.GetDefaultDB()
 	count, err := user_model.CountUserByOptions(db, getOptions)
@@ -44,7 +56,7 @@ func CheckUserExist(ctx context.Context, account string) (bool, error) {
 	}
 
 	if count > 1 {
-		log.AppLogger().
+		log_module.AppLogger().
 			WithField("account", account).
 			WithField("count", count).
 			Warn("user account is not unique")

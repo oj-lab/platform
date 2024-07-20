@@ -1,10 +1,10 @@
-package log
+package log_module
 
 import (
 	"os"
 	"runtime"
 
-	"github.com/oj-lab/oj-lab-platform/modules/config"
+	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
 	"github.com/sirupsen/logrus"
 )
 
@@ -25,7 +25,7 @@ func setupLog() {
 	logrus.SetOutput(os.Stdout)
 
 	logrus.SetLevel(logrus.DebugLevel)
-	lvl := config.AppConfig.GetString(logLevelProp)
+	lvl := config_module.AppConfig().GetString(logLevelProp)
 	logLevel, err := logrus.ParseLevel(lvl)
 	if err == nil {
 		println("log level:", lvl)

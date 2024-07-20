@@ -4,8 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/oj-lab/oj-lab-platform/modules"
 	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
-	"github.com/oj-lab/oj-lab-platform/modules/log"
+	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
 )
+
+const UserSubPrefix = "user_"
 
 func BuildCasbinEnforceHandlerWithDomain(domain string) gin.HandlerFunc {
 	return func(ginCtx *gin.Context) {
@@ -15,17 +17,20 @@ func BuildCasbinEnforceHandlerWithDomain(domain string) gin.HandlerFunc {
 		ls, err := GetLoginSessionFromGinCtx(ginCtx)
 		if err != nil {
 			modules.NewUnauthorizedError("cannot load login session from cookie").AppendToGin(ginCtx)
+			ginCtx.Abort()
 			return
 		}
 
-		allow, err := enforcer.Enforce(ls.Key.Account, "_", domain, path, method)
+		allow, err := enforcer.Enforce(UserSubPrefix+ls.Key.Account, "_", domain, path, method)
 		if err != nil {
-			log.AppLogger().Errorf("Failed to enforce: %v", err)
+			log_module.AppLogger().Errorf("Failed to enforce: %v", err)
 			modules.NewInternalError("Failed to enforce").AppendToGin(ginCtx)
+			ginCtx.Abort()
 			return
 		}
 		if !allow {
 			modules.NewUnauthorizedError("Unauthorized").AppendToGin(ginCtx)
+			ginCtx.Abort()
 			return
 		}
 		ginCtx.Next()

@@ -2,31 +2,28 @@
 level = "debug"
 
 [database]
-dsn = "user=postgres password=development host=host.docker.internal port=5432 dbname=oj_lab sslmode=disable TimeZone=Asia/Shanghai"
+dsn = "user=postgres password=postgres host=localhost port=5432 dbname=oj_lab sslmode=disable TimeZone=Asia/Shanghai"
 
 [redis]
-host = ["host.docker.internal:6379"]
+hosts = ["localhost:6379"]
 
 [jwt]
 secret = "example_secret"
 duration = "24h"
 
 [service]
+force_console_color = true
 auth_on = true
 port = ":8080"
-cookie.age = "24h"
 mode = "debug"
 swagger_on = true
-frontend_dist = "frontend_dist"
+frontend_dist = "frontend/dist"
 
 [rpc-server]
 port = 50051
 
-[judger]
-host = "http://host.docker.internal:8000"
-
 [minio]
-endpoint = "host.docker.internal:9000"
+endpoint = "localhost:9000"
 accessKeyID = "minio-root-user"
 secretAccessKey = "minio-root-password"
 useSSL = false

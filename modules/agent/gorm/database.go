@@ -1,7 +1,7 @@
 package gorm_agent
 
 import (
-	"github.com/oj-lab/oj-lab-platform/modules/config"
+	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -13,7 +13,7 @@ var db *gorm.DB
 var dsn string
 
 func init() {
-	dsn = config.AppConfig.GetString(dsnProp)
+	dsn = config_module.AppConfig().GetString(dsnProp)
 	if dsn == "" {
 		panic("database dsn is not set")
 	}

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/oj-lab/oj-lab-platform/modules/log"
+	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
 )
 
 func SetupEventRouter(baseRoute *gin.RouterGroup) {
@@ -25,7 +25,6 @@ func SetupEventRouter(baseRoute *gin.RouterGroup) {
 //	@Accept			text/event-stream
 //	@Produce		text/event-stream
 //	@Success		200	{string}	string	"data: {message}"
-//	@Router			/user/stream [get]
 func Stream(ginCtx *gin.Context) {
 	ginCtx.Header("Content-Type", "text/event-stream")
 	ginCtx.Header("Cache-Control", "no-cache")
@@ -34,7 +33,7 @@ func Stream(ginCtx *gin.Context) {
 	ginCtx.Stream(func(w io.Writer) bool {
 		// With event type
 		message := fmt.Sprintf("event: %s\ndata: %s\n\n", "eventType", time.Now().String())
-		log.AppLogger().Infof("Send message:\n%s", message)
+		log_module.AppLogger().Infof("Send message:\n%s", message)
 		fmt.Fprint(w, message)
 		time.Sleep(1 * time.Second)
 		counter++

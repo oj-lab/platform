@@ -9,8 +9,8 @@ import (
 	"github.com/oj-lab/oj-lab-platform/cmd/web_server/middleware"
 
 	"github.com/gin-gonic/gin"
-	"github.com/oj-lab/oj-lab-platform/modules/config"
-	"github.com/oj-lab/oj-lab-platform/modules/log"
+	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
+	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
 )
 
 const (
@@ -30,11 +30,11 @@ var (
 )
 
 func init() {
-	serviceForceConsoleColor = config.AppConfig.GetBool(serviceForceConsoleColorProp)
-	servicePort = config.AppConfig.GetString(servicePortProp)
-	serviceMode = config.AppConfig.GetString(serviceModeProp)
-	swaggerOn = config.AppConfig.GetBool(swaggerOnProp)
-	frontendDist = config.AppConfig.GetString(frontendDistProp)
+	serviceForceConsoleColor = config_module.AppConfig().GetBool(serviceForceConsoleColorProp)
+	servicePort = config_module.AppConfig().GetString(servicePortProp)
+	serviceMode = config_module.AppConfig().GetString(serviceModeProp)
+	swaggerOn = config_module.AppConfig().GetBool(swaggerOnProp)
+	frontendDist = config_module.AppConfig().GetString(frontendDistProp)
 }
 
 func GetProjectDir() string {
@@ -56,16 +56,16 @@ func main() {
 	if frontendDist != "" {
 		// If dist folder is not empty, serve frontend
 		if _, err := os.Stat(frontendDist); os.IsNotExist(err) {
-			log.AppLogger().Warn("Frontend dist is set but folder not found")
+			log_module.AppLogger().Warn("Frontend dist is set but folder not found")
 		} else {
-			log.AppLogger().Info("Serving frontend...")
+			log_module.AppLogger().Info("Serving frontend...")
 			r.LoadHTMLFiles(frontendDist + "/index.html")
 			handler.SetupFrontendRoute(baseRouter, frontendDist)
 		}
 	}
 
 	if swaggerOn {
-		log.AppLogger().Info("Serving swagger Doc...")
+		log_module.AppLogger().Info("Serving swagger Doc...")
 		handler.SetupSwaggoRouter(baseRouter)
 	}
 

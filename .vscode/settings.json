@@ -1,13 +1,7 @@
 {
   "material-icon-theme.folders.associations": {
-    "application": "core",
-    "mapper": "database",
-    "migrate_db": "import",
-    "service": "components",
-    "business": "hook",
-    "postman": "api",
-    ".github/workflows": "github",
-    "test-collection": "resource"
+    "problem_packages": "packages",
+    "modules/agent": "client"
   },
   "go.testFlags": [
     "-v",

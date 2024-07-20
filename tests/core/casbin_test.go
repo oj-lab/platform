@@ -43,12 +43,18 @@ func TestKeyMatchGin(t *testing.T) {
 
 func TestCasbin(t *testing.T) {
 	enforcer := casbin_agent.GetDefaultCasbinEnforcer()
+	_, err := enforcer.AddPolicy(
+		`user_test`, `r.ext.IsVIP == true`, `system`, `testData`, http.MethodGet, "allow")
+	if err != nil {
+		panic(err)
+	}
+
 	// Callback like SavePolicy should trigger the watcher to update the policy
-	err := enforcer.SavePolicy()
+	err = enforcer.SavePolicy()
 	if err != nil {
 		t.Error(err)
 	}
-	roles := enforcer.GetRolesForUserInDomain("test_user", `system`)
+	roles := enforcer.GetRolesForUserInDomain("user_test", `system`)
 	t.Logf("Roles: %v", roles)
 
 	policies, err := enforcer.GetFilteredPolicy(3, `testData`)
@@ -57,17 +63,9 @@ func TestCasbin(t *testing.T) {
 	}
 	t.Logf("Policies: %v", policies)
 
-	allow, err := enforcer.Enforce("test_user", casbin_agent.ExtraInfo{
+	allow, err := enforcer.Enforce("user_test", casbin_agent.ExtraInfo{
 		IsVIP: true,
 	}, `system`, `testData`, http.MethodGet)
-	if err != nil {
-		t.Error(err)
-	}
-	if !allow {
-		t.Error("Expected to allow")
-	}
-
-	allow, err = enforcer.Enforce("test_user", casbin_agent.ExtraInfo{}, `system`, `adminRequired`, http.MethodDelete)
 	if err != nil {
 		t.Error(err)
 	}

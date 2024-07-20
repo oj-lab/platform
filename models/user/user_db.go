@@ -76,11 +76,11 @@ func UpdateUser(tx *gorm.DB, update User) error {
 }
 
 type GetUserOptions struct {
-	Account string
-	Email   string
-	Mobile  string
-	Offset  *int
-	Limit   *int
+	AccountQuery string
+	EmailQuery   string
+	MobileQuery  string
+	Offset       *int
+	Limit        *int
 }
 
 // Count the total number of users that match the options,
@@ -88,11 +88,17 @@ type GetUserOptions struct {
 func CountUserByOptions(tx *gorm.DB, options GetUserOptions) (int64, error) {
 	var count int64
 
-	tx = tx.
-		Model(&User{}).
-		Where("account = ?", options.Account).
-		Or("email = ?", options.Email).
-		Or("mobile = ?", options.Mobile)
+	tx = tx.Model(&User{})
+
+	if options.AccountQuery != "" {
+		tx = tx.Where("account LIKE ?", options.AccountQuery)
+	}
+	if options.EmailQuery != "" {
+		tx = tx.Where("email LIKE ?", options.EmailQuery)
+	}
+	if options.MobileQuery != "" {
+		tx = tx.Where("mobile LIKE ?", options.MobileQuery)
+	}
 
 	err := tx.Count(&count).Error
 
@@ -107,10 +113,16 @@ func GetUserByOptions(tx *gorm.DB, options GetUserOptions) ([]User, int64, error
 
 	db_users := []User{}
 
-	tx = tx.
-		Where("account = ?", options.Account).
-		Or("email = ?", options.Email).
-		Or("mobile = ?", options.Mobile)
+	if options.AccountQuery != "" {
+		tx = tx.Where("account LIKE ?", options.AccountQuery)
+	}
+	if options.EmailQuery != "" {
+		tx = tx.Where("email LIKE ?", options.EmailQuery)
+	}
+	if options.MobileQuery != "" {
+		tx = tx.Where("mobile LIKE ?", options.MobileQuery)
+	}
+
 	if options.Offset != nil {
 		tx = tx.Offset(*options.Offset)
 	}

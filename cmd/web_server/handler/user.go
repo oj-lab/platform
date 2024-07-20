@@ -3,11 +3,13 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/oj-lab/oj-lab-platform/cmd/web_server/middleware"
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	"github.com/oj-lab/oj-lab-platform/modules"
+	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
 	user_service "github.com/oj-lab/oj-lab-platform/services/user"
 )
 
@@ -15,13 +17,53 @@ func SetupUserRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/user")
 	{
 		g.PUT("", updateUser)
-		g.GET("/health/*any", func(ginCtx *gin.Context) {
-			ginCtx.String(http.StatusOK, "Hello, this is user service")
-		})
+		g.GET("",
+			middleware.HandleRequireLogin,
+			middleware.BuildCasbinEnforceHandlerWithDomain("system"),
+			GetUserList,
+		)
 		g.POST("/login", login)
 		g.GET("/me", middleware.HandleRequireLogin, me)
 		g.GET("/check-exist", checkUserExist)
 	}
+}
+
+func AddUserCasbinPolicies() error {
+	enforcer := casbin_agent.GetDefaultCasbinEnforcer()
+	_, err := enforcer.AddPolicies([][]string{
+		{`role_admin`, `true`, `system`, `/api/v1/user/*any`, http.MethodGet, "allow"},
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetUserList(ginCtx *gin.Context) {
+	options := user_model.GetUserOptions{}
+	limitStr := ginCtx.Query("limit")
+	offsetStr := ginCtx.Query("offset")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		limit = 10
+	}
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		offset = 0
+	}
+	options.Limit = func() *int { return &limit }()
+	options.Offset = func() *int { return &offset }()
+
+	users, total, err := user_service.GetUserList(ginCtx, options)
+	if err != nil {
+		modules.NewInternalError(fmt.Sprintf("failed to get user list: %v", err)).AppendToGin(ginCtx)
+		return
+	}
+
+	ginCtx.JSON(http.StatusOK, gin.H{
+		"users": users,
+		"total": total,
+	})
 }
 
 type loginBody struct {

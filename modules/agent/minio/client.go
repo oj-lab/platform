@@ -5,8 +5,8 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/oj-lab/oj-lab-platform/modules/config"
-	"github.com/oj-lab/oj-lab-platform/modules/log"
+	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
+	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
 )
 
 const (
@@ -29,12 +29,12 @@ var (
 )
 
 func init() {
-	endpoint = config.AppConfig.GetString(minioEndpointProp)
-	accessKeyID = config.AppConfig.GetString(minioAccessKeyProp)
-	secretAccessKey = config.AppConfig.GetString(minioSecretAccessKeyProp)
-	useSSL = config.AppConfig.GetBool(minioUseSSLProp)
-	region = config.AppConfig.GetString(minioRegionProp)
-	bucketName = config.AppConfig.GetString(minioBucketNameProp)
+	endpoint = config_module.AppConfig().GetString(minioEndpointProp)
+	accessKeyID = config_module.AppConfig().GetString(minioAccessKeyProp)
+	secretAccessKey = config_module.AppConfig().GetString(minioSecretAccessKeyProp)
+	useSSL = config_module.AppConfig().GetBool(minioUseSSLProp)
+	region = config_module.AppConfig().GetString(minioRegionProp)
+	bucketName = config_module.AppConfig().GetString(minioBucketNameProp)
 }
 
 func GetBucketName() string {
@@ -56,16 +56,16 @@ func GetMinioClient() *minio.Client {
 
 		exists, err := minioClient.BucketExists(ctx, bucketName)
 		if err == nil && exists {
-			log.AppLogger().WithField("bucket", bucketName).Info("Bucket already exists")
+			log_module.AppLogger().WithField("bucket", bucketName).Info("Bucket already exists")
 			return minioClient
 		}
 
 		err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 		if err != nil {
-			log.AppLogger().WithError(err).
+			log_module.AppLogger().WithError(err).
 				WithField("bucket", bucketName).Error("Failed to create bucket")
 		} else {
-			log.AppLogger().WithField("bucket", bucketName).Info("Successfully created bucket")
+			log_module.AppLogger().WithField("bucket", bucketName).Info("Successfully created bucket")
 		}
 	}
 

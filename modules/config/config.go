@@ -1,4 +1,4 @@
-package config
+package config_module
 
 import (
 	"fmt"
@@ -10,12 +10,10 @@ import (
 )
 
 const serviceEnvEnvKey = "OJ_LAB_SERVICE_ENV"
-const workdirEnvKey = "OJ_LAB_WORKDIR"
 
 const defaultConfigName = "config"
 const defaultOverrideConfigName = "override"
 const defaultProjectRootName = "oj-lab-platform"
-const defaultProjectWorkdirFolder = "workdirs"
 
 type ServiceEnv string
 
@@ -25,8 +23,8 @@ const (
 )
 
 var serviceEnv ServiceEnv
-var Workdir string
-var AppConfig *viper.Viper
+var projectRoot string
+var appConfig *viper.Viper
 
 func (se ServiceEnv) isValid() bool {
 	if se == serviceEnvDev || se == serviceEnvPrd {
@@ -49,7 +47,7 @@ func loadServiceEnv() {
 }
 
 func loadConfig() error {
-	viper.AddConfigPath(Workdir)
+	viper.AddConfigPath(projectRoot)
 
 	viper.SetConfigName(defaultConfigName)
 	err := viper.ReadInConfig()
@@ -66,16 +64,15 @@ func loadConfig() error {
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	AppConfig = viper.GetViper()
+	appConfig = viper.GetViper()
 	return nil
 }
 
-func loadWorkdir() {
-	Workdir = os.Getenv(workdirEnvKey)
-	if Workdir != "" {
-		return
-	}
+func AppConfig() *viper.Viper {
+	return appConfig
+}
 
+func loadProjectRoot() {
 	// Try to locate project root, then find the workdir
 	wd, err := os.Getwd()
 	if err != nil {
@@ -90,16 +87,20 @@ func loadWorkdir() {
 	if wd == "/" {
 		panic("Cannot find projectRoot")
 	}
-	Workdir = path.Join(wd, defaultProjectWorkdirFolder, string(serviceEnv))
+	projectRoot = wd
+}
+
+func ProjectRoot() string {
+	return projectRoot
 }
 
 func init() {
 	loadServiceEnv()
-	loadWorkdir()
-	if _, err := os.Stat(Workdir); err != nil {
-		panic(fmt.Sprintf("Set workdir %s with error: %v", Workdir, err))
+	loadProjectRoot()
+	if _, err := os.Stat(projectRoot); err != nil {
+		panic(fmt.Sprintf("Project root not found: %v", projectRoot))
 	}
-	println("Workdir:", Workdir)
+	println("Project root:", projectRoot)
 	if err := loadConfig(); err != nil {
 		panic(fmt.Sprintf("Load config with error: %v", err))
 	}

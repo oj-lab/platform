@@ -4,6 +4,6 @@
     "ms-azuretools.vscode-docker",
     "tamasfe.even-better-toml",
     "pkief.material-icon-theme",
-    "bierner.markdown-preview-github-styles",
+    "davidanson.vscode-markdownlint"
   ]
 }

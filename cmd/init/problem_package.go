@@ -13,14 +13,12 @@ import (
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 	minio_agent "github.com/oj-lab/oj-lab-platform/modules/agent/minio"
-	"github.com/oj-lab/oj-lab-platform/modules/config"
-	"github.com/oj-lab/oj-lab-platform/modules/log"
-	yaml "gopkg.in/yaml.v2"
+	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
+	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
+	"gopkg.in/yaml.v2"
 )
 
-var ctx = context.Background()
-
-func main() {
+func loadProblemPackages(ctx context.Context) {
 	db := gorm_agent.GetDefaultDB()
 	minioClient := minio_agent.GetMinioClient()
 
@@ -31,13 +29,13 @@ func main() {
 	//    parse problem.md as description.
 	// 2. insert object into minio storage.
 	var (
-		packagePath string = path.Join(config.Workdir, "problem_packages")
+		packagePath string = path.Join(config_module.ProjectRoot(), "problem_packages/icpc")
 		title       string
 		slug        string
 	)
 	err := filepath.Walk(packagePath, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
-			log.AppLogger().WithError(err).Error("Walk package path failed")
+			log_module.AppLogger().WithError(err).Error("Walk package path failed")
 			return err
 		}
 		if info == nil {
@@ -47,31 +45,35 @@ func main() {
 			return nil
 		}
 		relativePath := strings.Replace(path, packagePath, "", 1)
-		log.AppLogger().WithField("relativePath", relativePath).Debug("Read file from package")
+		log_module.AppLogger().WithField("relativePath", relativePath).Debug("Read file from package")
 		if filepath.Base(relativePath) == "problem.yaml" {
 			resultMap := make(map[string]interface{})
 			yamlFile, err := os.ReadFile(path)
 			if err != nil {
-				log.AppLogger().WithError(err).Error("Read problem.yaml failed")
+				log_module.AppLogger().WithError(err).Error("Read problem.yaml failed")
 			}
 			err = yaml.Unmarshal(yamlFile, &resultMap)
 			if err != nil {
-				log.AppLogger().WithError(err).Error("Unmarshal problem.yaml failed")
+				log_module.AppLogger().WithError(err).Error("Unmarshal problem.yaml failed")
+			}
+			if resultMap["name"] == nil {
+				log_module.AppLogger().Error("Problem name is nil")
+				return nil
 			}
 			title = resultMap["name"].(string)
 			if title == "" {
-				log.AppLogger().Error("Problem title is empty")
+				log_module.AppLogger().Error("Problem title is empty")
 			}
 			slug = strings.Split(relativePath, "/")[1]
-			log.AppLogger().WithField("title", title).WithField("slug", slug).Debug("Read problem.yaml")
+			log_module.AppLogger().WithField("title", title).WithField("slug", slug).Debug("Read problem.yaml")
 		}
 		if filepath.Base(relativePath) == "problem.md" {
 			content, err := os.ReadFile(path)
 			if err != nil {
-				log.AppLogger().WithError(err).Error("Read problem.md failed")
+				log_module.AppLogger().WithError(err).Error("Read problem.md failed")
 			}
 			description := string(content)
-			log.AppLogger().WithField("description", description).Debug("Read problem.md")
+			log_module.AppLogger().WithField("description", description).Debug("Read problem.md")
 			err = problem_model.CreateProblem(db, problem_model.Problem{
 				Slug:        slug,
 				Title:       title,
@@ -90,7 +92,7 @@ func main() {
 			path,
 			minio.PutObjectOptions{})
 		if err != nil {
-			log.AppLogger().WithError(err).Error("Put object to minio failed")
+			log_module.AppLogger().WithError(err).Error("Put object to minio failed")
 		}
 		return err
 	})
@@ -98,5 +100,5 @@ func main() {
 		panic(err)
 	}
 
-	log.AppLogger().Info("Problem loaded")
+	log_module.AppLogger().Info("Problem loaded")
 }
