@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	swaggo_gen "github.com/oj-lab/oj-lab-platform/cmd/web_server/swaggo_gen"
 	"github.com/spf13/viper"
@@ -10,6 +12,7 @@ import (
 
 const (
 	servicePortProp = "service.port"
+	serviceHostProp = "service.host"
 )
 
 var (
@@ -21,8 +24,9 @@ func SetupSwaggoRouter(r *gin.RouterGroup) {
 }
 
 func init() {
-	sevicePort := viper.GetString(servicePortProp)
-	swaggerHost = "localhost" + sevicePort
+	sevicePort := viper.GetUint(servicePortProp)
+	seviceHost := viper.GetString(serviceHostProp)
+	swaggerHost = fmt.Sprintf("%s:%d", seviceHost, sevicePort)
 	println("Swagger host is set to: " + swaggerHost)
 	// programmatically set swagger info
 	swaggo_gen.SwaggerInfo.Title = "OJ Lab Services API"

@@ -14,7 +14,9 @@ duration = "24h"
 [service]
 force_console_color = true
 auth_on = true
-port = ":8080"
+host = "localhost"
+port = 8080
+ssl_enabled = false
 mode = "debug"
 swagger_on = true
 frontend_dist = "frontend/dist"

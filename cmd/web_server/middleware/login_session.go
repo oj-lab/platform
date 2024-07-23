@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/oj-lab/oj-lab-platform/modules"
-	"github.com/oj-lab/oj-lab-platform/modules/auth"
+	auth_module "github.com/oj-lab/oj-lab-platform/modules/auth"
 )
 
 const (
@@ -49,7 +49,7 @@ func HandleRequireLogin(ginCtx *gin.Context) {
 	ginCtx.Next()
 }
 
-func GetLoginSessionFromGinCtx(ginCtx *gin.Context) (*auth.LoginSession, error) {
+func GetLoginSessionFromGinCtx(ginCtx *gin.Context) (*auth_module.LoginSession, error) {
 	lsAccount, err := ginCtx.Cookie(loginSessionKeyAccountCookieName)
 	if err != nil {
 		return nil, err
@@ -62,12 +62,12 @@ func GetLoginSessionFromGinCtx(ginCtx *gin.Context) (*auth.LoginSession, error) 
 	if err != nil {
 		return nil, err
 	}
-	key := auth.LoginSessionKey{
+	key := auth_module.LoginSessionKey{
 		Account: lsAccount,
 		Id:      lsId,
 	}
 
-	ls, err := auth.GetLoginSession(ginCtx, key)
+	ls, err := auth_module.GetLoginSession(ginCtx, key)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func GetLoginSessionFromGinCtx(ginCtx *gin.Context) (*auth.LoginSession, error) 
 	return ls, nil
 }
 
-func SetLoginSessionKeyCookie(ginCtx *gin.Context, key auth.LoginSessionKey) {
+func SetLoginSessionKeyCookie(ginCtx *gin.Context, key auth_module.LoginSessionKey) {
 	ginCtx.SetCookie(loginSessionKeyAccountCookieName, key.Account,
 		int(loginSessionCookieMaxAge.Seconds()), "/", "", false, true)
 	ginCtx.SetCookie(loginSessionKeyIdCookieName, key.Id.String(),

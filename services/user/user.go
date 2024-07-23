@@ -5,7 +5,7 @@ import (
 
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
-	"github.com/oj-lab/oj-lab-platform/modules/auth"
+	auth_module "github.com/oj-lab/oj-lab-platform/modules/auth"
 	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
 )
 
@@ -38,9 +38,9 @@ func UpdateUser(ctx context.Context, user user_model.User) error {
 		return err
 	}
 
-	return auth.UpdateLoginSessionByAccount(ctx,
+	return auth_module.UpdateLoginSessionByAccount(ctx,
 		user.Account,
-		auth.LoginSessionData{
+		auth_module.LoginSessionData{
 			RoleSet: user.GetRolesStringSet(),
 		})
 }
@@ -65,14 +65,14 @@ func CheckUserExist(ctx context.Context, account string) (bool, error) {
 	return count > 0, nil
 }
 
-func StartLoginSession(ctx context.Context, account, password string) (*auth.LoginSession, error) {
+func StartLoginSession(ctx context.Context, account, password string) (*auth_module.LoginSession, error) {
 	db := gorm_agent.GetDefaultDB()
 	user, err := user_model.GetUserByAccountPassword(db, account, password)
 	if err != nil {
 		return nil, err
 	}
 
-	ls := auth.NewLoginSession(account, auth.LoginSessionData{
+	ls := auth_module.NewLoginSession(account, auth_module.LoginSessionData{
 		RoleSet: user.GetRolesStringSet(),
 	})
 	err = ls.SaveToRedis(ctx)

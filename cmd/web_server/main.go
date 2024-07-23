@@ -1,15 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
 
+	"github.com/gin-gonic/gin"
 	"github.com/oj-lab/oj-lab-platform/cmd/web_server/handler"
 	"github.com/oj-lab/oj-lab-platform/cmd/web_server/middleware"
 
-	"github.com/gin-gonic/gin"
 	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
+
 	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
 )
 
@@ -23,7 +25,7 @@ const (
 
 var (
 	serviceForceConsoleColor bool
-	servicePort              string
+	servicePort              uint
 	serviceMode              string
 	swaggerOn                bool
 	frontendDist             string
@@ -31,7 +33,7 @@ var (
 
 func init() {
 	serviceForceConsoleColor = config_module.AppConfig().GetBool(serviceForceConsoleColorProp)
-	servicePort = config_module.AppConfig().GetString(servicePortProp)
+	servicePort = config_module.AppConfig().GetUint(servicePortProp)
 	serviceMode = config_module.AppConfig().GetString(serviceModeProp)
 	swaggerOn = config_module.AppConfig().GetBool(swaggerOnProp)
 	frontendDist = config_module.AppConfig().GetString(frontendDistProp)
@@ -68,6 +70,7 @@ func main() {
 		log_module.AppLogger().Info("Serving swagger Doc...")
 		handler.SetupSwaggoRouter(baseRouter)
 	}
+	handler.SetupOauthRouter(baseRouter)
 
 	apiRouter := r.Group("/api/v1")
 	handler.SetupUserRouter(apiRouter)
@@ -77,7 +80,7 @@ func main() {
 	handler.SetupJudgeTaskRouter(apiRouter)
 	handler.SetupJudgeResultRouter(apiRouter)
 
-	err := r.Run(servicePort)
+	err := r.Run(fmt.Sprintf(":%d", servicePort))
 	if err != nil {
 		panic(err)
 	} // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
