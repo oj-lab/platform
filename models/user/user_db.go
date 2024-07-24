@@ -19,7 +19,6 @@ func CreateUser(tx *gorm.DB, user User) error {
 		Name:           user.Name,
 		Account:        user.Account,
 		HashedPassword: hashedPassword,
-		Roles:          user.Roles,
 	}
 
 	return tx.Create(&User).Error
@@ -27,7 +26,7 @@ func CreateUser(tx *gorm.DB, user User) error {
 
 func GetUser(tx *gorm.DB, account string) (*User, error) {
 	db_user := User{}
-	err := tx.Model(&User{}).Preload("Roles").Where("account = ?", account).First(&db_user).Error
+	err := tx.Model(&User{}).Where("account = ?", account).First(&db_user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +36,7 @@ func GetUser(tx *gorm.DB, account string) (*User, error) {
 
 func GetPublicUser(tx *gorm.DB, account string) (*User, error) {
 	db_user := User{}
-	err := tx.Model(&User{}).Preload("Roles").Select(PublicUserSelection).Where("account = ?", account).First(&db_user).Error
+	err := tx.Model(&User{}).Select(PublicUserSelection).Where("account = ?", account).First(&db_user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -67,9 +66,6 @@ func UpdateUser(tx *gorm.DB, update User) error {
 	new := old
 	if update.Password != nil {
 		new.HashedPassword = hashedPassword
-	}
-	if update.Roles != nil {
-		new.Roles = update.Roles
 	}
 
 	return tx.Model(&User{Account: new.Account}).Updates(new).Error

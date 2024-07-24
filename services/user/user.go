@@ -40,9 +40,7 @@ func UpdateUser(ctx context.Context, user user_model.User) error {
 
 	return auth_module.UpdateLoginSessionByAccount(ctx,
 		user.Account,
-		auth_module.LoginSessionData{
-			RoleSet: user.GetRolesStringSet(),
-		})
+		auth_module.LoginSessionData{})
 }
 
 func CheckUserExist(ctx context.Context, account string) (bool, error) {
@@ -66,16 +64,8 @@ func CheckUserExist(ctx context.Context, account string) (bool, error) {
 }
 
 func StartLoginSession(ctx context.Context, account, password string) (*auth_module.LoginSession, error) {
-	db := gorm_agent.GetDefaultDB()
-	user, err := user_model.GetUserByAccountPassword(db, account, password)
-	if err != nil {
-		return nil, err
-	}
-
-	ls := auth_module.NewLoginSession(account, auth_module.LoginSessionData{
-		RoleSet: user.GetRolesStringSet(),
-	})
-	err = ls.SaveToRedis(ctx)
+	ls := auth_module.NewLoginSession(account, auth_module.LoginSessionData{})
+	err := ls.SaveToRedis(ctx)
 	if err != nil {
 		return nil, err
 	}

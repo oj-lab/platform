@@ -13,21 +13,11 @@ type LoginSessionKey struct {
 }
 
 type LoginSessionData struct {
-	RoleSet map[string]struct{}
 }
 
 type LoginSession struct {
 	Key  LoginSessionKey
 	Data LoginSessionData
-}
-
-func (data LoginSessionData) HasRoles(roles []string) bool {
-	for _, role := range roles {
-		if _, ok := data.RoleSet[role]; !ok {
-			return false
-		}
-	}
-	return true
 }
 
 func (data LoginSessionData) GetJsonString() (string, error) {
@@ -55,9 +45,7 @@ func NewLoginSession(account string, data LoginSessionData) *LoginSession {
 			Account: account,
 			Id:      uuid.New(),
 		},
-		LoginSessionData{
-			RoleSet: data.RoleSet,
-		},
+		LoginSessionData{},
 	}
 }
 

@@ -14,7 +14,6 @@ func TestUserDB(t *testing.T) {
 	user := user_model.User{
 		Account:  "test",
 		Password: func() *string { s := "test"; return &s }(),
-		Roles:    []*user_model.Role{{Name: "test"}},
 	}
 	err := user_model.CreateUser(db, user)
 	if err != nil {

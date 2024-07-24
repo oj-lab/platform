@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -26,12 +25,6 @@ func BuildHandleRequireLoginWithRoles(roles []string) gin.HandlerFunc {
 			return
 		}
 		ginCtx.Set(loginSessionGinCtxKey, ls)
-
-		if !ls.Data.HasRoles(roles) {
-			modules.NewUnauthorizedError(fmt.Sprintf("require roles: %v", roles)).AppendToGin(ginCtx)
-			ginCtx.Abort()
-			return
-		}
 
 		ginCtx.Next()
 	}

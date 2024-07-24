@@ -12,7 +12,6 @@ func initDB() {
 	db := gorm_agent.GetDefaultDB()
 	err := db.AutoMigrate(
 		&user_model.User{},
-		&user_model.Role{},
 		&problem_model.Problem{},
 		&judge_model.Judge{},
 		&judge_model.JudgeResult{},
