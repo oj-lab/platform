@@ -36,7 +36,8 @@ func GetUser(tx *gorm.DB, account string) (*User, error) {
 
 func GetPublicUser(tx *gorm.DB, account string) (*User, error) {
 	db_user := User{}
-	err := tx.Model(&User{}).Select(PublicUserSelection).Where("account = ?", account).First(&db_user).Error
+	err := tx.Model(&User{}).Select(PublicUserSelection).
+		Where("account = ?", account).First(&db_user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +75,6 @@ func UpdateUser(tx *gorm.DB, update User) error {
 type GetUserOptions struct {
 	AccountQuery string
 	EmailQuery   string
-	MobileQuery  string
 	Offset       *int
 	Limit        *int
 }
@@ -91,9 +91,6 @@ func CountUserByOptions(tx *gorm.DB, options GetUserOptions) (int64, error) {
 	}
 	if options.EmailQuery != "" {
 		tx = tx.Where("email LIKE ?", options.EmailQuery)
-	}
-	if options.MobileQuery != "" {
-		tx = tx.Where("mobile LIKE ?", options.MobileQuery)
 	}
 
 	err := tx.Count(&count).Error
@@ -114,9 +111,6 @@ func GetUserByOptions(tx *gorm.DB, options GetUserOptions) ([]User, int64, error
 	}
 	if options.EmailQuery != "" {
 		tx = tx.Where("email LIKE ?", options.EmailQuery)
-	}
-	if options.MobileQuery != "" {
-		tx = tx.Where("mobile LIKE ?", options.MobileQuery)
 	}
 
 	if options.Offset != nil {

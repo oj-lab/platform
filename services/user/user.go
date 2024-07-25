@@ -63,7 +63,7 @@ func CheckUserExist(ctx context.Context, account string) (bool, error) {
 	return count > 0, nil
 }
 
-func StartLoginSession(ctx context.Context, account, password string) (*auth_module.LoginSession, error) {
+func StartLoginSession(ctx context.Context, account string) (*auth_module.LoginSession, error) {
 	ls := auth_module.NewLoginSession(account, auth_module.LoginSessionData{})
 	err := ls.SaveToRedis(ctx)
 	if err != nil {
