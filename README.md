@@ -1,7 +1,7 @@
 # OJ Lab Platform
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/oj-lab/oj-lab-platform/build-and-test.yaml?logo=github&label=Tests)
-![Codecov](https://img.shields.io/codecov/c/gh/oj-lab/oj-lab-platform?logo=codecov&label=Codecov)
+[![codecov](https://codecov.io/gh/oj-lab/oj-lab-platform/graph/badge.svg?token=T5P2KP7VTL)](https://codecov.io/gh/oj-lab/oj-lab-platform)
 ![Codespace Supported](https://img.shields.io/badge/Codespace_Supported-000000?style=flat&logo=github)
 
 Central service for OJ Lab, supporting distributed deployment.
