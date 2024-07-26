@@ -1,4 +1,4 @@
-package core_test
+package minio_agent
 
 import (
 	"testing"

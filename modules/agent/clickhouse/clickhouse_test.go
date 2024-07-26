@@ -1,4 +1,4 @@
-package core_test
+package clickhouse_agent
 
 import (
 	"context"
@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	clickhouse_agent "github.com/oj-lab/oj-lab-platform/modules/agent/clickhouse"
 )
 
 func TestClickhouse(t *testing.T) {
+	var ctx = context.Background()
 	t.Log("TestClickhouse")
-	conn, err := clickhouse_agent.Connect()
+	conn, err := Connect()
 	if err != nil {
 		t.Error(err)
 	}

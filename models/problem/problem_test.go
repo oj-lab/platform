@@ -1,30 +1,29 @@
-package models_test
+package problem_model
 
 import (
 	"encoding/json"
 	"fmt"
 	"testing"
 
-	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 )
 
 func TestProblemDB(t *testing.T) {
 	db := gorm_agent.GetDefaultDB()
 	description := "Given two integer A and B, please output the answer of A+B."
-	problem := problem_model.Problem{
+	problem := Problem{
 		Slug:        "a-plus-b-problem",
 		Title:       "A+B Problem",
 		Description: &description,
-		Tags:        []*problem_model.AlgorithmTag{{Name: "tag1"}, {Name: "tag2"}},
+		Tags:        []*AlgorithmTag{{Name: "tag1"}, {Name: "tag2"}},
 	}
 
-	err := problem_model.CreateProblem(db, problem)
+	err := CreateProblem(db, problem)
 	if err != nil {
 		t.Error(err)
 	}
 
-	dbProblem, err := problem_model.GetProblem(db, problem.Slug)
+	dbProblem, err := GetProblem(db, problem.Slug)
 	if err != nil {
 		t.Error(err)
 	}
@@ -35,13 +34,13 @@ func TestProblemDB(t *testing.T) {
 	}
 	fmt.Printf("%+v\n", string(problemJson))
 
-	problemOption := problem_model.GetProblemOptions{
-		Selection: problem_model.ProblemInfoSelection,
-		Tags:      []*problem_model.AlgorithmTag{{Name: "tag1"}},
+	problemOption := GetProblemOptions{
+		Selection: ProblemInfoSelection,
+		Tags:      []*AlgorithmTag{{Name: "tag1"}},
 		Slug:      &problem.Slug,
 	}
 
-	problemList, problemCount, err := problem_model.GetProblemInfoListByOptions(db, problemOption)
+	problemList, problemCount, err := GetProblemInfoListByOptions(db, problemOption)
 	if err != nil {
 		t.Error(err)
 	}
@@ -56,7 +55,7 @@ func TestProblemDB(t *testing.T) {
 	}
 	fmt.Printf("%+v\n", string(problemListJson))
 
-	err = problem_model.DeleteProblem(db, problem.Slug)
+	err = DeleteProblem(db, problem.Slug)
 	if err != nil {
 		t.Error(err)
 	}

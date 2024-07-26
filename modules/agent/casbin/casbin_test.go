@@ -1,48 +1,46 @@
-package core_test
+package casbin_agent
 
 import (
 	"net/http"
 	"testing"
-
-	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
 )
 
 func TestKeyMatchGin(t *testing.T) {
 	key2 := "/api/v1/user/:id"
 	key1 := "/api/v1/user/1"
-	if !casbin_agent.KeyMatchGin(key1, key2) {
+	if !KeyMatchGin(key1, key2) {
 		t.Error("Expected to match")
 	}
 	key1 = "/api/v1/user/"
-	if casbin_agent.KeyMatchGin(key1, key2) {
+	if KeyMatchGin(key1, key2) {
 		t.Error("Expected not to match")
 	}
 
 	key2 = "/api/v1/:resource/*any"
 	key1 = "/api/v1/user"
-	if !casbin_agent.KeyMatchGin(key1, key2) {
+	if !KeyMatchGin(key1, key2) {
 		t.Error("Expected to match")
 	}
 	key1 = "/api/v1/user/1"
-	if !casbin_agent.KeyMatchGin(key1, key2) {
+	if !KeyMatchGin(key1, key2) {
 		t.Error("Expected to match")
 	}
 	key1 = "/api/v1/user/"
-	if !casbin_agent.KeyMatchGin(key1, key2) {
+	if !KeyMatchGin(key1, key2) {
 		t.Error("Expected to match")
 	}
 	key1 = "/api/v1/user/1/send"
-	if !casbin_agent.KeyMatchGin(key1, key2) {
+	if !KeyMatchGin(key1, key2) {
 		t.Error("Expected to match")
 	}
 	key1 = "/api/v1//"
-	if casbin_agent.KeyMatchGin(key1, key2) {
+	if KeyMatchGin(key1, key2) {
 		t.Error("Expected not to match")
 	}
 }
 
 func TestCasbin(t *testing.T) {
-	enforcer := casbin_agent.GetDefaultCasbinEnforcer()
+	enforcer := GetDefaultCasbinEnforcer()
 	_, err := enforcer.AddPolicy(
 		`user_test`, `r.ext.IsVIP == true`, `system`, `testData`, http.MethodGet, "allow")
 	if err != nil {
@@ -63,7 +61,7 @@ func TestCasbin(t *testing.T) {
 	}
 	t.Logf("Policies: %v", policies)
 
-	allow, err := enforcer.Enforce("user_test", casbin_agent.ExtraInfo{
+	allow, err := enforcer.Enforce("user_test", ExtraInfo{
 		IsVIP: true,
 	}, `system`, `testData`, http.MethodGet)
 	if err != nil {

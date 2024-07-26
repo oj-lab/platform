@@ -1,12 +1,10 @@
-package core_test
+package log_module
 
 import (
 	"testing"
 
 	"github.com/spf13/viper"
 )
-
-const logLevelProp = "log.level"
 
 func TestInit(T *testing.T) {
 	logLevel := viper.GetString(logLevelProp)

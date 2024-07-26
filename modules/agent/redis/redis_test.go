@@ -1,4 +1,4 @@
-package core_test
+package redis_agent
 
 import (
 	"context"
@@ -11,9 +11,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-var ctx = context.Background()
-
 func TestRedis(t *testing.T) {
+	var ctx = context.Background()
 	// rdb := redis.NewClusterClient(&redis.ClusterOptions{
 	// 	Addrs: []string{":7000", ":7001", ":7002", ":7003", ":7004", ":7005"},
 

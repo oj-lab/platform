@@ -1,10 +1,9 @@
-package models_test
+package judge_model
 
 import (
 	"encoding/json"
 	"testing"
 
-	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 )
@@ -19,25 +18,25 @@ func TestJudgeDB(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	judge := &judge_model.Judge{
-		Language:    judge_model.ProgrammingLanguageCpp,
+	judge := &Judge{
+		Language:    ProgrammingLanguageCpp,
 		ProblemSlug: problem.Slug,
 	}
-	judge, err = judge_model.CreateJudge(db, *judge)
+	judge, err = CreateJudge(db, *judge)
 	if err != nil {
 		t.Error(err)
 	}
 
-	judgeResult := &judge_model.JudgeResult{
+	judgeResult := &JudgeResult{
 		JudgeUID: judge.UID,
-		Verdict:  judge_model.JudgeVerdictAccepted,
+		Verdict:  JudgeVerdictAccepted,
 	}
-	_, err = judge_model.CreateJudgeResult(db, *judgeResult)
+	_, err = CreateJudgeResult(db, *judgeResult)
 	if err != nil {
 		t.Error(err)
 	}
 
-	judge, err = judge_model.GetJudge(db, judge.UID)
+	judge, err = GetJudge(db, judge.UID)
 	if err != nil {
 		t.Error(err)
 	}
