@@ -4,6 +4,8 @@
 ![Codecov](https://img.shields.io/codecov/c/gh/oj-lab/oj-lab-platform?logo=codecov&label=Codecov)
 ![Codespace Supported](https://img.shields.io/badge/Codespace_Supported-000000?style=flat&logo=github)
 
+Central service for OJ Lab, supporting distributed deployment.
+
 ## Development
 
 > 🌟 Accept VSCode extension recommandation for complete experience.
