@@ -2,27 +2,35 @@ name: Build and Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.21.1
-    - name: Test All
-      run: |
-        make test
-    - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@v4.0.0
-      with:
-        only-new-issues: true
-        skip-pkg-cache: true
-        skip-build-cache: true
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.22.5
+
+      - name: Test All
+        run: |
+          make test
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          only-new-issues: true
+          skip-pkg-cache: true
+          skip-build-cache: true

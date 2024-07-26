@@ -92,7 +92,7 @@ check: gen-proto install-cilint
 
 .PHONY: test
 test: build gen-swagger setup-dependencies
-	go test -cover -v -count=1 ./...
+	go test -race -covermode=atomic -coverprofile=coverage.out -cover -v -count=1 ./...
 
 # Dependent targets
 
