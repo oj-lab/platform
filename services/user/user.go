@@ -9,6 +9,12 @@ import (
 	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
 )
 
+func CreateUser(ctx context.Context, user user_model.User) (*user_model.User, error) {
+	db := gorm_agent.GetDefaultDB()
+
+	return user_model.CreateUser(db, user)
+}
+
 func GetUser(ctx context.Context, account string) (*user_model.User, error) {
 	db := gorm_agent.GetDefaultDB()
 	user, err := user_model.GetUser(db, account)

@@ -14,7 +14,7 @@ func TestUserDB(t *testing.T) {
 		Account:  "test",
 		Password: func() *string { s := "test"; return &s }(),
 	}
-	err := CreateUser(db, user)
+	_, err := CreateUser(db, user)
 	if err != nil {
 		t.Error(err)
 	}

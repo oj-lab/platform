@@ -11,7 +11,7 @@ import (
 
 const githubOauthEntryURL = "https://github.com/login/oauth/authorize"
 const githubAccessTokenURL = "https://github.com/login/oauth/access_token"
-const callbackURL = "/oauth/github/callback"
+const githubApiUserURL = "https://api.github.com/user"
 
 const (
 	servicePortProp       = "service.port"
@@ -37,7 +37,7 @@ func isGithubAuthEnabled() bool {
 	return githubClientID != "" && githubClientSecret != ""
 }
 
-func GetGithubOauthEntryURL() (*url.URL, error) {
+func GetGithubOauthEntryURL(callbackURL string) (*url.URL, error) {
 	if !isGithubAuthEnabled() {
 		return nil, fmt.Errorf("github auth is not enabled")
 	}
@@ -101,4 +101,35 @@ func GetGithubAccessToken(code string) (*GithubAccessTokenResponse, error) {
 	}
 
 	return &tokenResponse, nil
+}
+
+type GithubUser struct {
+	Login     string `json:"login"`
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	AvatarURL string `json:"avatar_url"`
+}
+
+func GetGithubUser(accessToken string) (*GithubUser, error) {
+	req, err := http.NewRequest(http.MethodGet, githubApiUserURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var user GithubUser
+	err = json.NewDecoder(resp.Body).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }

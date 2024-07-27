@@ -14,6 +14,8 @@ import (
 	user_service "github.com/oj-lab/oj-lab-platform/services/user"
 )
 
+const callbackURL = "/auth/github/callback"
+
 func SetupOauthRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/auth")
 	{
@@ -28,17 +30,43 @@ func githubCallback(ginCtx *gin.Context) {
 	code := ginCtx.Query("code")
 	tokenResponse, err := auth_module.GetGithubAccessToken(code)
 	if err != nil {
-		_ = ginCtx.Error(err)
+		modules.NewInternalError(fmt.Sprintf("failed to get github access token: %v", err)).AppendToGin(ginCtx)
 		return
 	}
 
 	log_module.AppLogger().WithField("tokenResponse", tokenResponse).Info("github callback")
+	githubUser, err := auth_module.GetGithubUser(tokenResponse.AccessToken)
+	if err != nil {
+		modules.NewInternalError(fmt.Sprintf("failed to get github user: %v", err)).AppendToGin(ginCtx)
+		return
+	}
+
+	user, _ := user_service.GetUser(ginCtx, githubUser.Login)
+	if user == nil {
+		user, err = user_service.CreateUser(ginCtx, user_model.User{
+			Account:   githubUser.Login,
+			Name:      githubUser.Name,
+			Email:     &githubUser.Email,
+			AvatarURL: githubUser.AvatarURL,
+		})
+		if err != nil {
+			modules.NewInternalError(fmt.Sprintf("failed to create user: %v", err)).AppendToGin(ginCtx)
+			return
+		}
+	}
+
+	ls, err := user_service.StartLoginSession(ginCtx, user.Account)
+	if err != nil {
+		modules.NewInternalError(fmt.Sprintf("failed to start login session: %v", err)).AppendToGin(ginCtx)
+	}
+
+	middleware.SetLoginSessionKeyCookie(ginCtx, ls.Key)
 
 	ginCtx.JSON(200, nil)
 }
 
 func loginGithub(ginCtx *gin.Context) {
-	u, err := auth_module.GetGithubOauthEntryURL()
+	u, err := auth_module.GetGithubOauthEntryURL(callbackURL)
 	if err != nil {
 		modules.NewInternalError(fmt.Sprintf("failed to get github oauth entry url: %v", err)).AppendToGin(ginCtx)
 	}

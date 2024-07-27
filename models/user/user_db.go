@@ -4,24 +4,35 @@ import (
 	"fmt"
 
 	"github.com/alexedwards/argon2id"
+	"github.com/oj-lab/oj-lab-platform/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 // Account, Password, Roles will be used to create a new user.
-func CreateUser(tx *gorm.DB, user User) error {
-	hashedPassword, err := argon2id.CreateHash(*user.Password, argon2id.DefaultParams)
+func CreateUser(tx *gorm.DB, request User) (*User, error) {
+	user := User{
+		MetaFields: models.NewMetaFields(),
+		Name:       request.Name,
+		Account:    request.Account,
+		Email:      request.Email,
+		AvatarURL:  request.AvatarURL,
+	}
+
+	if request.Password != nil {
+		hashedPassword, err := argon2id.CreateHash(*request.Password, argon2id.DefaultParams)
+		if err != nil {
+			return nil, err
+		}
+		user.HashedPassword = hashedPassword
+	}
+
+	err := tx.Create(&user).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	User := User{
-		Name:           user.Name,
-		Account:        user.Account,
-		HashedPassword: hashedPassword,
-	}
-
-	return tx.Create(&User).Error
+	return &user, nil
 }
 
 func GetUser(tx *gorm.DB, account string) (*User, error) {

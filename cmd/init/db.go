@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
@@ -20,22 +22,22 @@ func initDB() {
 		panic("failed to migrate database")
 	}
 
-	err = user_model.CreateUser(db, user_model.User{
+	_, err = user_model.CreateUser(db, user_model.User{
 		Name:     "root",
 		Account:  "root",
 		Password: func() *string { s := ""; return &s }(),
 	})
 	if err != nil {
-		panic("failed to create admin user")
+		panic(fmt.Sprintf("failed to create root user: %v", err))
 	}
 
-	err = user_model.CreateUser(db, user_model.User{
+	_, err = user_model.CreateUser(db, user_model.User{
 		Name:     "anonymous",
 		Account:  "anonymous",
 		Password: func() *string { s := ""; return &s }(),
 	})
 	if err != nil {
-		panic("failed to create anonymous user")
+		panic(fmt.Sprintf("failed to create anonymous user: %v", err))
 	}
 	log_module.AppLogger().Info("migrate tables ans users success")
 }
