@@ -5,6 +5,7 @@ import (
 
 	"github.com/alexedwards/argon2id"
 	"github.com/oj-lab/oj-lab-platform/models"
+	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -86,6 +87,7 @@ func UpdateUser(tx *gorm.DB, update User) error {
 type GetUserOptions struct {
 	AccountQuery string
 	EmailQuery   string
+	DomainRole   *casbin_agent.DomainRole
 	Offset       *int
 	Limit        *int
 }
