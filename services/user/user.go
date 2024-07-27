@@ -2,8 +2,10 @@ package user_service
 
 import (
 	"context"
+	"fmt"
 
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
+	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 	auth_module "github.com/oj-lab/oj-lab-platform/modules/auth"
 	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
@@ -47,6 +49,29 @@ func UpdateUser(ctx context.Context, user user_model.User) error {
 	return auth_module.UpdateLoginSessionByAccount(ctx,
 		user.Account,
 		auth_module.LoginSessionData{})
+}
+
+func GrantUserRole(ctx context.Context, account, role, domain string) error {
+	exist, err := CheckUserExist(ctx, account)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		return fmt.Errorf("user not exist")
+	}
+
+	enforcer := casbin_agent.GetDefaultCasbinEnforcer()
+	account = casbin_agent.UserSubjectPrefix + account
+	role = casbin_agent.RoleSubjectPrefix + role
+	notDuplicated, err := enforcer.AddRoleForUserInDomain(account, role, domain)
+	if err != nil {
+		return err
+	}
+	if !notDuplicated {
+		return fmt.Errorf("role already granted")
+	}
+
+	return nil
 }
 
 func CheckUserExist(ctx context.Context, account string) (bool, error) {
