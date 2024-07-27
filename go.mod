@@ -11,7 +11,10 @@ require (
 	gorm.io/gorm v1.25.10
 )
 
-require github.com/swaggo/swag v1.16.3
+require (
+	github.com/stretchr/testify v1.9.0
+	github.com/swaggo/swag v1.16.3
+)
 
 require (
 	github.com/ClickHouse/ch-go v0.61.5 // indirect
@@ -20,6 +23,7 @@ require (
 	github.com/casbin/govaluate v1.1.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/glebarez/go-sqlite v1.20.3 // indirect
 	github.com/glebarez/sqlite v1.7.0 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
@@ -31,6 +35,7 @@ require (
 	github.com/paulmach/orb v0.11.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230126093431-47fa9a501578 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
