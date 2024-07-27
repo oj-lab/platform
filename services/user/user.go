@@ -29,7 +29,7 @@ func GetUserList(
 	ctx context.Context, options user_model.GetUserOptions,
 ) ([]user_model.User, int64, error) {
 	db := gorm_agent.GetDefaultDB()
-	users, total, err := user_model.GetUserByOptions(db, options)
+	users, total, err := user_model.GetUsersByOptions(db, options)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -54,7 +54,7 @@ func CheckUserExist(ctx context.Context, account string) (bool, error) {
 		AccountQuery: account,
 	}
 	db := gorm_agent.GetDefaultDB()
-	count, err := user_model.CountUserByOptions(db, getOptions)
+	count, err := user_model.CountUsersByOptions(db, getOptions)
 	if err != nil {
 		return false, err
 	}

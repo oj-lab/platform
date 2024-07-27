@@ -2,6 +2,7 @@ package user_model
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/alexedwards/argon2id"
 	"github.com/oj-lab/oj-lab-platform/models"
@@ -92,12 +93,21 @@ type GetUserOptions struct {
 	Limit        *int
 }
 
-// Count the total number of users that match the options,
-// ignoring the offset and limit.
-func CountUserByOptions(tx *gorm.DB, options GetUserOptions) (int64, error) {
-	var count int64
-
+func buildGetUserTXByOptions(tx *gorm.DB, options GetUserOptions, isCount bool) *gorm.DB {
 	tx = tx.Model(&User{})
+
+	if options.DomainRole != nil {
+		enforcer := casbin_agent.GetDefaultCasbinEnforcer()
+		subjects := enforcer.GetUsersForRoleInDomain(options.DomainRole.Role, options.DomainRole.Domain)
+		accounts := []string{}
+		for _, subject := range subjects {
+			if strings.HasPrefix(subject, casbin_agent.UserSubjectPrefix) {
+				account := strings.TrimPrefix(subject, casbin_agent.UserSubjectPrefix)
+				accounts = append(accounts, account)
+			}
+		}
+		tx = tx.Where("account IN ?", accounts)
+	}
 
 	if options.AccountQuery != "" {
 		tx = tx.Where("account LIKE ?", options.AccountQuery)
@@ -105,33 +115,40 @@ func CountUserByOptions(tx *gorm.DB, options GetUserOptions) (int64, error) {
 	if options.EmailQuery != "" {
 		tx = tx.Where("email LIKE ?", options.EmailQuery)
 	}
+
+	if !isCount {
+		if options.Offset != nil {
+			tx = tx.Offset(*options.Offset)
+		}
+		if options.Limit != nil {
+			tx = tx.Limit(*options.Limit)
+		}
+	}
+
+	return tx
+}
+
+// Count the total number of users that match the options,
+// ignoring the offset and limit.
+func CountUsersByOptions(tx *gorm.DB, options GetUserOptions) (int64, error) {
+	var count int64
+
+	tx = buildGetUserTXByOptions(tx, options, true)
 
 	err := tx.Count(&count).Error
 
 	return count, err
 }
 
-func GetUserByOptions(tx *gorm.DB, options GetUserOptions) ([]User, int64, error) {
-	total, err := CountUserByOptions(tx, options)
+func GetUsersByOptions(tx *gorm.DB, options GetUserOptions) ([]User, int64, error) {
+	total, err := CountUsersByOptions(tx, options)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	db_users := []User{}
 
-	if options.AccountQuery != "" {
-		tx = tx.Where("account LIKE ?", options.AccountQuery)
-	}
-	if options.EmailQuery != "" {
-		tx = tx.Where("email LIKE ?", options.EmailQuery)
-	}
-
-	if options.Offset != nil {
-		tx = tx.Offset(*options.Offset)
-	}
-	if options.Limit != nil {
-		tx = tx.Limit(*options.Limit)
-	}
+	tx = buildGetUserTXByOptions(tx, options, false)
 
 	err = tx.Find(&db_users).Error
 	if err != nil {

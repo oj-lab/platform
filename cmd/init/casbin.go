@@ -9,8 +9,8 @@ func loadCasbinPolicies() {
 	enforcer := casbin_agent.GetDefaultCasbinEnforcer()
 
 	_, err := enforcer.AddGroupingPolicies([][]string{
-		{`user_root`, `role_super`, `system`},
-		{`role_super`, `role_admin`, `system`},
+		{`user:root`, `role:super`, `system`},
+		{`role:super`, `role:admin`, `system`},
 	})
 	if err != nil {
 		panic(err)

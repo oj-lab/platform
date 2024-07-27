@@ -31,8 +31,8 @@ e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 m = g(r.sub, p.sub) && eval(p.ext_rule) && r.dom == p.dom && keyMatchGin(r.obj, p.obj) && regexMatch(r.act, p.act)
 `
 
-const UserSubjectPrefix = "user_"
-const RoleSubjectPrefix = "role_"
+const UserSubjectPrefix = "user:"
+const RoleSubjectPrefix = "role:"
 
 type ExtraInfo struct {
 	IsVIP bool
