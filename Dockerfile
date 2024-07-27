@@ -22,6 +22,7 @@ ENV OJ_LAB_SERVICE_ENV='production'
 ENV DATABASE_DSN='user=postgres password=postgres host=host.docker.internal port=5432 dbname=oj_lab sslmode=disable TimeZone=Asia/Shanghai'
 ENV REDIS_HOSTS='["host.docker.internal:6379"]'
 ENV MINIO_ENDPOINT='http://host.docker.internal:9000'
+ENV SERVICE_MODE="release"
 
 EXPOSE 8080
 CMD [ "web_server" ]
