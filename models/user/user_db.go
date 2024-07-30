@@ -1,7 +1,9 @@
 package user_model
 
 import (
+	"crypto/md5"
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/alexedwards/argon2id"
@@ -10,6 +12,8 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
+
+const gravatarURLFormat = "https://www.gravatar.com/avatar/%x?d=identicon&s=512"
 
 // Account, Password, Roles will be used to create a new user.
 func CreateUser(tx *gorm.DB, request User) (*User, error) {
@@ -21,6 +25,17 @@ func CreateUser(tx *gorm.DB, request User) (*User, error) {
 		AvatarURL:  request.AvatarURL,
 	}
 
+	_, err := url.Parse(user.AvatarURL)
+	if err != nil || user.AvatarURL == "" {
+		if user.Email != nil {
+			md5sum := md5.Sum([]byte(*user.Email))
+			user.AvatarURL = fmt.Sprintf(gravatarURLFormat, md5sum)
+		} else {
+			md5sum := md5.Sum([]byte(user.Account))
+			user.AvatarURL = fmt.Sprintf(gravatarURLFormat, md5sum)
+		}
+	}
+
 	if request.Password != nil {
 		hashedPassword, err := argon2id.CreateHash(*request.Password, argon2id.DefaultParams)
 		if err != nil {
@@ -29,7 +44,7 @@ func CreateUser(tx *gorm.DB, request User) (*User, error) {
 		user.HashedPassword = hashedPassword
 	}
 
-	err := tx.Create(&user).Error
+	err = tx.Create(&user).Error
 	if err != nil {
 		return nil, err
 	}
