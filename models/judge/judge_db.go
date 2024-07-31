@@ -52,9 +52,7 @@ func buildGetJudgeTXByOptions(
 	tx *gorm.DB, options GetJudgeOptions, isCount bool,
 ) *gorm.DB {
 	tx = tx.Model(&Judge{}).
-		Preload(clause.Associations)
-		// See more in: https://gorm.io/docs/preload.html
-		// Preload("User.Roles").Preload("Problem.Tags").Preload(clause.Associations)
+		Preload(clause.Associations) // See more in: https://gorm.io/docs/preload.html
 	if len(options.Selection) > 0 {
 		tx = tx.Select(options.Selection)
 	}

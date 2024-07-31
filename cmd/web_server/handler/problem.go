@@ -38,18 +38,13 @@ func SetupProblemRouter(baseRoute *gin.RouterGroup) {
 func getProblem(ginCtx *gin.Context) {
 	slug := ginCtx.Param("slug")
 
-	problemInfo, err := problem_service.GetProblem(ginCtx, slug)
+	problem, err := problem_service.GetProblem(ginCtx, slug)
 	if err != nil {
 		_ = ginCtx.Error(err)
 		return
 	}
 
-	ginCtx.JSON(200, gin.H{
-		"slug":        problemInfo.Slug,
-		"title":       problemInfo.Title,
-		"description": problemInfo.Description,
-		"tags":        problem_model.GetTagsList(*problemInfo),
-	})
+	ginCtx.JSON(200, problem)
 }
 
 // putProblem
