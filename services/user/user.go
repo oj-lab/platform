@@ -70,6 +70,37 @@ func GrantUserRole(ctx context.Context, account, role, domain string) error {
 	if !notDuplicated {
 		return fmt.Errorf("role already granted")
 	}
+	err = enforcer.SavePolicy()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func RevokeUserRole(ctx context.Context, account, role, domain string) error {
+	exist, err := CheckUserExist(ctx, account)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		return fmt.Errorf("user not exist")
+	}
+
+	enforcer := casbin_agent.GetDefaultCasbinEnforcer()
+	account = casbin_agent.UserSubjectPrefix + account
+	role = casbin_agent.RoleSubjectPrefix + role
+	notDuplicated, err := enforcer.DeleteRoleForUserInDomain(account, role, domain)
+	if err != nil {
+		return err
+	}
+	if !notDuplicated {
+		return fmt.Errorf("role not granted")
+	}
+	err = enforcer.SavePolicy()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

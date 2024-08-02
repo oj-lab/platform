@@ -7,8 +7,6 @@ import (
 	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
 )
 
-const UserSubPrefix = "user_"
-
 func BuildCasbinEnforceHandlerWithDomain(domain string) gin.HandlerFunc {
 	return func(ginCtx *gin.Context) {
 		enforcer := casbin_agent.GetDefaultCasbinEnforcer()
@@ -21,7 +19,7 @@ func BuildCasbinEnforceHandlerWithDomain(domain string) gin.HandlerFunc {
 			return
 		}
 
-		allow, err := enforcer.Enforce(UserSubPrefix+ls.Key.Account, "_", domain, path, method)
+		allow, err := enforcer.Enforce(casbin_agent.UserSubjectPrefix+ls.Key.Account, "_", domain, path, method)
 		if err != nil {
 			log_module.AppLogger().Errorf("Failed to enforce: %v", err)
 			modules.NewInternalError("Failed to enforce").AppendToGin(ginCtx)
