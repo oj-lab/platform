@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -52,21 +51,21 @@ func AddUserCasbinPolicies() error {
 }
 
 func GetUserList(ginCtx *gin.Context) {
-	options := user_model.GetUserOptions{}
-	limitStr := ginCtx.Query("limit")
-	offsetStr := ginCtx.Query("offset")
-	limit, err := strconv.Atoi(limitStr)
+	limit, err := gin_utils.QueryInt(ginCtx, "limit", 10)
 	if err != nil {
-		limit = 10
+		gin_utils.NewInvalidParamError(ginCtx, "limit", err.Error())
+		return
 	}
-	offset, err := strconv.Atoi(offsetStr)
+	offset, err := gin_utils.QueryInt(ginCtx, "offset", 0)
 	if err != nil {
-		offset = 0
+		gin_utils.NewInvalidParamError(ginCtx, "offset", err.Error())
+		return
 	}
-	options.Limit = func() *int { return &limit }()
-	options.Offset = func() *int { return &offset }()
 
-	users, total, err := user_service.GetUserList(ginCtx, options)
+	users, total, err := user_service.GetUserList(ginCtx, user_model.GetUserOptions{
+		Limit:  &limit,
+		Offset: &offset,
+	})
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get user list: %v", err))
 		return

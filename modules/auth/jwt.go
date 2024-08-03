@@ -8,8 +8,10 @@ import (
 	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
 )
 
-var jwtSecret string
-var jwtDuration time.Duration
+var (
+	jwtSecret   string
+	jwtDuration time.Duration
+)
 
 func init() {
 	jwtSecret = config_module.AppConfig().GetString("jwt.secret")

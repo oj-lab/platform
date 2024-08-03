@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
@@ -95,20 +94,12 @@ func deleteProblem(ginCtx *gin.Context) {
 //	@Accept			json
 //	@Success		200
 func getProblemInfoList(ginCtx *gin.Context) {
-	limitStr := ginCtx.Query("limit")
-	offsetStr := ginCtx.Query("offset")
-	if limitStr == "" {
-		limitStr = "10"
-	}
-	if offsetStr == "" {
-		offsetStr = "0"
-	}
-	limit, err := strconv.Atoi(limitStr)
+	limit, err := gin_utils.QueryInt(ginCtx, "limit", 10)
 	if err != nil {
 		gin_utils.NewInvalidParamError(ginCtx, "limit", err.Error())
 		return
 	}
-	offset, err := strconv.Atoi(offsetStr)
+	offset, err := gin_utils.QueryInt(ginCtx, "offset", 0)
 	if err != nil {
 		gin_utils.NewInvalidParamError(ginCtx, "offset", err.Error())
 		return

@@ -9,21 +9,24 @@ import (
 	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
 )
 
-const githubOauthEntryURL = "https://github.com/login/oauth/authorize"
-const githubAccessTokenURL = "https://github.com/login/oauth/access_token"
-const githubApiUserURL = "https://api.github.com/user"
-
 const (
+	githubOauthEntryURL  = "https://github.com/login/oauth/authorize"
+	githubAccessTokenURL = "https://github.com/login/oauth/access_token"
+	githubApiUserURL     = "https://api.github.com/user"
+
 	servicePortProp       = "service.port"
 	serviceHostProp       = "service.host"
 	serviceSSLEnabledProp = "service.ssl_enabled"
 )
 
-var githubClientID string
-var githubClientSecret string
-var servicePort uint
-var serviceHost string
-var serviceSSLEnabled bool
+var (
+	githubClientID     string
+	githubClientSecret string
+
+	servicePort       uint
+	serviceHost       string
+	serviceSSLEnabled bool
+)
 
 func init() {
 	githubClientID = config_module.AppConfig().GetString("auth_modulegithub.client_id")
