@@ -7,10 +7,12 @@ import (
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 )
 
-func GetProblemInfoList(_ context.Context) ([]problem_model.Problem, int64, error) {
+func GetProblemInfoList(_ context.Context, limit, offset *int) ([]problem_model.Problem, int64, error) {
 	db := gorm_agent.GetDefaultDB()
 	getOptions := problem_model.GetProblemOptions{
 		Selection: problem_model.ProblemInfoSelection,
+		Limit:     limit,
+		Offset:    offset,
 	}
 
 	problemList, total, err := problem_model.GetProblemInfoListByOptions(db, getOptions)

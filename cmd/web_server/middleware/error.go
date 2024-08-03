@@ -2,19 +2,23 @@ package middleware
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/oj-lab/oj-lab-platform/modules"
 	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
+	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
 )
 
-func GetServiceError(ginErr gin.Error) *modules.SeviceError {
-	if modules.IsServiceError(ginErr.Meta) {
-		return ginErr.Meta.(*modules.SeviceError)
+func GetServiceError(ginErr gin.Error) *gin_utils.SeviceError {
+	if gin_utils.IsServiceError(ginErr.Meta) {
+		return ginErr.Meta.(*gin_utils.SeviceError)
 	} else {
-		serviceErr := modules.NewInternalError(fmt.Sprintf("%v", ginErr.Err))
+		serviceErr := gin_utils.SeviceError{
+			Code: http.StatusInternalServerError,
+			Msg:  fmt.Sprintf("%v", ginErr.Err),
+		}
 		serviceErr.CaptureStackTrace()
-		return serviceErr
+		return &serviceErr
 	}
 }
 

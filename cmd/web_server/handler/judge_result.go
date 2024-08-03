@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
-	"github.com/oj-lab/oj-lab-platform/modules"
+	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
 	judge_service "github.com/oj-lab/oj-lab-platform/services/judge"
 )
 
@@ -24,20 +24,20 @@ type ReportJudgeResultCountBody struct {
 func putReportJudgeResultCount(ginCtx *gin.Context) {
 	body := ReportJudgeResultCountBody{}
 	if err := ginCtx.ShouldBindJSON(&body); err != nil {
-		modules.NewInvalidParamError("body", "invalid body").AppendToGin(ginCtx)
+		gin_utils.NewInvalidParamError(ginCtx, "body", "invalid body")
 		return
 	}
 
 	judgeUID, err := uuid.Parse(body.JudgeUID)
 	if err != nil {
-		modules.NewInvalidParamError("judgeUID", "invalid judgeUID").AppendToGin(ginCtx)
+		gin_utils.NewInvalidParamError(ginCtx, "judgeUID", "invalid judgeUID")
 		return
 	}
 
 	if err := judge_service.ReportJudgeResultCount(
 		ginCtx, judgeUID, body.ResultCount,
 	); err != nil {
-		modules.NewInternalError(err.Error()).AppendToGin(ginCtx)
+		gin_utils.NewInternalError(ginCtx, err.Error())
 		return
 	}
 
@@ -56,17 +56,17 @@ type ReportJudgeResultBody struct {
 func postReportJudgeResult(ginCtx *gin.Context) {
 	body := ReportJudgeResultBody{}
 	if err := ginCtx.ShouldBindJSON(&body); err != nil {
-		modules.NewInvalidParamError("body", "invalid body").AppendToGin(ginCtx)
+		gin_utils.NewInvalidParamError(ginCtx, "body", "invalid body")
 	}
 
 	judgeUID, err := uuid.Parse(body.JudgeUIDString)
 	if err != nil {
-		modules.NewInvalidParamError("judgeUID", "invalid judgeUID").AppendToGin(ginCtx)
+		gin_utils.NewInvalidParamError(ginCtx, "judgeUID", "invalid judgeUID")
 		return
 	}
 	verdict := judge_model.JudgeVerdict(body.VerdictString)
 	if !verdict.IsValid() {
-		modules.NewInvalidParamError("verdict", "invalid verdict").AppendToGin(ginCtx)
+		gin_utils.NewInvalidParamError(ginCtx, "verdict", "invalid verdict")
 		return
 	}
 
@@ -77,7 +77,7 @@ func postReportJudgeResult(ginCtx *gin.Context) {
 		MemoryUsageByte: body.MemoryUsageByte,
 	})
 	if err != nil {
-		modules.NewInternalError(err.Error()).AppendToGin(ginCtx)
+		gin_utils.NewInternalError(ginCtx, err.Error())
 		return
 	}
 }

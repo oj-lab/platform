@@ -1,4 +1,4 @@
-package modules
+package gin_utils
 
 import (
 	"fmt"
@@ -38,28 +38,31 @@ func IsServiceError(err interface{}) bool {
 	return ok
 }
 
-func NewInternalError(msg string) *SeviceError {
-	return &SeviceError{
+func NewInternalError(ginCtx *gin.Context, msg string) {
+	serviceErr := SeviceError{
 		Code: http.StatusInternalServerError,
 		Msg:  msg,
 	}
+	serviceErr.AppendToGin(ginCtx)
 }
 
-func NewUnauthorizedError(msg string) *SeviceError {
-	return &SeviceError{
+func NewUnauthorizedError(ginCtx *gin.Context, msg string) {
+	serviceErr := SeviceError{
 		Code: http.StatusUnauthorized,
 		Msg:  msg,
 	}
+	serviceErr.AppendToGin(ginCtx)
 }
 
-func NewInvalidParamError(param string, hints ...string) *SeviceError {
+func NewInvalidParamError(ginCtx *gin.Context, param string, hints ...string) {
 	msg := fmt.Sprintf("invalid param: %s", param)
 	for _, hint := range hints {
 		msg += fmt.Sprintf(", %s", hint)
 	}
 
-	return &SeviceError{
+	serviceErr := SeviceError{
 		Code: http.StatusBadRequest,
 		Msg:  msg,
 	}
+	serviceErr.AppendToGin(ginCtx)
 }

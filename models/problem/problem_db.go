@@ -50,7 +50,8 @@ func buildGetProblemTXByOptions(tx *gorm.DB, options GetProblemOptions, isCount 
 		tx = tx.Select(options.Selection)
 	}
 	if len(tagsList) > 0 {
-		tx = tx.Joins("JOIN problem_algorithm_tags ON problem_algorithm_tags.problem_slug = problems.slug").
+		tx = tx.
+			Joins("JOIN problem_algorithm_tags ON problem_algorithm_tags.problem_slug = problems.slug").
 			Where("problem_algorithm_tags.algorithm_tag_name in ?", tagsList)
 	}
 	if options.Slug != nil {

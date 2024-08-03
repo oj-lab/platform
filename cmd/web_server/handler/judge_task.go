@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
-	"github.com/oj-lab/oj-lab-platform/modules"
+	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
 	judge_service "github.com/oj-lab/oj-lab-platform/services/judge"
 	"github.com/redis/go-redis/v9"
 )
@@ -58,7 +58,7 @@ func putReportJudgeTask(ginCtx *gin.Context) {
 
 	verdict := judge_model.JudgeVerdict(body.VerdictString)
 	if !verdict.IsValid() {
-		modules.NewInvalidParamError("verdict", "invalid verdict").AppendToGin(ginCtx)
+		gin_utils.NewInvalidParamError(ginCtx, "verdict", "invalid verdict")
 		return
 	}
 

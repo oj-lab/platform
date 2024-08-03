@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/oj-lab/oj-lab-platform/modules"
 	auth_module "github.com/oj-lab/oj-lab-platform/modules/auth"
+	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
 )
 
 const (
@@ -20,7 +20,7 @@ func BuildHandleRequireLoginWithRoles(roles []string) gin.HandlerFunc {
 	return func(ginCtx *gin.Context) {
 		ls, err := GetLoginSessionFromGinCtx(ginCtx)
 		if err != nil {
-			modules.NewUnauthorizedError("cannot load login session from cookie").AppendToGin(ginCtx)
+			gin_utils.NewUnauthorizedError(ginCtx, "cannot load login session from cookie")
 			ginCtx.Abort()
 			return
 		}
@@ -33,7 +33,7 @@ func BuildHandleRequireLoginWithRoles(roles []string) gin.HandlerFunc {
 func HandleRequireLogin(ginCtx *gin.Context) {
 	ls, err := GetLoginSessionFromGinCtx(ginCtx)
 	if err != nil {
-		modules.NewUnauthorizedError("cannot load login session from cookie").AppendToGin(ginCtx)
+		gin_utils.NewUnauthorizedError(ginCtx, "cannot load login session from cookie")
 		ginCtx.Abort()
 		return
 	}

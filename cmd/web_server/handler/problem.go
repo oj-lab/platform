@@ -2,11 +2,12 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
-	"github.com/oj-lab/oj-lab-platform/modules"
+	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
 	judge_service "github.com/oj-lab/oj-lab-platform/services/judge"
 	problem_service "github.com/oj-lab/oj-lab-platform/services/problem"
 )
@@ -94,9 +95,32 @@ func deleteProblem(ginCtx *gin.Context) {
 //	@Accept			json
 //	@Success		200
 func getProblemInfoList(ginCtx *gin.Context) {
-	problemInfoList, total, err := problem_service.GetProblemInfoList(ginCtx)
+	limitStr := ginCtx.Query("limit")
+	offsetStr := ginCtx.Query("offset")
+	if limitStr == "" {
+		limitStr = "10"
+	}
+	if offsetStr == "" {
+		offsetStr = "0"
+	}
+	limit, err := strconv.Atoi(limitStr)
 	if err != nil {
-		_ = ginCtx.Error(err)
+		gin_utils.NewInvalidParamError(ginCtx, "limit", err.Error())
+		return
+	}
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		gin_utils.NewInvalidParamError(ginCtx, "offset", err.Error())
+		return
+	}
+
+	problemInfoList, total, err := problem_service.GetProblemInfoList(
+		ginCtx,
+		&limit,
+		&offset,
+	)
+	if err != nil {
+		gin_utils.NewInternalError(ginCtx, err.Error())
 		return
 	}
 
@@ -189,7 +213,7 @@ func postJudge(ginCtx *gin.Context) {
 	judge := judge_model.NewJudge("", slug, body.Code, body.Language)
 	result, err := judge_service.CreateJudge(ginCtx, judge)
 	if err != nil {
-		modules.NewInternalError(err.Error()).AppendToGin(ginCtx)
+		gin_utils.NewInternalError(ginCtx, err.Error())
 		return
 	}
 

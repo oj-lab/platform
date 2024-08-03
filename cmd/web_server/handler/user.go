@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/oj-lab/oj-lab-platform/cmd/web_server/middleware"
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
-	"github.com/oj-lab/oj-lab-platform/modules"
 	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
+	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
 	user_service "github.com/oj-lab/oj-lab-platform/services/user"
 )
 
@@ -68,7 +68,7 @@ func GetUserList(ginCtx *gin.Context) {
 
 	users, total, err := user_service.GetUserList(ginCtx, options)
 	if err != nil {
-		modules.NewInternalError(fmt.Sprintf("failed to get user list: %v", err)).AppendToGin(ginCtx)
+		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get user list: %v", err))
 		return
 	}
 
@@ -89,12 +89,12 @@ func GetUserList(ginCtx *gin.Context) {
 func me(ginCtx *gin.Context) {
 	ls, err := middleware.GetLoginSessionFromGinCtx(ginCtx)
 	if err != nil {
-		modules.NewUnauthorizedError("cannot load login session from cookie").AppendToGin(ginCtx)
+		gin_utils.NewUnauthorizedError(ginCtx, "cannot load login session from cookie")
 		return
 	}
 	user, err := user_service.GetUser(ginCtx, ls.Key.Account)
 	if err != nil {
-		modules.NewInternalError(fmt.Sprintf("failed to get user: %v", err)).AppendToGin(ginCtx)
+		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get user: %v", err))
 		return
 	}
 
@@ -111,13 +111,13 @@ func grantUserRole(ginCtx *gin.Context) {
 	body := &grantUserRoleBody{}
 	err := ginCtx.BindJSON(body)
 	if err != nil {
-		modules.NewInvalidParamError("body", "invalid body").AppendToGin(ginCtx)
+		gin_utils.NewInvalidParamError(ginCtx, "body", "invalid body")
 		return
 	}
 
 	err = user_service.GrantUserRole(ginCtx, account, body.Role, body.Domain)
 	if err != nil {
-		modules.NewInternalError(fmt.Sprintf("failed to grant user role: %v", err)).AppendToGin(ginCtx)
+		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to grant user role: %v", err))
 		return
 	}
 
@@ -134,13 +134,13 @@ func revokeUserRole(ginCtx *gin.Context) {
 	body := &revokeUserRoleBody{}
 	err := ginCtx.BindJSON(body)
 	if err != nil {
-		modules.NewInvalidParamError("body", "invalid body").AppendToGin(ginCtx)
+		gin_utils.NewInvalidParamError(ginCtx, "body", "invalid body")
 		return
 	}
 
 	err = user_service.RevokeUserRole(ginCtx, account, body.Role, body.Domain)
 	if err != nil {
-		modules.NewInternalError(fmt.Sprintf("failed to revoke user role: %v", err)).AppendToGin(ginCtx)
+		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to revoke user role: %v", err))
 		return
 	}
 

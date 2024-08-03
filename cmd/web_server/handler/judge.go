@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/oj-lab/oj-lab-platform/models"
 	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
-	"github.com/oj-lab/oj-lab-platform/modules"
+	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
 	judge_service "github.com/oj-lab/oj-lab-platform/services/judge"
 )
 
@@ -24,13 +24,13 @@ func getJudge(ginCtx *gin.Context) {
 	uidString := ginCtx.Param("uid")
 	uid, err := uuid.Parse(uidString)
 	if err != nil {
-		modules.NewInvalidParamError("uid", "invalid uid").AppendToGin(ginCtx)
+		gin_utils.NewInvalidParamError(ginCtx, "uid", "invalid uid")
 		return
 	}
 
 	judge, err := judge_service.GetJudge(ginCtx, uid)
 	if err != nil {
-		modules.NewInternalError(fmt.Sprintf("failed to get judge: %v", err)).AppendToGin(ginCtx)
+		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get judge: %v", err))
 		return
 	}
 
@@ -63,12 +63,12 @@ func getJudgeList(ginCtx *gin.Context) {
 
 	limit, err := strconv.Atoi(limitQuery)
 	if err != nil {
-		modules.NewInvalidParamError("limit", "invalid limit").AppendToGin(ginCtx)
+		gin_utils.NewInvalidParamError(ginCtx, "limit", "invalid limit")
 		return
 	}
 	offset, err := strconv.Atoi(offsetQuery)
 	if err != nil {
-		modules.NewInvalidParamError("offset", "invalid offset").AppendToGin(ginCtx)
+		gin_utils.NewInvalidParamError(ginCtx, "offset", "invalid offset")
 		return
 	}
 
@@ -80,7 +80,7 @@ func getJudgeList(ginCtx *gin.Context) {
 
 	judges, total, err := judge_service.GetJudgeList(ginCtx, options)
 	if err != nil {
-		modules.NewInternalError(fmt.Sprintf("failed to get judge list: %v", err)).AppendToGin(ginCtx)
+		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get judge list: %v", err))
 		return
 	}
 

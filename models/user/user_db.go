@@ -1,7 +1,6 @@
 package user_model
 
 import (
-	"crypto/md5"
 	"fmt"
 	"net/url"
 	"strings"
@@ -9,11 +8,10 @@ import (
 	"github.com/alexedwards/argon2id"
 	"github.com/oj-lab/oj-lab-platform/models"
 	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
+	gravatar_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gravatar"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
-
-const gravatarURLFormat = "https://www.gravatar.com/avatar/%x?d=identicon&s=512"
 
 // Account, Password, Roles will be used to create a new user.
 func CreateUser(tx *gorm.DB, request User) (*User, error) {
@@ -28,11 +26,9 @@ func CreateUser(tx *gorm.DB, request User) (*User, error) {
 	_, err := url.Parse(user.AvatarURL)
 	if err != nil || user.AvatarURL == "" {
 		if user.Email != nil {
-			md5sum := md5.Sum([]byte(*user.Email))
-			user.AvatarURL = fmt.Sprintf(gravatarURLFormat, md5sum)
+			user.AvatarURL = gravatar_utils.GetAvatarURL(*user.Email)
 		} else {
-			md5sum := md5.Sum([]byte(user.Account))
-			user.AvatarURL = fmt.Sprintf(gravatarURLFormat, md5sum)
+			user.AvatarURL = gravatar_utils.GetAvatarURL(user.Account)
 		}
 	}
 
