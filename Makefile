@@ -98,7 +98,7 @@ check: gen-proto install-cilint
 	golangci-lint run
 
 .PHONY: test
-test: build gen-swagger setup-dependencies
+test: build gen-swagger setup-data
 	go test -race -covermode=atomic -coverprofile=coverage.out -cover -v -count=1 \
 		./models/... ./modules/... ./services/...
 
