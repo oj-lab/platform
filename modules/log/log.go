@@ -10,7 +10,7 @@ import (
 )
 
 const logLevelProp = "log.level"
-const logForceQuote = "log.force_quote"
+const logPrettyJson = "log.pretty_json"
 const logTimeOn = "log.time_on"
 const logTimeFormat = "log.time_format"
 
@@ -31,8 +31,8 @@ func setupLog() {
 
 	logrus.SetLevel(logrus.DebugLevel)
 	lvl := config_module.AppConfig().GetString(logLevelProp)
-	forceQuote := config_module.AppConfig().GetBool(logForceQuote)
-	fullTimeOn := config_module.AppConfig().GetBool(logTimeOn)
+	prettyJson := config_module.AppConfig().GetBool(logPrettyJson)
+	timeOn := config_module.AppConfig().GetBool(logTimeOn)
 	timestampFormat := config_module.AppConfig().GetString(logTimeFormat)
 
 	logLevel, err := logrus.ParseLevel(lvl)
@@ -41,11 +41,10 @@ func setupLog() {
 		logrus.SetLevel(logLevel)
 	}
 	// TODO: control log format in config
-	// logrus.SetFormatter(&logrus.JSONFormatter{})
-	logrus.SetFormatter(&logrus.TextFormatter{
-		ForceQuote:      forceQuote, // value Quote
-		FullTimestamp:   fullTimeOn,
-		TimestampFormat: timestampFormat,
+	logrus.SetFormatter(&logrus.JSONFormatter{
+		TimestampFormat:  timestampFormat,
+		DisableTimestamp: !timeOn,
+		PrettyPrint:      prettyJson,
 	})
 }
 

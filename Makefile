@@ -65,13 +65,16 @@ unset-data: build
 
 .PHONY: setup-dependencies
 setup-dependencies: build get-front get-problem-packages
-	docker compose up -d postgres redis minio clickhouse
-	@echo "Wait 2 seconds for db setup"
-	sleep 2s
+	@if [ "$(shell docker ps -f status=running | grep -E "postgres|redis|minio|clickhouse" | wc -l)" -eq 4 ]; then \
+		echo "Containers already up"; \
+		./bin/clean; \
+	else \
+		docker compose up -d postgres redis minio clickhouse; \
+		@echo "Wait 10 seconds for db setup"; \
+		sleep 10s; \
+	fi
+	./bin/init;
 
-.PHONY: setup-data
-setup-data:setup-dependencies unset-data
-	./bin/init
 
 .PHONY: get-front
 get-front:
@@ -98,7 +101,7 @@ check: gen-proto install-cilint
 	golangci-lint run
 
 .PHONY: test
-test: build gen-swagger setup-data
+test: build gen-swagger setup-dependencies
 	go test -race -covermode=atomic -coverprofile=coverage.out -cover -v -count=1 \
 		./models/... ./modules/... ./services/...
 

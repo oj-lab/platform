@@ -1,6 +1,6 @@
 [log]
 level = "debug"
-force_quote = true
+pretty_json = true
 time_on = true
 time_format = "2006-01-02 15:04:05"
 
