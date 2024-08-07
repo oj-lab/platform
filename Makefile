@@ -59,12 +59,22 @@ unset-dependencies:
 	docker compose stop postgres redis minio clickhouse
 	docker compose rm -f postgres redis minio clickhouse
 
+.PHONY: unset-data
+unset-data: build
+	./bin/clean
+
 .PHONY: setup-dependencies
-setup-dependencies: unset-dependencies build get-front get-problem-packages
-	docker compose up -d postgres redis minio clickhouse
-	@echo "Wait 10 seconds for db setup"
-	sleep 10s
-	./bin/init
+setup-dependencies: build get-front get-problem-packages
+	@if [ "$(shell docker ps -f status=running | grep -E "postgres|redis|minio|clickhouse" | wc -l)" -eq 4 ]; then \
+		echo "Containers already up"; \
+		./bin/clean; \
+	else \
+		docker compose up -d postgres redis minio clickhouse; \
+		@echo "Wait 10 seconds for db setup"; \
+		sleep 10s; \
+	fi
+	./bin/init;
+
 
 .PHONY: get-front
 get-front:
