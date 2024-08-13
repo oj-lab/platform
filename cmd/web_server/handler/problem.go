@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
@@ -14,9 +12,6 @@ import (
 func SetupProblemRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/problem")
 	{
-		g.GET("/greet", func(c *gin.Context) {
-			c.String(http.StatusOK, "Hello, this is problem service")
-		})
 		g.GET("", getProblemInfoList)
 		g.PUT("", putProblem)
 		g.GET("/:slug", getProblem)
