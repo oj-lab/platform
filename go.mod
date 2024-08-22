@@ -11,7 +11,10 @@ require (
 	gorm.io/gorm v1.25.10
 )
 
-require github.com/stretchr/testify v1.9.0
+require (
+	github.com/stretchr/testify v1.9.0
+	github.com/swaggo/swag v1.16.3
+)
 
 require (
 	github.com/ClickHouse/ch-go v0.61.5 // indirect
@@ -41,7 +44,6 @@ require (
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
-	github.com/swaggo/swag v1.16.3 // indirect
 	go.opentelemetry.io/otel v1.26.0 // indirect
 	go.opentelemetry.io/otel/trace v1.26.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect

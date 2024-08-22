@@ -78,7 +78,7 @@ func loadProblemPackages(ctx context.Context) {
 				Slug:        slug,
 				Title:       title,
 				Description: &description,
-				Tags: []*problem_model.AlgorithmTag{
+				Tags: []*problem_model.ProblemTag{
 					{Name: "to-be-add"},
 				},
 			})

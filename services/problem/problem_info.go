@@ -15,7 +15,11 @@ func GetProblemInfoList(_ context.Context, limit, offset *int) ([]problem_model.
 		Offset:    offset,
 	}
 
-	problemList, total, err := problem_model.GetProblemInfoListByOptions(db, getOptions)
+	total, err := problem_model.CountProblemByOptions(db, getOptions)
+	if err != nil {
+		return nil, 0, err
+	}
+	problemList, err := problem_model.GetProblemListByOptions(db, getOptions)
 	if err != nil {
 		return nil, 0, err
 	}

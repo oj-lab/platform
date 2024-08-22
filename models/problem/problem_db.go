@@ -35,12 +35,12 @@ type GetProblemOptions struct {
 	Selection []string
 	Slug      *string
 	Title     *string
-	Tags      []*AlgorithmTag
+	Tags      []*ProblemTag
 	Offset    *int
 	Limit     *int
 }
 
-func buildGetProblemTXByOptions(tx *gorm.DB, options GetProblemOptions, isCount bool) *gorm.DB {
+func buildGetProblemsTXByOptions(tx *gorm.DB, options GetProblemOptions, isCount bool) *gorm.DB {
 	tagsList := []string{}
 	for _, tag := range options.Tags {
 		tagsList = append(tagsList, tag.Name)
@@ -51,8 +51,8 @@ func buildGetProblemTXByOptions(tx *gorm.DB, options GetProblemOptions, isCount 
 	}
 	if len(tagsList) > 0 {
 		tx = tx.
-			Joins("JOIN problem_algorithm_tags ON problem_algorithm_tags.problem_slug = problems.slug").
-			Where("problem_algorithm_tags.algorithm_tag_name in ?", tagsList)
+			Joins("JOIN problem_problem_tags ON problem_problem_tags.problem_slug = problems.slug").
+			Where("problem_problem_tags.problem_tag_name in ?", tagsList)
 	}
 	if options.Slug != nil {
 		tx = tx.Where("slug = ?", *options.Slug)
@@ -77,27 +77,21 @@ func buildGetProblemTXByOptions(tx *gorm.DB, options GetProblemOptions, isCount 
 func CountProblemByOptions(tx *gorm.DB, options GetProblemOptions) (int64, error) {
 	var count int64
 
-	tx = buildGetProblemTXByOptions(tx, options, true)
+	tx = buildGetProblemsTXByOptions(tx, options, true)
 	err := tx.Count(&count).Error
 
 	return count, err
 }
 
-func GetProblemInfoListByOptions(tx *gorm.DB, options GetProblemOptions) ([]Problem, int64, error) {
-	total, err := CountProblemByOptions(tx, options)
-	if err != nil {
-		return nil, 0, err
-	}
-
+func GetProblemListByOptions(tx *gorm.DB, options GetProblemOptions) ([]Problem, error) {
 	problemList := []Problem{}
-
-	tx = buildGetProblemTXByOptions(tx, options, false)
-	err = tx.Find(&problemList).Error
+	tx = buildGetProblemsTXByOptions(tx, options, false)
+	err := tx.Find(&problemList).Error
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
-	return problemList, total, nil
+	return problemList, nil
 }
 
 func GetTagsList(problem Problem) []string {

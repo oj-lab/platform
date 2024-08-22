@@ -50,10 +50,10 @@ func clearDB() {
 	err := db.Migrator().DropTable(
 		&user_model.User{},
 		&problem_model.Problem{},
-		&problem_model.AlgorithmTag{},
+		&problem_model.ProblemTag{},
 		&judge_model.Judge{},
 		&judge_model.JudgeResult{},
-		"problem_algorithm_tags",
+		"problem_problem_tags",
 		"casbin_rule",
 	)
 

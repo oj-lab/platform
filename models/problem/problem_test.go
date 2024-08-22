@@ -15,7 +15,7 @@ func TestProblemDB(t *testing.T) {
 		Slug:        "a-plus-b-problem",
 		Title:       "A+B Problem",
 		Description: &description,
-		Tags:        []*AlgorithmTag{{Name: "tag1"}, {Name: "tag2"}},
+		Tags:        []*ProblemTag{{Name: "tag1"}, {Name: "tag2"}},
 	}
 
 	err := CreateProblem(db, problem)
@@ -36,16 +36,16 @@ func TestProblemDB(t *testing.T) {
 
 	problemOption := GetProblemOptions{
 		Selection: ProblemInfoSelection,
-		Tags:      []*AlgorithmTag{{Name: "tag1"}},
+		Tags:      []*ProblemTag{{Name: "tag1"}},
 		Slug:      &problem.Slug,
 	}
 
-	problemList, problemCount, err := GetProblemInfoListByOptions(db, problemOption)
+	problemList, err := GetProblemListByOptions(db, problemOption)
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Printf("problemCount: %d\n", problemCount)
-	if problemCount != 1 {
+	fmt.Printf("problemList: %v\n", problemList)
+	if len(problemList) != 1 {
 		t.Error("problemCount should be 1")
 	}
 
