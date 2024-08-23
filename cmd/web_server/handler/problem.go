@@ -102,8 +102,8 @@ func getProblemInfoList(ginCtx *gin.Context) {
 
 	problemInfoList, total, err := problem_service.GetProblemInfoList(
 		ginCtx,
-		&limit,
-		&offset,
+		nil,
+		&limit, &offset,
 	)
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, err.Error())

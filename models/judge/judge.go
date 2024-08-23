@@ -7,13 +7,13 @@ import (
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 )
 
-type JudgeTaskStatus string
+type JudgeStatus string
 
 const (
-	JudgeTaskStatusPending  JudgeTaskStatus = "pending"
-	JudgeTaskStatusWaiting  JudgeTaskStatus = "waiting"
-	JudgeTaskStatusRunning  JudgeTaskStatus = "running"
-	JudgeTaskStatusFinished JudgeTaskStatus = "finished"
+	JudgeStatusPending  JudgeStatus = "pending"
+	JudgeStatusWaiting  JudgeStatus = "waiting"
+	JudgeStatusRunning  JudgeStatus = "running"
+	JudgeStatusFinished JudgeStatus = "finished"
 )
 
 type ProgrammingLanguage string
@@ -39,7 +39,7 @@ type Judge struct {
 	Problem       problem_model.Problem `json:"problem"`
 	Code          string                `json:"code" gorm:"not null"`
 	Language      ProgrammingLanguage   `json:"language" gorm:"not null"`
-	Status        JudgeTaskStatus       `json:"status" gorm:"default:pending"`
+	Status        JudgeStatus           `json:"status" gorm:"default:pending"`
 	ResultCount   uint                  `json:"resultCount"`
 	Results       []JudgeResult         `json:"results" gorm:"foreignKey:JudgeUID"`
 	Verdict       JudgeVerdict          `json:"verdict"`
@@ -56,7 +56,7 @@ func NewJudge(
 		ProblemSlug: problemSlug,
 		Code:        code,
 		Language:    language,
-		Status:      JudgeTaskStatusPending,
+		Status:      JudgeStatusPending,
 	}
 }
 

@@ -17,7 +17,7 @@ func PickJudgeTask(ctx context.Context, consumer string) (*judge_model.JudgeTask
 	db := gorm_agent.GetDefaultDB()
 	err = judge_model.UpdateJudge(db, judge_model.Judge{
 		UID:    uuid.MustParse(task.JudgeUID),
-		Status: judge_model.JudgeTaskStatusRunning,
+		Status: judge_model.JudgeStatusRunning,
 	})
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func ReportJudgeTask(
 
 	err := judge_model.UpdateJudge(db, judge_model.Judge{
 		RedisStreamID: streamID,
-		Status:        judge_model.JudgeTaskStatusFinished,
+		Status:        judge_model.JudgeStatusFinished,
 		Verdict:       verdict,
 	})
 	if err != nil {

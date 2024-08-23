@@ -40,15 +40,16 @@ func GetJudge(tx *gorm.DB, uid uuid.UUID) (*Judge, error) {
 
 type GetJudgeOptions struct {
 	Selection      []string
-	Statuses       []JudgeTaskStatus
 	UserAccount    *string
-	ProblemSlug    *string
+	ProblemSlugs   []string
+	Statuses       []JudgeStatus
+	Verdicts       []JudgeVerdict
 	Offset         *int
 	Limit          *int
 	OrderByColumns []models.OrderByColumnOption
 }
 
-func buildGetJudgeTXByOptions(
+func buildGetJudgesTXByOptions(
 	tx *gorm.DB, options GetJudgeOptions, isCount bool,
 ) *gorm.DB {
 	tx = tx.Model(&Judge{}).
@@ -59,11 +60,14 @@ func buildGetJudgeTXByOptions(
 	if options.UserAccount != nil {
 		tx = tx.Where("user_account = ?", *options.UserAccount)
 	}
-	if options.ProblemSlug != nil {
-		tx = tx.Where("problem_slug = ?", *options.ProblemSlug)
-	}
 	if len(options.Statuses) > 0 {
 		tx = tx.Where("status IN ?", options.Statuses)
+	}
+	if len(options.Verdicts) > 0 {
+		tx = tx.Where("verdict IN ?", options.Verdicts)
+	}
+	if len(options.ProblemSlugs) > 0 {
+		tx = tx.Where("problem_slug IN ?", options.ProblemSlugs)
 	}
 
 	if !isCount {
@@ -84,24 +88,27 @@ func buildGetJudgeTXByOptions(
 	return tx
 }
 
+func CountJudgeByOptions(tx *gorm.DB, options GetJudgeOptions) (int64, error) {
+	tx = buildGetJudgesTXByOptions(tx, options, true)
+	var count int64
+	err := tx.Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 func GetJudgeListByOptions(
 	tx *gorm.DB, options GetJudgeOptions,
-) ([]*Judge, int64, error) {
-	tx = buildGetJudgeTXByOptions(tx, options, false)
+) ([]*Judge, error) {
+	tx = buildGetJudgesTXByOptions(tx, options, false)
 	var judges []*Judge
 	err := tx.Find(&judges).Error
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
-	tx = buildGetJudgeTXByOptions(tx, options, true)
-	var count int64
-	err = tx.Count(&count).Error
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return judges, count, nil
+	return judges, nil
 }
 
 func UpdateJudge(tx *gorm.DB, judge Judge) error {

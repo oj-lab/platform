@@ -8,7 +8,7 @@ type Problem struct {
 	Title       string        `json:"title" gorm:"not null"`
 	Description *string       `json:"description,omitempty"`
 	Tags        []*ProblemTag `json:"tags" gorm:"many2many:problem_problem_tags;"`
-	Solved      bool          `json:"solved,omitempty" gorm:"-"`
+	IsAccepted  bool          `json:"solved,omitempty" gorm:"-"`
 }
 
 type ProblemTag struct {

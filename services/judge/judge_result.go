@@ -23,7 +23,7 @@ func CreateJudgeResult(
 	if judge == nil {
 		return nil, ErrJudgeNotFound
 	}
-	if judge.Status != judge_model.JudgeTaskStatusRunning {
+	if judge.Status != judge_model.JudgeStatusRunning {
 		return nil, ErrInvalidJudgeStatus
 	}
 

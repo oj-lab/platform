@@ -54,7 +54,8 @@ func TestCreateJudge(t *testing.T) {
 	}
 
 	db := gorm_agent.GetDefaultDB()
-	judges, _, err := judge_model.GetJudgeListByOptions(db, judge_model.GetJudgeOptions{OrderByColumns: []models.OrderByColumnOption{{Column: "create_at", Desc: true}}})
+	judges, err := judge_model.GetJudgeListByOptions(db,
+		judge_model.GetJudgeOptions{OrderByColumns: []models.OrderByColumnOption{{Column: "create_at", Desc: true}}})
 	if err != nil || len(judges) == 0 {
 		t.Error(err)
 	}

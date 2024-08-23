@@ -24,7 +24,12 @@ func GetJudgeList(
 	ctx context.Context, options judge_model.GetJudgeOptions,
 ) ([]*judge_model.Judge, int64, error) {
 	db := gorm_agent.GetDefaultDB()
-	judges, total, err := judge_model.GetJudgeListByOptions(db, options)
+
+	total, err := judge_model.CountJudgeByOptions(db, options)
+	if err != nil {
+		return nil, 0, err
+	}
+	judges, err := judge_model.GetJudgeListByOptions(db, options)
 	if err != nil {
 		return nil, 0, err
 	}
