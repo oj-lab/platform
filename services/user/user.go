@@ -31,7 +31,11 @@ func GetUserList(
 	ctx context.Context, options user_model.GetUserOptions,
 ) ([]user_model.User, int64, error) {
 	db := gorm_agent.GetDefaultDB()
-	users, total, err := user_model.GetUsersByOptions(db, options)
+	total, err := user_model.CountUsersByOptions(db, options)
+	if err != nil {
+		return nil, 0, err
+	}
+	users, err := user_model.GetUsersByOptions(db, options)
 	if err != nil {
 		return nil, 0, err
 	}

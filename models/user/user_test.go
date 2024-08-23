@@ -45,7 +45,7 @@ func TestUserDB(t *testing.T) {
 		t.Error(err)
 	}
 
-	users, _, err := GetUsersByOptions(db, GetUserOptions{
+	users, err := GetUsersByOptions(db, GetUserOptions{
 		DomainRole: &casbin_agent.DomainRole{
 			Role:   "role:super",
 			Domain: "system",

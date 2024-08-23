@@ -151,22 +151,15 @@ func CountUsersByOptions(tx *gorm.DB, options GetUserOptions) (int64, error) {
 	return count, err
 }
 
-func GetUsersByOptions(tx *gorm.DB, options GetUserOptions) ([]User, int64, error) {
-	total, err := CountUsersByOptions(tx, options)
-	if err != nil {
-		return nil, 0, err
-	}
-
+func GetUsersByOptions(tx *gorm.DB, options GetUserOptions) ([]User, error) {
 	db_users := []User{}
-
 	tx = buildGetUserTXByOptions(tx, options, false)
-
-	err = tx.Find(&db_users).Error
+	err := tx.Find(&db_users).Error
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
-	return db_users, total, nil
+	return db_users, nil
 }
 
 func GetUserByAccountPassword(tx *gorm.DB, account string, password string) (*User, error) {
