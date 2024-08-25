@@ -17,6 +17,7 @@ func initDB() {
 		&problem_model.Problem{},
 		&judge_model.Judge{},
 		&judge_model.JudgeResult{},
+		&judge_model.ScoreCache{},
 	)
 	if err != nil {
 		panic("failed to migrate database")
