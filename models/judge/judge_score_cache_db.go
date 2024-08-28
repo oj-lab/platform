@@ -5,14 +5,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateJudgeScoreCache(tx *gorm.DB, scoreCache ScoreCache) (*ScoreCache, error) {
+func CreateJudgeScoreCache(tx *gorm.DB, scoreCache JudgeScoreCache) (*JudgeScoreCache, error) {
 	scoreCache.MetaFields = models.NewMetaFields()
 	return &scoreCache, tx.Create(&scoreCache).Error
 }
 
-func GetJudgeScoreCache(tx *gorm.DB, userAccount string, problemSlug string) (*ScoreCache, error) {
-	scoreCache := ScoreCache{}
-	err := tx.Model(&ScoreCache{}).
+func GetJudgeScoreCache(tx *gorm.DB, userAccount string, problemSlug string) (*JudgeScoreCache, error) {
+	scoreCache := JudgeScoreCache{}
+	err := tx.Model(&JudgeScoreCache{}).
 		Where("user_account = ?", userAccount).
 		Where("problem_slug = ?", problemSlug).
 		First(&scoreCache).Error
@@ -22,6 +22,6 @@ func GetJudgeScoreCache(tx *gorm.DB, userAccount string, problemSlug string) (*S
 	return &scoreCache, nil
 }
 
-func UpdateJudgeScoreCache(tx *gorm.DB, scoreCache ScoreCache) error {
+func UpdateJudgeScoreCache(tx *gorm.DB, scoreCache JudgeScoreCache) error {
 	return tx.Model(&scoreCache).Updates(scoreCache).Error
 }

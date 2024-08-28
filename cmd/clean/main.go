@@ -64,7 +64,6 @@ func clearDB() {
 		&judge_model.Judge{},
 		&judge_model.JudgeResult{},
 		&judge_model.ScoreCache{},
-		"problem_tags",
 		"problem_problem_tags",
 		"casbin_rule",
 	)

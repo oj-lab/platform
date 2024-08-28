@@ -9,22 +9,22 @@ import (
 )
 
 // user contest problem summary score info
-type ScoreCache struct {
+type JudgeScoreCache struct {
 	models.MetaFields
 	UserAccount     string                `json:"userAccount" gorm:"primaryKey"`
 	User            user_model.User       `json:"user"`
 	ProblemSlug     string                `json:"problemSlug" gorm:"primaryKey"`
 	Problem         problem_model.Problem `json:"problem"`
 	SubmissionCount int64                 `json:"submissionCount" gorm:"default:1"` // judge create time < solvetime will be count
-	IsCorrect       bool                  `json:"isCorrect" gorm:"default:false"`
-	SolveTime       *time.Time            `json:"SolveAt"  gorm:"default:null"` // ac time < solveTime, update submissionCount
+	IsAccepted      bool                  `json:"isAccepted" gorm:"default:false"`
+	SolveTime       *time.Time            `json:"solveAt"  gorm:"default:null"` // ac time < solveTime, update submissionCount
 }
 
-func NewScoreCache(userAccount string, problemSlug string) ScoreCache {
-	return ScoreCache{
+func NewJudgeScoreCache(userAccount string, problemSlug string) JudgeScoreCache {
+	return JudgeScoreCache{
 		UserAccount:     userAccount,
 		ProblemSlug:     problemSlug,
 		SubmissionCount: 1,
-		IsCorrect:       false,
+		IsAccepted:      false,
 	}
 }
