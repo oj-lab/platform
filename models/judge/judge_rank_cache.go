@@ -6,10 +6,18 @@ import (
 )
 
 // user contest summary rank info
-type RankCache struct {
+type JudgeRankCache struct {
 	models.MetaFields
 	UserAccount      string          `json:"userAccount" gorm:"primaryKey"`
 	User             user_model.User `json:"user"`
-	Points           uint            `json:"points"`
-	TotalSubmissions uint            `json:"totalSubmissions"`
+	Points           int64           `json:"points"`
+	TotalSubmissions int64           `json:"totalSubmissions"`
+}
+
+func NewJudgeRankCache(userAccount string) JudgeRankCache {
+	return JudgeRankCache{
+		UserAccount:      userAccount,
+		Points:           0,
+		TotalSubmissions: 0,
+	}
 }

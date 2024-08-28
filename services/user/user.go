@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
@@ -13,7 +14,10 @@ import (
 
 func CreateUser(ctx context.Context, user user_model.User) (*user_model.User, error) {
 	db := gorm_agent.GetDefaultDB()
-
+	_, err := judge_model.CreateJudgeRankCache(db, judge_model.NewJudgeRankCache(user.Account))
+	if err != nil {
+		return nil, err
+	}
 	return user_model.CreateUser(db, user)
 }
 

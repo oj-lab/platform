@@ -18,6 +18,7 @@ func initDB() {
 		&judge_model.Judge{},
 		&judge_model.JudgeResult{},
 		&judge_model.JudgeScoreCache{},
+		&judge_model.JudgeRankCache{},
 	)
 	if err != nil {
 		panic("failed to migrate database")
@@ -37,8 +38,20 @@ func initDB() {
 		Account:  "anonymous",
 		Password: func() *string { s := ""; return &s }(),
 	})
+
 	if err != nil {
 		panic(fmt.Sprintf("failed to create anonymous user: %v", err))
 	}
+
+	_, err = judge_model.CreateJudgeRankCache(db, judge_model.NewJudgeRankCache("root"))
+	if err != nil {
+		panic(fmt.Sprintf("failed to create root rankcache: %v", err))
+	}
+
+	_, err = judge_model.CreateJudgeRankCache(db, judge_model.NewJudgeRankCache("anonymous"))
+	if err != nil {
+		panic(fmt.Sprintf("failed to create anonymous rankcache: %v", err))
+	}
+
 	log_module.AppLogger().Info("migrate tables ans users success")
 }
