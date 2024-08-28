@@ -15,22 +15,26 @@ func UpsertJudgeScoreCache(ctx context.Context, uid uuid.UUID, verdict judge_mod
 		return nil, err
 	}
 	// log_module.AppLogger().WithField("judge", judge).Debug("getjudge")
-
-	scoreCache, err := judge_model.GetJudgeScoreCache(db, judge.UserAccount, judge.ProblemSlug)
-	if err != nil {
-		// previous empty
-		// log_module.AppLogger().Debug("previous empty")
-
-		scoreCache := judge_model.NewJudgeScoreCache(judge.UserAccount, judge.ProblemSlug)
-		if verdict == judge_model.JudgeVerdictAccepted {
-			scoreCache.IsAccepted = true
-			scoreCache.SolveTime = judge.CreateAt
-		}
-		newScoreCache, err := judge_model.CreateJudgeScoreCache(db, scoreCache)
+	var scoreCache *judge_model.JudgeScoreCache
+	for {
+		scoreCache, err = judge_model.GetJudgeScoreCache(db, judge.UserAccount, judge.ProblemSlug)
 		if err != nil {
-			return nil, err
+			// previous empty
+			// log_module.AppLogger().Debug("previous empty")
+
+			scoreCache := judge_model.NewJudgeScoreCache(judge.UserAccount, judge.ProblemSlug)
+			if verdict == judge_model.JudgeVerdictAccepted {
+				scoreCache.IsAccepted = true
+				scoreCache.SolveTime = judge.CreateAt
+			}
+			newScoreCache, err := judge_model.CreateJudgeScoreCache(db, scoreCache)
+			if err != nil { // create fail, get data again and continue the update logic.
+				continue
+			}
+			return newScoreCache, nil
+		} else {
+			break
 		}
-		return newScoreCache, nil
 	}
 
 	// log_module.AppLogger().WithField("scoreCache", scoreCache).Debug("get scoreCache")
