@@ -11,16 +11,14 @@ require (
 	gorm.io/gorm v1.25.10
 )
 
-require (
-	github.com/stretchr/testify v1.9.0
-	github.com/swaggo/swag v1.16.3
-)
+require github.com/stretchr/testify v1.9.0
 
 require (
 	github.com/ClickHouse/ch-go v0.61.5 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
+	github.com/bmatcuk/doublestar/v4 v4.6.1 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
-	github.com/casbin/govaluate v1.1.0 // indirect
+	github.com/casbin/govaluate v1.2.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
@@ -44,6 +42,7 @@ require (
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
+	github.com/swaggo/swag v1.16.3 // indirect
 	go.opentelemetry.io/otel v1.26.0 // indirect
 	go.opentelemetry.io/otel/trace v1.26.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
@@ -98,7 +97,7 @@ require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.26.0
 	github.com/alexedwards/argon2id v1.0.0
 	github.com/casbin/casbin v1.9.1
-	github.com/casbin/casbin/v2 v2.97.0
+	github.com/casbin/casbin/v2 v2.99.0
 	github.com/casbin/gorm-adapter/v3 v3.25.0
 	github.com/casbin/redis-watcher/v2 v2.5.0
 	github.com/gin-contrib/sse v0.1.0 // indirect
