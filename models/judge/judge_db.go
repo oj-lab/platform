@@ -21,7 +21,7 @@ func CreateJudge(tx *gorm.DB, judge Judge) (*Judge, error) {
 	return &judge, tx.Create(&judge).Error
 }
 
-// only count if when accept && accept time < SolvedTime
+// include self, only count if when accept && accept time < SolvedTime
 func GetBeforeSubmission(tx *gorm.DB, judge Judge) (int, error) {
 	var count int64
 	err := tx.Model(&Judge{}).
