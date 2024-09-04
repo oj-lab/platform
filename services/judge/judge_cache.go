@@ -17,36 +17,26 @@ func UpsertJudgeCache(ctx context.Context, uid uuid.UUID, verdict judge_model.Ju
 	// log_module.AppLogger().WithField("judge", judge).Debug("getjudge")
 	var scoreCache *judge_model.JudgeScoreCache
 	var rankCache *judge_model.JudgeRankCache
-	rankCache, err = judge_model.GetJudgeRankCache(db, judge.UserAccount)
-	if err != nil {
-		return err
+	for {
+		rankCache, err = judge_model.GetJudgeRankCache(db, judge.UserAccount)
+		if err != nil { // previous empty
+			_, err = judge_model.CreateJudgeRankCache(db, judge_model.NewJudgeRankCache(judge.UserAccount))
+			if err != nil { // create fail, exists -> get data again and continue the update logic.
+				continue
+			}
+		} else {
+			break
+		}
 	}
 
-	extraPoint := 0
 	for {
 		scoreCache, err = judge_model.GetJudgeScoreCache(db, judge.UserAccount, judge.ProblemSlug)
-		if err != nil {
-			// previous empty
-			// log_module.AppLogger().Debug("previous empty")
-			scoreCache := judge_model.NewJudgeScoreCache(judge.UserAccount, judge.ProblemSlug)
-			if verdict == judge_model.JudgeVerdictAccepted {
-				extraPoint = 1
-				scoreCache.IsAccepted = true
-				scoreCache.SolveTime = judge.CreateAt
-			}
-			_, err := judge_model.CreateJudgeScoreCache(db, scoreCache)
-			if err != nil { // create fail, get data again and continue the update logic.
+		if err != nil { // previous empty
+			_, err := judge_model.CreateJudgeScoreCache(db, judge_model.NewJudgeScoreCache(judge.UserAccount, judge.ProblemSlug))
+			if err != nil { // create fail, exists -> get data again and continue the update logic.
 				continue
 			}
 
-			// create success
-			rankCache.Points += int64(extraPoint)
-			rankCache.TotalSubmissions += 1
-			err = judge_model.UpdateJudgeRankCache(db, *rankCache)
-			if err != nil {
-				return err
-			}
-			return nil
 		} else {
 			break
 		}
@@ -57,17 +47,18 @@ func UpsertJudgeCache(ctx context.Context, uid uuid.UUID, verdict judge_model.Ju
 	// previous no ac || current more early
 	// need to update
 	if !scoreCache.IsAccepted || judge.CreateAt.Before(*scoreCache.SolveTime) {
+		extraPoint := 0
 		if !scoreCache.IsAccepted {
 			extraPoint = 1
 		}
 		preSubmissionCount := scoreCache.SubmissionCount
 		if verdict == judge_model.JudgeVerdictAccepted {
-			scoreCache.SubmissionCount, err = judge_model.GetBeforeSubmission(db, *judge) // rescan to count previous finished
+			scoreCache.SubmissionCount, err = judge_model.GetBeforeSubmission(db, *judge) // rescan to count previous finished judge
 			if err != nil {
 				return err
 			}
 			scoreCache.IsAccepted = true
-			rankCache.Points = rankCache.Points + int64(extraPoint)
+			rankCache.Points = rankCache.Points + extraPoint
 			scoreCache.SolveTime = judge.CreateAt
 		} else {
 			scoreCache.SubmissionCount += 1
@@ -79,12 +70,12 @@ func UpsertJudgeCache(ctx context.Context, uid uuid.UUID, verdict judge_model.Ju
 		if err != nil {
 			return err
 		}
-
 		err = judge_model.UpdateJudgeRankCache(db, *rankCache)
 		if err != nil {
 			return err
 		}
 	}
+
 	// if no early, no need update, just a query
 	return nil
 }

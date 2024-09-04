@@ -1,15 +1,19 @@
 package judge_service
 
 import (
+	"fmt"
 	"net/http/httptest"
 	"testing"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/gin-gonic/gin"
 	"github.com/oj-lab/oj-lab-platform/models"
 	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
+	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 )
 
@@ -66,4 +70,137 @@ func TestCreateJudge(t *testing.T) {
 	asserts := assert.New(t)
 	asserts.Equal(judge.ProblemSlug, insert_judge.ProblemSlug)
 	asserts.Equal(judge.Language, insert_judge.Language)
+}
+
+func TestUpsertJudgeCache(t *testing.T) {
+	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+	db := gorm_agent.GetDefaultDB()
+
+	user := user_model.User{
+		Account:  "test-upserJudgeCache-user",
+		Password: func() *string { s := ""; return &s }(),
+	}
+
+	problem := problem_model.Problem{
+		Slug: "test-upserJudgeCache-problem",
+	}
+
+	judge1 := &judge_model.Judge{
+		UserAccount: user.Account,
+		User:        user,
+		ProblemSlug: problem.Slug,
+		Problem:     problem,
+		Verdict:     judge_model.JudgeVerdictAccepted,
+	}
+	judge1.UID = uuid.New()
+	judge1, err := CreateJudge(ctx, *judge1)
+	if err != nil {
+		t.Error(err)
+	}
+	time1 := time.Unix(int64(1000), 0)
+	judge1.MetaFields.CreateAt = &time1
+	err = judge_model.UpdateJudge(db, *judge1)
+	if err != nil {
+		t.Error(err)
+	}
+	err = UpsertJudgeCache(ctx, judge1.UID, judge_model.JudgeVerdictAccepted)
+	if err != nil {
+		t.Error(err)
+	}
+
+	judge2 := &judge_model.Judge{
+		UserAccount: user.Account,
+		User:        user,
+		ProblemSlug: problem.Slug,
+		Problem:     problem,
+		Verdict:     judge_model.JudgeVerdictWrongAnswer,
+	}
+	judge2, err = CreateJudge(ctx, *judge2)
+	if err != nil {
+		t.Error(err)
+	}
+	time2 := time.Unix(int64(999), 0)
+	judge2.MetaFields.CreateAt = &time2
+	err = judge_model.UpdateJudge(db, *judge2)
+	if err != nil {
+		t.Error(err)
+	}
+	err = UpsertJudgeCache(ctx, judge2.UID, judge_model.JudgeVerdictWrongAnswer)
+	if err != nil {
+		t.Error(err)
+	}
+
+	judge3 := &judge_model.Judge{
+		UserAccount: user.Account,
+		User:        user,
+		ProblemSlug: problem.Slug,
+		Problem:     problem,
+		Verdict:     judge_model.JudgeVerdictWrongAnswer,
+	}
+	judge3, err = CreateJudge(ctx, *judge3)
+	if err != nil {
+		t.Error(err)
+	}
+	time3 := time.Unix(int64(1001), 0)
+	judge3.MetaFields.CreateAt = &time3
+	err = judge_model.UpdateJudge(db, *judge3)
+	if err != nil {
+		t.Error(err)
+	}
+	err = UpsertJudgeCache(ctx, judge3.UID, judge_model.JudgeVerdictWrongAnswer)
+	if err != nil {
+		t.Error(err)
+	}
+
+	rankCache, err := judge_model.GetJudgeRankCache(db, user.Account)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(rankCache)
+	scoreCacheCache, err := judge_model.GetJudgeScoreCache(db, user.Account, problem.Slug)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(scoreCacheCache)
+
+	asserts := assert.New(t)
+	asserts.Equal(rankCache.Points, 1)
+	asserts.Equal(rankCache.TotalSubmissions, 2)
+	asserts.Equal(scoreCacheCache.SubmissionCount, 2)
+
+	judge4 := &judge_model.Judge{
+		UserAccount: user.Account,
+		User:        user,
+		ProblemSlug: problem.Slug,
+		Problem:     problem,
+		Verdict:     judge_model.JudgeVerdictAccepted,
+	}
+	judge4, err = CreateJudge(ctx, *judge4)
+	if err != nil {
+		t.Error(err)
+	}
+	time4 := time.Unix(int64(998), 0)
+	judge4.MetaFields.CreateAt = &time4
+	err = judge_model.UpdateJudge(db, *judge4)
+	if err != nil {
+		t.Error(err)
+	}
+	err = UpsertJudgeCache(ctx, judge4.UID, judge_model.JudgeVerdictAccepted)
+	if err != nil {
+		t.Error(err)
+	}
+
+	rankCache, err = judge_model.GetJudgeRankCache(db, user.Account)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(rankCache)
+	scoreCacheCache, err = judge_model.GetJudgeScoreCache(db, user.Account, problem.Slug)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(scoreCacheCache)
+	asserts.Equal(rankCache.Points, 1)
+	asserts.Equal(rankCache.TotalSubmissions, 1)
+	asserts.Equal(scoreCacheCache.SubmissionCount, 1)
 }

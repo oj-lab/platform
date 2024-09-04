@@ -2,12 +2,15 @@ package judge_model
 
 import (
 	"encoding/json"
+	"fmt"
+	"strconv"
 	"testing"
 	"time"
 
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestJudgeDB(t *testing.T) {
@@ -94,4 +97,119 @@ func TestJudgeScoreCacheDB(t *testing.T) {
 		t.Error(err)
 	}
 	t.Logf("%+v\n", string(judgeScoreCacheJson))
+}
+
+func TestJudgeRank(t *testing.T) {
+	db := gorm_agent.GetDefaultDB()
+
+	var names []string
+	var users []user_model.User
+
+	for i := 0; i < 4; i++ {
+		names = append(names, "test"+strconv.Itoa(i))
+		users = append(users, user_model.User{
+			Account:  names[i],
+			Password: func() *string { s := ""; return &s }(),
+		})
+	}
+
+	_, err := CreateJudgeRankCache(db, JudgeRankCache{
+		UserAccount:      names[0],
+		User:             users[0],
+		Points:           10,
+		TotalSubmissions: 10,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = CreateJudgeRankCache(db, JudgeRankCache{
+		UserAccount:      names[1],
+		User:             users[1],
+		Points:           10,
+		TotalSubmissions: 11,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = CreateJudgeRankCache(db, JudgeRankCache{
+		UserAccount:      names[2],
+		User:             users[2],
+		Points:           10,
+		TotalSubmissions: 12,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = CreateJudgeRankCache(db, JudgeRankCache{
+		UserAccount:      names[3],
+		User:             users[3],
+		Points:           9,
+		TotalSubmissions: 10,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = UpdateJudgeRankCache(db, JudgeRankCache{
+		UserAccount:      names[3],
+		User:             users[3],
+		Points:           9,
+		TotalSubmissions: 8,
+	})
+	assert.Error(t, err)
+	assert.Equal(t, "TotalSubmissions must >= Points", err.Error())
+	rankCache, err := GetJudgeRankCache(db, names[3])
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("rankCache: %v\n", rankCache)
+
+	rankOption := GetRankOptions{
+		Selection: RankInfoSelection,
+	}
+	rankList, err := GetRankCacheListByOptions(db, rankOption)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("rankList: %v\n", rankList)
+	if len(rankList) != 4 {
+		t.Error("rankCount should be 4")
+	}
+
+	offset := 2
+	rankOption = GetRankOptions{
+		Selection: RankInfoSelection,
+		Offset:    &offset,
+	}
+	rankList, err = GetRankCacheListByOptions(db, rankOption)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("rankList: %v\n", rankList)
+	if len(rankList) != 2 {
+		t.Error("rankCount should be 2")
+	}
+
+	rankListJson, err := json.MarshalIndent(rankList, "", "\t")
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("%+v\n", string(rankListJson))
+
+	for i := 0; i < 4; i++ {
+		err = DeleteJudgeRankCache(db, names[i])
+		if err != nil {
+			t.Error(err)
+		}
+	}
+
+	for i := 0; i < 4; i++ {
+		err = user_model.DeleteUser(db, users[i])
+		if err != nil {
+			t.Error(err)
+		}
+	}
 }

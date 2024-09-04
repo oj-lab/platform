@@ -10,8 +10,8 @@ type JudgeRankCache struct {
 	models.MetaFields
 	UserAccount      string          `json:"userAccount" gorm:"primaryKey"`
 	User             user_model.User `json:"user"`
-	Points           int64           `json:"points"`
-	TotalSubmissions int64           `json:"totalSubmissions"`
+	Points           int             `json:"points"`
+	TotalSubmissions int             `json:"totalSubmissions"`
 }
 
 func NewJudgeRankCache(userAccount string) JudgeRankCache {

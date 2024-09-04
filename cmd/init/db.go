@@ -43,15 +43,5 @@ func initDB() {
 		panic(fmt.Sprintf("failed to create anonymous user: %v", err))
 	}
 
-	_, err = judge_model.CreateJudgeRankCache(db, judge_model.NewJudgeRankCache("root"))
-	if err != nil {
-		panic(fmt.Sprintf("failed to create root rankcache: %v", err))
-	}
-
-	_, err = judge_model.CreateJudgeRankCache(db, judge_model.NewJudgeRankCache("anonymous"))
-	if err != nil {
-		panic(fmt.Sprintf("failed to create anonymous rankcache: %v", err))
-	}
-
 	log_module.AppLogger().Info("migrate tables ans users success")
 }
