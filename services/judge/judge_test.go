@@ -163,7 +163,7 @@ func TestUpsertJudgeCache(t *testing.T) {
 	asserts.Equal(rankCache.Points, 1)
 	asserts.Equal(rankCache.TotalSubmissions, 2)
 	asserts.Equal(scoreCacheCache.SubmissionCount, 2)
-	asserts.Equal(scoreCacheCache.SolveTime, baseACJudge.CreateAt)
+	asserts.Equal(scoreCacheCache.SolveTime.In(time.Local), baseACJudge.CreateAt.In(time.Local))
 
 	preACJudge := baseACJudge
 	preACJudge, err = CreateJudge(ctx, *preACJudge)
@@ -209,7 +209,7 @@ func TestUpsertJudgeCache(t *testing.T) {
 	asserts.Equal(rankCache.Points, 1)
 	asserts.Equal(rankCache.TotalSubmissions, 2)
 	asserts.Equal(scoreCacheCache.SubmissionCount, 2)
-	asserts.Equal(scoreCacheCache.SolveTime, preACJudge.CreateAt)
+	asserts.Equal(scoreCacheCache.SolveTime.In(time.Local), preACJudge.CreateAt.In(time.Local))
 
 	submissionCount, err := judge_model.GetBeforeSubmission(db, *preACJudge)
 	if err != nil {
