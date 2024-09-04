@@ -21,6 +21,20 @@ func CreateJudge(tx *gorm.DB, judge Judge) (*Judge, error) {
 	return &judge, tx.Create(&judge).Error
 }
 
+// include self, only count if when accept && accept time < SolvedTime
+func GetBeforeSubmission(tx *gorm.DB, judge Judge) (int, error) {
+	var count int64
+	err := tx.Model(&Judge{}).
+		Where("create_at < ?", judge.CreateAt).
+		Where("status = ?", JudgeStatusFinished).
+		Count(&count).Error
+
+	if err != nil {
+		return 0, err
+	}
+	return int(count + 1), err
+}
+
 func GetJudge(tx *gorm.DB, uid uuid.UUID) (*Judge, error) {
 	judge := Judge{}
 	err := tx.Model(&Judge{}).
@@ -139,6 +153,9 @@ func UpdateJudge(tx *gorm.DB, judge Judge) error {
 	}
 	if judge.Verdict != "" {
 		updatingJudge.Verdict = judge.Verdict
+	}
+	if judge.MetaFields.CreateAt != nil {
+		updatingJudge.MetaFields = judge.MetaFields
 	}
 
 	return tx.Model(&updatingJudge).Updates(updatingJudge).Error

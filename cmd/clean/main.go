@@ -4,13 +4,13 @@ import (
 	"context"
 
 	"github.com/minio/minio-go/v7"
-	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
-
 	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
 	user_model "github.com/oj-lab/oj-lab-platform/models/user"
+	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 	minio_agent "github.com/oj-lab/oj-lab-platform/modules/agent/minio"
+	redis_agent "github.com/oj-lab/oj-lab-platform/modules/agent/redis"
 
 	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
 )
@@ -44,6 +44,16 @@ func removeMinioObjects() {
 	log_module.AppLogger().Info("Remove Minio Objects success")
 }
 
+func clearRedis() {
+	ctx := context.Background()
+	redis_agent := redis_agent.GetDefaultRedisClient()
+	err := redis_agent.FlushDB(ctx).Err()
+	if err != nil {
+		log_module.AppLogger().WithError(err).Error("Failed to clear redis")
+	}
+
+	log_module.AppLogger().Info("Clear Redis success")
+}
 func clearDB() {
 	db := gorm_agent.GetDefaultDB()
 
@@ -53,6 +63,8 @@ func clearDB() {
 		&problem_model.ProblemTag{},
 		&judge_model.Judge{},
 		&judge_model.JudgeResult{},
+		&judge_model.JudgeScoreCache{},
+		&judge_model.JudgeRankCache{},
 		"problem_problem_tags",
 		"casbin_rule",
 	)
@@ -61,12 +73,13 @@ func clearDB() {
 		panic("failed to drop tables")
 	}
 
-	log_module.AppLogger().Info("Clear db success")
-
+	log_module.AppLogger().Info("Clear DB success")
 }
+
 func main() {
 	removeMinioObjects()
 	clearCasbin()
+	clearRedis()
 	clearDB()
 
 	println("data clean success")

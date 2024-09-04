@@ -1,15 +1,19 @@
 package judge_service
 
 import (
+	"fmt"
 	"net/http/httptest"
 	"testing"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/gin-gonic/gin"
 	"github.com/oj-lab/oj-lab-platform/models"
 	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
 	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
+	user_model "github.com/oj-lab/oj-lab-platform/models/user"
 	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
 )
 
@@ -66,4 +70,155 @@ func TestCreateJudge(t *testing.T) {
 	asserts := assert.New(t)
 	asserts.Equal(judge.ProblemSlug, insert_judge.ProblemSlug)
 	asserts.Equal(judge.Language, insert_judge.Language)
+}
+
+func TestUpsertJudgeCache(t *testing.T) {
+	// previous WA || later WA ||  previous AC || later AC || GetBeforeSubmission
+	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+	db := gorm_agent.GetDefaultDB()
+
+	user := user_model.User{
+		Account:  "test-upserJudgeCache-user",
+		Password: func() *string { s := ""; return &s }(),
+	}
+	problem := problem_model.Problem{
+		Slug: "test-upserJudgeCache-problem",
+	}
+
+	baseACJudge := &judge_model.Judge{
+		UserAccount: user.Account,
+		User:        user,
+		ProblemSlug: problem.Slug,
+		Problem:     problem,
+		Verdict:     judge_model.JudgeVerdictAccepted,
+		Status:      judge_model.JudgeStatusFinished,
+	}
+	baseACJudge.UID = uuid.New()
+	baseACJudge, err := CreateJudge(ctx, *baseACJudge)
+	if err != nil {
+		t.Error(err)
+	}
+	time1 := time.Unix(int64(1000), 0)
+	baseACJudge.MetaFields.CreateAt = &time1
+	err = judge_model.UpdateJudge(db, *baseACJudge)
+	if err != nil {
+		t.Error(err)
+	}
+	err = UpsertJudgeCache(ctx, baseACJudge.UID, judge_model.JudgeVerdictAccepted)
+	if err != nil {
+		t.Error(err)
+	}
+
+	preWAJudge := &judge_model.Judge{
+		UserAccount: user.Account,
+		User:        user,
+		ProblemSlug: problem.Slug,
+		Problem:     problem,
+		Verdict:     judge_model.JudgeVerdictWrongAnswer,
+		Status:      judge_model.JudgeStatusFinished,
+	}
+	preWAJudge, err = CreateJudge(ctx, *preWAJudge)
+	if err != nil {
+		t.Error(err)
+	}
+	time2 := time.Unix(int64(998), 0)
+	preWAJudge.MetaFields.CreateAt = &time2
+	err = judge_model.UpdateJudge(db, *preWAJudge)
+	if err != nil {
+		t.Error(err)
+	}
+	err = UpsertJudgeCache(ctx, preWAJudge.UID, judge_model.JudgeVerdictWrongAnswer)
+	if err != nil {
+		t.Error(err)
+	}
+
+	laterWAJudge := preWAJudge
+	laterWAJudge, err = CreateJudge(ctx, *laterWAJudge)
+	if err != nil {
+		t.Error(err)
+	}
+	time3 := time.Unix(int64(1001), 0)
+	laterWAJudge.MetaFields.CreateAt = &time3
+	err = judge_model.UpdateJudge(db, *laterWAJudge)
+	if err != nil {
+		t.Error(err)
+	}
+	err = UpsertJudgeCache(ctx, laterWAJudge.UID, judge_model.JudgeVerdictWrongAnswer)
+	if err != nil {
+		t.Error(err)
+	}
+
+	rankCache, err := judge_model.GetJudgeRankCache(db, user.Account)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(rankCache)
+	scoreCacheCache, err := judge_model.GetJudgeScoreCache(db, user.Account, problem.Slug)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(scoreCacheCache)
+
+	asserts := assert.New(t)
+	asserts.Equal(rankCache.Points, 1)
+	asserts.Equal(rankCache.TotalSubmissions, 2)
+	asserts.Equal(scoreCacheCache.SubmissionCount, 2)
+	asserts.Equal(scoreCacheCache.SolveTime.In(time.Local), baseACJudge.CreateAt.In(time.Local))
+
+	preACJudge := baseACJudge
+	preACJudge, err = CreateJudge(ctx, *preACJudge)
+	if err != nil {
+		t.Error(err)
+	}
+	time4 := time.Unix(int64(999), 0)
+	preACJudge.MetaFields.CreateAt = &time4
+	err = judge_model.UpdateJudge(db, *preACJudge)
+	if err != nil {
+		t.Error(err)
+	}
+	err = UpsertJudgeCache(ctx, preACJudge.UID, judge_model.JudgeVerdictAccepted)
+	if err != nil {
+		t.Error(err)
+	}
+	laterACJudge := baseACJudge
+	laterACJudge, err = CreateJudge(ctx, *laterACJudge)
+	if err != nil {
+		t.Error(err)
+	}
+	time5 := time.Unix(int64(1002), 0)
+	laterACJudge.MetaFields.CreateAt = &time5
+	err = judge_model.UpdateJudge(db, *laterACJudge)
+	if err != nil {
+		t.Error(err)
+	}
+	err = UpsertJudgeCache(ctx, laterACJudge.UID, judge_model.JudgeVerdictAccepted)
+	if err != nil {
+		t.Error(err)
+	}
+
+	rankCache, err = judge_model.GetJudgeRankCache(db, user.Account)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(rankCache)
+	scoreCacheCache, err = judge_model.GetJudgeScoreCache(db, user.Account, problem.Slug)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(scoreCacheCache)
+	asserts.Equal(rankCache.Points, 1)
+	asserts.Equal(rankCache.TotalSubmissions, 2)
+	asserts.Equal(scoreCacheCache.SubmissionCount, 2)
+	asserts.Equal(scoreCacheCache.SolveTime.In(time.Local), preACJudge.CreateAt.In(time.Local))
+
+	submissionCount, err := judge_model.GetBeforeSubmission(db, *preACJudge)
+	if err != nil {
+		t.Error(err)
+	}
+	asserts.Equal(submissionCount, 2)
+	submissionCount, err = judge_model.GetBeforeSubmission(db, *laterACJudge)
+	if err != nil {
+		t.Error(err)
+	}
+	asserts.Equal(submissionCount, 5)
 }

@@ -79,6 +79,7 @@ func main() {
 	handler.SetupJudgeRouter(apiRouter)
 	handler.SetupJudgeTaskRouter(apiRouter)
 	handler.SetupJudgeResultRouter(apiRouter)
+	handler.SetupRankRouter(apiRouter)
 
 	err := r.Run(fmt.Sprintf(":%d", servicePort))
 	if err != nil {
