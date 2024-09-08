@@ -5,8 +5,8 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
-	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
+	config_module "github.com/oj-lab/platform/modules/config"
+	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 const (

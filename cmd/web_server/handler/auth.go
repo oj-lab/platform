@@ -5,13 +5,13 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/oj-lab/oj-lab-platform/cmd/web_server/middleware"
-	user_model "github.com/oj-lab/oj-lab-platform/models/user"
-	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
-	auth_module "github.com/oj-lab/oj-lab-platform/modules/auth"
-	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
-	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
-	user_service "github.com/oj-lab/oj-lab-platform/services/user"
+	"github.com/oj-lab/platform/cmd/web_server/middleware"
+	user_model "github.com/oj-lab/platform/models/user"
+	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
+	auth_module "github.com/oj-lab/platform/modules/auth"
+	log_module "github.com/oj-lab/platform/modules/log"
+	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
+	user_service "github.com/oj-lab/platform/services/user"
 )
 
 const callbackURL = "/auth/github/callback"

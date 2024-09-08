@@ -7,12 +7,12 @@ import (
 	"runtime"
 
 	"github.com/gin-gonic/gin"
-	"github.com/oj-lab/oj-lab-platform/cmd/web_server/handler"
-	"github.com/oj-lab/oj-lab-platform/cmd/web_server/middleware"
+	"github.com/oj-lab/platform/cmd/web_server/handler"
+	"github.com/oj-lab/platform/cmd/web_server/middleware"
 
-	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
+	config_module "github.com/oj-lab/platform/modules/config"
 
-	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
+	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 const (

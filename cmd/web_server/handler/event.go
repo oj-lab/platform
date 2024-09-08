@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
+	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 func SetupEventRouter(baseRoute *gin.RouterGroup) {

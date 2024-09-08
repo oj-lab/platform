@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/oj-lab/oj-lab-platform/proto"
+	"github.com/oj-lab/platform/proto"
 )
 
 type StreamerServer struct {

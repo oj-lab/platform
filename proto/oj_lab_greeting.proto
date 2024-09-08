@@ -4,7 +4,7 @@ syntax = "proto3";
 
 package oj_lab_greeting.protos;
 
-option go_package = "github.com/oj-lab/oj-lab-platform/proto";
+option go_package = "github.com/oj-lab/platform/proto";
 
 service Greeter {
     rpc Greeting (GreetingRequest) returns (GreetingResponse) {}

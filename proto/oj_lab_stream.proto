@@ -4,7 +4,7 @@ syntax = "proto3";
 
 package oj_lab_stream.protos;
 
-option go_package = "github.com/oj-lab/oj-lab-platform/proto";
+option go_package = "github.com/oj-lab/platform/proto";
 
 service Streamer {
     rpc StartStream (StreamRequest) returns (stream StreamResponse) {}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	swaggo_gen "github.com/oj-lab/oj-lab-platform/cmd/web_server/swaggo_gen"
+	swaggo_gen "github.com/oj-lab/platform/cmd/web_server/swaggo_gen"
 	"github.com/spf13/viper"
 	swagger_files "github.com/swaggo/files"
 	gin_swagger "github.com/swaggo/gin-swagger"

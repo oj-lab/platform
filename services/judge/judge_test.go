@@ -10,11 +10,11 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/gin-gonic/gin"
-	"github.com/oj-lab/oj-lab-platform/models"
-	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
-	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
-	user_model "github.com/oj-lab/oj-lab-platform/models/user"
-	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
+	"github.com/oj-lab/platform/models"
+	judge_model "github.com/oj-lab/platform/models/judge"
+	problem_model "github.com/oj-lab/platform/models/problem"
+	user_model "github.com/oj-lab/platform/models/user"
+	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 )
 
 func TestGetJudge(t *testing.T) {

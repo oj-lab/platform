@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
+	config_module "github.com/oj-lab/platform/modules/config"
 )
 
 var (

@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
-	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
+	log_module "github.com/oj-lab/platform/modules/log"
+	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
 )
 
 func GetServiceError(ginErr gin.Error) *gin_utils.SeviceError {

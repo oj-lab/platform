@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
-	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
+	config_module "github.com/oj-lab/platform/modules/config"
 )
 
 const (

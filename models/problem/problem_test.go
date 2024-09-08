@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
+	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 )
 
 func TestProblemDB(t *testing.T) {

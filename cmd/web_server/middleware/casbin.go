@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
-	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
-	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
+	casbin_agent "github.com/oj-lab/platform/modules/agent/casbin"
+	log_module "github.com/oj-lab/platform/modules/log"
+	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
 )
 
 func BuildCasbinEnforceHandlerWithDomain(domain string) gin.HandlerFunc {

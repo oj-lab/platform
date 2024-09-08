@@ -11,7 +11,7 @@ RUN make get-front
 
 FROM ubuntu:latest
 
-WORKDIR /oj-lab-platform
+WORKDIR /platform
 
 COPY --from=build /workdir/bin/web_server /usr/local/bin/web_server
 COPY --from=build /workdir/frontend/dist ./frontend_dist

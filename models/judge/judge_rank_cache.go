@@ -1,8 +1,8 @@
 package judge_model
 
 import (
-	"github.com/oj-lab/oj-lab-platform/models"
-	user_model "github.com/oj-lab/oj-lab-platform/models/user"
+	"github.com/oj-lab/platform/models"
+	user_model "github.com/oj-lab/platform/models/user"
 )
 
 // user contest summary rank info

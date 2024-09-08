@@ -13,7 +13,7 @@ const serviceEnvEnvKey = "OJ_LAB_SERVICE_ENV"
 
 const defaultConfigName = "config"
 const defaultOverrideConfigName = "override"
-const defaultProjectRootName = "oj-lab-platform"
+const defaultProjectRootName = "platform"
 
 type ServiceEnv string
 

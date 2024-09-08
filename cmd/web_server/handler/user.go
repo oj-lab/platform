@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/oj-lab/oj-lab-platform/cmd/web_server/middleware"
-	user_model "github.com/oj-lab/oj-lab-platform/models/user"
-	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
-	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
-	user_service "github.com/oj-lab/oj-lab-platform/services/user"
+	"github.com/oj-lab/platform/cmd/web_server/middleware"
+	user_model "github.com/oj-lab/platform/models/user"
+	casbin_agent "github.com/oj-lab/platform/modules/agent/casbin"
+	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
+	user_service "github.com/oj-lab/platform/services/user"
 )
 
 func SetupUserRouter(baseRoute *gin.RouterGroup) {

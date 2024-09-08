@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	minio_agent "github.com/oj-lab/oj-lab-platform/modules/agent/minio"
+	minio_agent "github.com/oj-lab/platform/modules/agent/minio"
 )
 
 func unzipProblemPackage(_ context.Context, zipFile, targetDir string) error {

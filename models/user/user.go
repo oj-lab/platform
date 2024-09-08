@@ -1,6 +1,6 @@
 package user_model
 
-import "github.com/oj-lab/oj-lab-platform/models"
+import "github.com/oj-lab/platform/models"
 
 type User struct {
 	models.MetaFields

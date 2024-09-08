@@ -10,11 +10,11 @@ import (
 	"strings"
 
 	"github.com/minio/minio-go/v7"
-	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
-	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
-	minio_agent "github.com/oj-lab/oj-lab-platform/modules/agent/minio"
-	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
-	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
+	problem_model "github.com/oj-lab/platform/models/problem"
+	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
+	minio_agent "github.com/oj-lab/platform/modules/agent/minio"
+	config_module "github.com/oj-lab/platform/modules/config"
+	log_module "github.com/oj-lab/platform/modules/log"
 	"gopkg.in/yaml.v2"
 )
 

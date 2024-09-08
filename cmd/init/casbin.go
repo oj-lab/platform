@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/oj-lab/oj-lab-platform/cmd/web_server/handler"
-	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
+	"github.com/oj-lab/platform/cmd/web_server/handler"
+	casbin_agent "github.com/oj-lab/platform/modules/agent/casbin"
 )
 
 func loadCasbinPolicies() {

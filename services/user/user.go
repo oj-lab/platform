@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
-	user_model "github.com/oj-lab/oj-lab-platform/models/user"
-	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
-	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
-	auth_module "github.com/oj-lab/oj-lab-platform/modules/auth"
-	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
+	judge_model "github.com/oj-lab/platform/models/judge"
+	user_model "github.com/oj-lab/platform/models/user"
+	casbin_agent "github.com/oj-lab/platform/modules/agent/casbin"
+	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
+	auth_module "github.com/oj-lab/platform/modules/auth"
+	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 func CreateUser(ctx context.Context, user user_model.User) (*user_model.User, error) {

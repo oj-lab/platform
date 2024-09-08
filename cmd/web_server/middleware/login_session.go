@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	auth_module "github.com/oj-lab/oj-lab-platform/modules/auth"
-	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
+	auth_module "github.com/oj-lab/platform/modules/auth"
+	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
 )
 
 const (

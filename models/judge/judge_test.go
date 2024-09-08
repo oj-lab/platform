@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
-	user_model "github.com/oj-lab/oj-lab-platform/models/user"
-	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
+	problem_model "github.com/oj-lab/platform/models/problem"
+	user_model "github.com/oj-lab/platform/models/user"
+	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 	"github.com/stretchr/testify/assert"
 )
 

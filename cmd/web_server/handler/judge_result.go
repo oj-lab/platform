@@ -3,9 +3,9 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
-	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
-	judge_service "github.com/oj-lab/oj-lab-platform/services/judge"
+	judge_model "github.com/oj-lab/platform/models/judge"
+	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
+	judge_service "github.com/oj-lab/platform/services/judge"
 )
 
 func SetupJudgeResultRouter(baseRoute *gin.RouterGroup) {

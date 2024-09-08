@@ -3,7 +3,7 @@ package judge_model
 import (
 	"context"
 
-	redis_agent "github.com/oj-lab/oj-lab-platform/modules/agent/redis"
+	redis_agent "github.com/oj-lab/platform/modules/agent/redis"
 	"github.com/redis/go-redis/v9"
 )
 

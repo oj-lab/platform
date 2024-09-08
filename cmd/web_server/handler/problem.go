@@ -2,11 +2,11 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
-	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
-	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
-	judge_service "github.com/oj-lab/oj-lab-platform/services/judge"
-	problem_service "github.com/oj-lab/oj-lab-platform/services/problem"
+	judge_model "github.com/oj-lab/platform/models/judge"
+	problem_model "github.com/oj-lab/platform/models/problem"
+	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
+	judge_service "github.com/oj-lab/platform/services/judge"
+	problem_service "github.com/oj-lab/platform/services/problem"
 )
 
 func SetupProblemRouter(baseRoute *gin.RouterGroup) {

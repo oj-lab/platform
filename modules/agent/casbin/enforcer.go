@@ -8,9 +8,9 @@ import (
 	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	rediswatcher "github.com/casbin/redis-watcher/v2"
-	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
-	redis_agent "github.com/oj-lab/oj-lab-platform/modules/agent/redis"
-	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
+	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
+	redis_agent "github.com/oj-lab/platform/modules/agent/redis"
+	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 var casbinEnforcer *casbin.SyncedCachedEnforcer

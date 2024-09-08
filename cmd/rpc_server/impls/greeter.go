@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/oj-lab/oj-lab-platform/proto"
+	"github.com/oj-lab/platform/proto"
 )
 
 type GreeterServer struct {

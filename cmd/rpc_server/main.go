@@ -8,9 +8,9 @@ import (
 	"log"
 	"net"
 
-	"github.com/oj-lab/oj-lab-platform/cmd/rpc_server/impls"
-	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
-	"github.com/oj-lab/oj-lab-platform/proto"
+	"github.com/oj-lab/platform/cmd/rpc_server/impls"
+	config_module "github.com/oj-lab/platform/modules/config"
+	"github.com/oj-lab/platform/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

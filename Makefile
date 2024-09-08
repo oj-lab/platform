@@ -1,7 +1,7 @@
 OS := $(shell uname -s)
 
 FRONTEND_DIST_DIR := frontend/dist
-FRONTEND_DIST_URL := https://github.com/oj-lab/oj-lab-front/releases/download/v0.0.3/dist.zip
+FRONTEND_DIST_URL := https://github.com/oj-lab/frontend/releases/download/v0.0.3/dist.zip
 ICPC_PROBLEM_PACKAGES_DIR := problem_packages/icpc
 ICPC_PROBLEM_PACKAGES_URL := https://github.com/oj-lab/problem-packages/releases/download/v0.0.1/icpc_problem.zip
 

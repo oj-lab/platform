@@ -6,10 +6,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/oj-lab/oj-lab-platform/models"
-	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
-	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
-	judge_service "github.com/oj-lab/oj-lab-platform/services/judge"
+	"github.com/oj-lab/platform/models"
+	judge_model "github.com/oj-lab/platform/models/judge"
+	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
+	judge_service "github.com/oj-lab/platform/services/judge"
 )
 
 func SetupJudgeRouter(baseRoute *gin.RouterGroup) {

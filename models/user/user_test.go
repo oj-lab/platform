@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
-	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
+	casbin_agent "github.com/oj-lab/platform/modules/agent/casbin"
+	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 )
 
 func TestUserDB(t *testing.T) {

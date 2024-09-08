@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	user_service "github.com/oj-lab/oj-lab-platform/services/user"
+	user_service "github.com/oj-lab/platform/services/user"
 )
 
 func main() {

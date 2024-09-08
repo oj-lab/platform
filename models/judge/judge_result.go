@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/oj-lab/oj-lab-platform/models"
+	"github.com/oj-lab/platform/models"
 )
 
 // Should contains a priority definition

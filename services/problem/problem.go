@@ -3,8 +3,8 @@ package problem_service
 import (
 	"context"
 
-	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
-	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
+	problem_model "github.com/oj-lab/platform/models/problem"
+	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 
 	"gorm.io/gorm"
 )

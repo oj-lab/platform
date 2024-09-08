@@ -3,9 +3,9 @@ package judge_model
 import (
 	"time"
 
-	"github.com/oj-lab/oj-lab-platform/models"
-	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
-	user_model "github.com/oj-lab/oj-lab-platform/models/user"
+	"github.com/oj-lab/platform/models"
+	problem_model "github.com/oj-lab/platform/models/problem"
+	user_model "github.com/oj-lab/platform/models/user"
 )
 
 // user contest problem summary score info

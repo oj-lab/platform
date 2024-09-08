@@ -4,15 +4,15 @@ import (
 	"context"
 
 	"github.com/minio/minio-go/v7"
-	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
-	problem_model "github.com/oj-lab/oj-lab-platform/models/problem"
-	user_model "github.com/oj-lab/oj-lab-platform/models/user"
-	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
-	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
-	minio_agent "github.com/oj-lab/oj-lab-platform/modules/agent/minio"
-	redis_agent "github.com/oj-lab/oj-lab-platform/modules/agent/redis"
+	judge_model "github.com/oj-lab/platform/models/judge"
+	problem_model "github.com/oj-lab/platform/models/problem"
+	user_model "github.com/oj-lab/platform/models/user"
+	casbin_agent "github.com/oj-lab/platform/modules/agent/casbin"
+	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
+	minio_agent "github.com/oj-lab/platform/modules/agent/minio"
+	redis_agent "github.com/oj-lab/platform/modules/agent/redis"
 
-	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
+	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 func clearCasbin() {

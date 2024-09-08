@@ -1,4 +1,4 @@
-module github.com/oj-lab/oj-lab-platform
+module github.com/oj-lab/platform
 
 go 1.21
 

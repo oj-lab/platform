@@ -1,6 +1,6 @@
 package problem_model
 
-import "github.com/oj-lab/oj-lab-platform/models"
+import "github.com/oj-lab/platform/models"
 
 type Problem struct {
 	models.MetaFields

@@ -1,7 +1,7 @@
 package gorm_agent
 
 import (
-	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
+	config_module "github.com/oj-lab/platform/modules/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

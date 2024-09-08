@@ -2,8 +2,8 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	gin_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gin"
-	judge_service "github.com/oj-lab/oj-lab-platform/services/judge"
+	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
+	judge_service "github.com/oj-lab/platform/services/judge"
 )
 
 func SetupRankRouter(baseRoute *gin.RouterGroup) {

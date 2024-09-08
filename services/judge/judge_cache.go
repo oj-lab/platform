@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	judge_model "github.com/oj-lab/oj-lab-platform/models/judge"
-	gorm_agent "github.com/oj-lab/oj-lab-platform/modules/agent/gorm"
+	judge_model "github.com/oj-lab/platform/models/judge"
+	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 )
 
 func UpsertJudgeCache(ctx context.Context, uid uuid.UUID, verdict judge_model.JudgeVerdict) error {

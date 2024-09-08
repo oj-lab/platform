@@ -3,7 +3,7 @@ package judge_model
 import (
 	"errors"
 
-	"github.com/oj-lab/oj-lab-platform/models"
+	"github.com/oj-lab/platform/models"
 	"gorm.io/gorm"
 )
 

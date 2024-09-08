@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/alexedwards/argon2id"
-	"github.com/oj-lab/oj-lab-platform/models"
-	casbin_agent "github.com/oj-lab/oj-lab-platform/modules/agent/casbin"
-	gravatar_utils "github.com/oj-lab/oj-lab-platform/modules/utils/gravatar"
+	"github.com/oj-lab/platform/models"
+	casbin_agent "github.com/oj-lab/platform/modules/agent/casbin"
+	gravatar_utils "github.com/oj-lab/platform/modules/utils/gravatar"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )

@@ -1,7 +1,7 @@
 package redis_agent
 
 import (
-	config_module "github.com/oj-lab/oj-lab-platform/modules/config"
+	config_module "github.com/oj-lab/platform/modules/config"
 	"github.com/redis/go-redis/v9"
 )
 

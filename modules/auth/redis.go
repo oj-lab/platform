@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	redis_agent "github.com/oj-lab/oj-lab-platform/modules/agent/redis"
-	log_module "github.com/oj-lab/oj-lab-platform/modules/log"
+	redis_agent "github.com/oj-lab/platform/modules/agent/redis"
+	log_module "github.com/oj-lab/platform/modules/log"
 	"github.com/redis/go-redis/v9"
 )
 
