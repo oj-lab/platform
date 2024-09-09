@@ -58,6 +58,7 @@ func githubCallback(ginCtx *gin.Context) {
 	ls, err := user_service.StartLoginSession(ginCtx, user.Account)
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to start login session: %v", err))
+		return
 	}
 
 	middleware.SetLoginSessionKeyCookie(ginCtx, ls.Key)
@@ -69,6 +70,7 @@ func loginGithub(ginCtx *gin.Context) {
 	u, err := auth_module.GetGithubOauthEntryURL(callbackURL)
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get github oauth entry url: %v", err))
+		return
 	}
 	ginCtx.Redirect(http.StatusFound, u.String())
 }
@@ -99,6 +101,7 @@ func loginByPassword(ginCtx *gin.Context) {
 	user, err := user_model.GetUserByAccountPassword(db, body.Account, body.Password)
 	if err != nil {
 		gin_utils.NewUnauthorizedError(ginCtx, "account or password incorrect")
+		return
 	}
 
 	ls, err := user_service.StartLoginSession(ginCtx, user.Account)

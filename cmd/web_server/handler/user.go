@@ -19,9 +19,9 @@ func SetupUserRouter(baseRoute *gin.RouterGroup) {
 		g.GET("",
 			middleware.HandleRequireLogin,
 			middleware.BuildCasbinEnforceHandlerWithDomain("system"),
-			GetUserList,
+			getUserList,
 		)
-		g.GET("/me", middleware.HandleRequireLogin, me)
+		g.GET("/current", middleware.HandleRequireLogin, getCurrentUser)
 		g.POST("/:account/role",
 			middleware.HandleRequireLogin,
 			middleware.BuildCasbinEnforceHandlerWithDomain("system"),
@@ -50,7 +50,7 @@ func AddUserCasbinPolicies() error {
 	return nil
 }
 
-func GetUserList(ginCtx *gin.Context) {
+func getUserList(ginCtx *gin.Context) {
 	limit, err := gin_utils.QueryInt(ginCtx, "limit", 10)
 	if err != nil {
 		gin_utils.NewInvalidParamError(ginCtx, "limit", err.Error())
@@ -85,7 +85,7 @@ func GetUserList(ginCtx *gin.Context) {
 //	@Router			/user/me [get]
 //	@Success		200
 //	@Failure		401
-func me(ginCtx *gin.Context) {
+func getCurrentUser(ginCtx *gin.Context) {
 	ls, err := middleware.GetLoginSessionFromGinCtx(ginCtx)
 	if err != nil {
 		gin_utils.NewUnauthorizedError(ginCtx, "cannot load login session from cookie")
