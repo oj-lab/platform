@@ -2,6 +2,7 @@ package casbin_agent
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -70,4 +71,53 @@ func TestCasbin(t *testing.T) {
 	if !allow {
 		t.Error("Expected to allow")
 	}
+	allow, err = enforcer.Enforce("user_test", ExtraInfo{
+		IsVIP: false,
+	}, `system`, `testData`, http.MethodGet)
+	if err != nil {
+		t.Error(err)
+	}
+	if allow {
+		t.Error("Expected to not allow")
+	}
+
+	_, err = enforcer.AddPolicies([][]string{
+		{
+			RoleSubjectPrefix + `admin`, `true`, `system`,
+			`/api/v1/user/*any`, strings.Join([]string{http.MethodGet, http.MethodPost, http.MethodDelete}, "|"),
+			"allow",
+		},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	err = enforcer.SavePolicy()
+	if err != nil {
+		t.Error(err)
+	}
+	_, err = enforcer.AddGroupingPolicies([][]string{
+		{`role:super`, `role:admin`, `system`},
+		{`user:root`, `role:super`, `system`},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	err = enforcer.SavePolicy()
+	if err != nil {
+		t.Error(err)
+	}
+	roles, err = enforcer.GetImplicitRolesForUser("user:root", "system")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Logf("Implicit Roles: %v", roles)
+
+	allow, err = enforcer.Enforce("user:root", "_", "system", "/api/v1/user", http.MethodGet)
+	if err != nil {
+		t.Error(err)
+	}
+	if !allow {
+		t.Error("Expected to allow")
+	}
+	enforcer.ClearPolicy()
 }

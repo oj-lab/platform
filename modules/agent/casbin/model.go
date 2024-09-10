@@ -22,13 +22,13 @@ r = sub, ext, dom, obj, act
 p = sub, ext_rule, dom, obj, act, eft
 
 [role_definition]
-g = _, _，_
+g = _, _, _
 
 [policy_effect]
 e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 
 [matchers]
-m = g(r.sub, p.sub) && eval(p.ext_rule) && r.dom == p.dom && keyMatchGin(r.obj, p.obj) && regexMatch(r.act, p.act)
+m = g(r.sub, p.sub, r.dom) && eval(p.ext_rule) && r.dom == p.dom && keyMatchGin(r.obj, p.obj) && regexMatch(r.act, p.act)
 `
 
 const UserSubjectPrefix = "user:"
