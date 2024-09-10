@@ -11,17 +11,22 @@ func GetRankList(
 	_ context.Context,
 	account *string,
 	limit, offset *int,
-) ([]judge_model.JudgeRank, error) {
+) ([]judge_model.JudgeRank, int64, error) {
 	db := gorm_agent.GetDefaultDB()
-	getOptions := judge_model.GetRankOptions{
-		Selection: judge_model.RankInfoSelection,
-		Limit:     limit,
-		Offset:    offset,
+	getOptions := judge_model.GetRankCacheOptions{
+		// Selection: judge_model.RankCacheInfoSelection,
+		Limit:  limit,
+		Offset: offset,
+	}
+
+	total, err := judge_model.CountRankByOptions(db, getOptions)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	rankCacheList, err := judge_model.GetRankCacheListByOptions(db, getOptions)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	var rankList []judge_model.JudgeRank
@@ -29,12 +34,11 @@ func GetRankList(
 	for i, rankCache := range rankCacheList {
 		rankList = append(rankList, judge_model.JudgeRank{
 			Rank:             i + *offset + 1,
-			AvatarURL:        rankCache.User.AvatarURL,
-			Name:             rankCache.User.Name,
+			User:             rankCache.User,
 			Points:           rankCache.Points,
 			TotalSubmissions: rankCache.TotalSubmissions,
 			AcceptRate:       float32(rankCache.Points) / float32(rankCache.TotalSubmissions),
 		})
 	}
-	return rankList, nil
+	return rankList, total, nil
 }

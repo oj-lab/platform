@@ -21,3 +21,5 @@ func NewJudgeRankCache(userAccount string) JudgeRankCache {
 		TotalSubmissions: 0,
 	}
 }
+
+var RankCacheInfoSelection = append([]string{"points", "total_submissions"}, models.MetaFieldsSelection...)

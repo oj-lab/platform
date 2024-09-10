@@ -46,7 +46,7 @@ func getRankList(ginCtx *gin.Context) {
 		return
 	}
 
-	rankInfoList, err := judge_service.GetRankList(
+	rankInfoList, total, err := judge_service.GetRankList(
 		ginCtx,
 		nil,
 		&limit, &offset,
@@ -56,5 +56,8 @@ func getRankList(ginCtx *gin.Context) {
 		return
 	}
 
-	ginCtx.JSON(200, rankInfoList)
+	ginCtx.JSON(200, gin.H{
+		"total": total,
+		"list":  rankInfoList,
+	})
 }

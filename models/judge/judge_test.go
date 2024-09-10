@@ -167,8 +167,8 @@ func TestJudgeRank(t *testing.T) {
 	}
 	fmt.Printf("rankCache: %v\n", rankCache)
 
-	rankOption := GetRankOptions{
-		Selection: RankInfoSelection,
+	rankOption := GetRankCacheOptions{
+		Selection: RankCacheInfoSelection,
 	}
 	rankList, err := GetRankCacheListByOptions(db, rankOption)
 	if err != nil {
@@ -180,8 +180,8 @@ func TestJudgeRank(t *testing.T) {
 	}
 
 	offset := 2
-	rankOption = GetRankOptions{
-		Selection: RankInfoSelection,
+	rankOption = GetRankCacheOptions{
+		Selection: RankCacheInfoSelection,
 		Offset:    &offset,
 	}
 	rankList, err = GetRankCacheListByOptions(db, rankOption)
