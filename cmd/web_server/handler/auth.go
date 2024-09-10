@@ -87,7 +87,7 @@ type loginBody struct {
 //	@Tags			user
 //	@Accept			json
 //	@Param			loginBody	body	loginBody	true	"body"
-//	@Router			/user/login [post]
+//	@Router			/auth/password [post]
 //	@Success		200
 func loginByPassword(ginCtx *gin.Context) {
 	body := &loginBody{}

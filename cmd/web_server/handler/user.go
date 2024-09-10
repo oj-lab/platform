@@ -32,6 +32,7 @@ func SetupUserRouter(baseRoute *gin.RouterGroup) {
 			middleware.BuildCasbinEnforceHandlerWithDomain("system"),
 			revokeUserRole,
 		)
+		g.POST("/logout", logout)
 	}
 }
 
@@ -140,6 +141,22 @@ func revokeUserRole(ginCtx *gin.Context) {
 	err = user_service.RevokeUserRole(ginCtx, account, body.Role, body.Domain)
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to revoke user role: %v", err))
+		return
+	}
+
+	ginCtx.Status(http.StatusOK)
+}
+
+func logout(ginCtx *gin.Context) {
+	ls, err := middleware.GetLoginSessionFromGinCtx(ginCtx)
+	if err != nil {
+		gin_utils.NewUnauthorizedError(ginCtx, "cannot load login session from cookie")
+		return
+	}
+
+	err = ls.DelInRedis(ginCtx)
+	if err != nil {
+		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to Del session in redis: %v", err))
 		return
 	}
 

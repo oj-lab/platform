@@ -57,3 +57,12 @@ func (ls LoginSession) SaveToRedis(ctx context.Context) error {
 
 	return nil
 }
+
+func (ls LoginSession) DelInRedis(ctx context.Context) error {
+	err := DelLoginSession(ctx, ls.Key)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -54,7 +54,7 @@ services:
     image: ghcr.io/oj-lab/judger:main
     pull_policy: always
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "host.docker.internal:172.24.95.162"
     environment:
       - ENABLE_RCLONE=true
     ports:

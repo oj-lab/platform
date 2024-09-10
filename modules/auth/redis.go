@@ -33,6 +33,17 @@ func SetLoginSession(ctx context.Context, key LoginSessionKey, data LoginSession
 	return nil
 }
 
+func DelLoginSession(ctx context.Context, key LoginSessionKey) error {
+	redisClient := redis_agent.GetDefaultRedisClient()
+
+	err := redisClient.Del(ctx, getLoginSessionRedisKey(key)).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func GetLoginSession(ctx context.Context, key LoginSessionKey) (*LoginSession, error) {
 	redisClient := redis_agent.GetDefaultRedisClient()
 
