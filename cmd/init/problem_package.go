@@ -29,7 +29,7 @@ func loadProblemPackages(ctx context.Context) {
 	//    parse problem.md as description.
 	// 2. insert object into minio storage.
 	var (
-		packagePath string = path.Join(config_module.ProjectRoot(), "problem_packages/icpc")
+		packagePath string = path.Join(config_module.ProjectRoot(), "problem-packages/icpc")
 		title       string
 		slug        string
 	)

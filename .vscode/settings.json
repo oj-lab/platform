@@ -1,6 +1,6 @@
 {
   "material-icon-theme.folders.associations": {
-    "problem_packages": "packages",
+    "problem-packages": "packages",
     "modules/agent": "client"
   },
   "go.testFlags": [
