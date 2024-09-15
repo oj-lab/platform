@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/oj-lab/platform/cmd/web_server/middleware"
 	user_model "github.com/oj-lab/platform/models/user"
 	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
@@ -41,18 +42,29 @@ func githubCallback(ginCtx *gin.Context) {
 		return
 	}
 
-	user, _ := user_service.GetUser(ginCtx, githubUser.Login)
-	if user == nil {
+	users, total, err := user_service.GetUserList(ginCtx, user_model.GetUserOptions{
+		GithubLogin: &githubUser.Login,
+	})
+	if err != nil {
+		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get user list: %v", err))
+		return
+	}
+	var user *user_model.User
+	if total <= 0 {
+		uuid := uuid.New()
 		user, err = user_service.CreateUser(ginCtx, user_model.User{
-			Account:   githubUser.Login,
-			Name:      githubUser.Name,
-			Email:     &githubUser.Email,
-			AvatarURL: githubUser.AvatarURL,
+			Account:     uuid.String(),
+			Name:        githubUser.Name,
+			Email:       &githubUser.Email,
+			AvatarURL:   githubUser.AvatarURL,
+			GithubLogin: &githubUser.Login,
 		})
 		if err != nil {
 			gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to create user: %v", err))
 			return
 		}
+	} else {
+		user = &users[0]
 	}
 
 	ls, err := user_service.StartLoginSession(ginCtx, user.Account)
@@ -60,7 +72,6 @@ func githubCallback(ginCtx *gin.Context) {
 		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to start login session: %v", err))
 		return
 	}
-
 	middleware.SetLoginSessionKeyCookie(ginCtx, ls.Key)
 
 	ginCtx.JSON(200, nil)

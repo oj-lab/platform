@@ -102,6 +102,7 @@ type GetUserOptions struct {
 	DomainRole   *casbin_agent.DomainRole
 	Offset       *int
 	Limit        *int
+	GithubLogin  *string
 }
 
 func buildGetUserTXByOptions(tx *gorm.DB, options GetUserOptions, isCount bool) *gorm.DB {
@@ -125,6 +126,9 @@ func buildGetUserTXByOptions(tx *gorm.DB, options GetUserOptions, isCount bool) 
 	}
 	if options.EmailQuery != "" {
 		tx = tx.Where("email LIKE ?", options.EmailQuery)
+	}
+	if options.GithubLogin != nil {
+		tx = tx.Where("github_login = ?", *options.GithubLogin)
 	}
 
 	if !isCount {

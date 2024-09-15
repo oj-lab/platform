@@ -10,6 +10,7 @@ type User struct {
 	HashedPassword string  `json:"-" gorm:"not null"`
 	Email          *string `json:"email,omitempty" gorm:"unique"`
 	AvatarURL      string  `json:"avatarUrl"`
+	GithubLogin    *string `json:"githubLogin" gorm:"unique"`
 }
 
 var PublicUserSelection = append([]string{"account", "name", "avatar_url"}, models.MetaFieldsSelection...)
