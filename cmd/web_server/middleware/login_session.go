@@ -1,8 +1,6 @@
 package middleware
 
 import (
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	auth_module "github.com/oj-lab/platform/modules/auth"
@@ -10,7 +8,6 @@ import (
 )
 
 const (
-	loginSessionCookieMaxAge         = time.Hour * 24 * 7
 	loginSessionKeyIdCookieName      = "LS_KEY_ID"
 	loginSessionKeyAccountCookieName = "LS_KEY_ACCOUNT"
 	loginSessionGinCtxKey            = "login_session"
@@ -70,7 +67,7 @@ func GetLoginSessionFromGinCtx(ginCtx *gin.Context) (*auth_module.LoginSession, 
 
 func SetLoginSessionKeyCookie(ginCtx *gin.Context, key auth_module.LoginSessionKey) {
 	ginCtx.SetCookie(loginSessionKeyAccountCookieName, key.Account,
-		int(loginSessionCookieMaxAge.Seconds()), "/", "", false, true)
+		int(auth_module.LoginSessionDuration.Seconds()), "/", "", false, true)
 	ginCtx.SetCookie(loginSessionKeyIdCookieName, key.Id.String(),
-		int(loginSessionCookieMaxAge.Seconds()), "/", "", false, true)
+		int(auth_module.LoginSessionDuration.Seconds()), "/", "", false, true)
 }

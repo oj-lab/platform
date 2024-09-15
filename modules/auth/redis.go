@@ -3,7 +3,6 @@ package auth_module
 import (
 	"context"
 	"fmt"
-	"time"
 
 	redis_agent "github.com/oj-lab/platform/modules/agent/redis"
 	log_module "github.com/oj-lab/platform/modules/log"
@@ -11,7 +10,6 @@ import (
 )
 
 const loginSessionKeyFormat = "LS_%s_%s" // "LS_<account>_<uuid>"
-const loginSessionDuration = time.Minute * 15
 
 func getLoginSessionRedisKey(key LoginSessionKey) string {
 	return fmt.Sprintf(loginSessionKeyFormat, key.Account, key.Id.String())
@@ -25,7 +23,7 @@ func SetLoginSession(ctx context.Context, key LoginSessionKey, data LoginSession
 		return err
 	}
 	// TODO: Watch Redis JSON SET usage, currently not support atomic SETEX
-	err = redisClient.Set(ctx, getLoginSessionRedisKey(key), value, loginSessionDuration).Err()
+	err = redisClient.Set(ctx, getLoginSessionRedisKey(key), value, LoginSessionDuration).Err()
 	if err != nil {
 		return err
 	}

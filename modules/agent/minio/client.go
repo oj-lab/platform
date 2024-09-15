@@ -11,11 +11,11 @@ import (
 
 const (
 	minioEndpointProp        = "minio.endpoint"
-	minioAccessKeyProp       = "minio.accessKeyID"
-	minioSecretAccessKeyProp = "minio.secretAccessKey"
-	minioUseSSLProp          = "minio.useSSL"
+	minioAccessKeyProp       = "minio.access_key_id"
+	minioSecretAccessKeyProp = "minio.secret_access_key"
+	minioUseSSLProp          = "minio.use_ssl"
 	minioRegionProp          = "minio.region"
-	minioBucketNameProp      = "minio.bucketName"
+	minioBucketNameProp      = "minio.bucket_name"
 )
 
 var (

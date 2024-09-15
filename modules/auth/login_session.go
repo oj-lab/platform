@@ -3,9 +3,22 @@ package auth_module
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/google/uuid"
+	config_module "github.com/oj-lab/platform/modules/config"
 )
+
+const defaultLoginSessionDuration = time.Hour * 24 * 7
+
+var LoginSessionDuration time.Duration
+
+func init() {
+	LoginSessionDuration = config_module.AppConfig().GetDuration("service.login_session_duration")
+	if LoginSessionDuration == 0 {
+		LoginSessionDuration = defaultLoginSessionDuration
+	}
+}
 
 type LoginSessionKey struct {
 	Account string
