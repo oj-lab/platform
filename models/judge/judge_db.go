@@ -54,7 +54,7 @@ func GetJudge(tx *gorm.DB, uid uuid.UUID) (*Judge, error) {
 
 type GetJudgeOptions struct {
 	Selection      []string
-	UserAccount    *string
+	UserAccount    string
 	ProblemSlugs   []string
 	Statuses       []JudgeStatus
 	Verdicts       []JudgeVerdict
@@ -71,8 +71,8 @@ func buildGetJudgesTXByOptions(
 	if len(options.Selection) > 0 {
 		tx = tx.Select(options.Selection)
 	}
-	if options.UserAccount != nil {
-		tx = tx.Where("user_account = ?", *options.UserAccount)
+	if len(options.UserAccount) > 0 {
+		tx = tx.Where("user_account = ?", options.UserAccount)
 	}
 	if len(options.Statuses) > 0 {
 		tx = tx.Where("status IN ?", options.Statuses)

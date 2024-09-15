@@ -37,7 +37,7 @@ func TestProblemDB(t *testing.T) {
 	problemOption := GetProblemOptions{
 		Selection: ProblemInfoSelection,
 		Tags:      []*ProblemTag{{Name: "tag1"}},
-		Slug:      &problem.Slug,
+		Slug:      problem.Slug,
 	}
 
 	problemList, err := GetProblemListByOptions(db, problemOption)

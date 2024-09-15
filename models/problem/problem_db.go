@@ -32,12 +32,12 @@ func UpdateProblem(tx *gorm.DB, problem Problem) error {
 }
 
 type GetProblemOptions struct {
-	Selection []string
-	Slug      *string
-	Title     *string
-	Tags      []*ProblemTag
-	Offset    *int
-	Limit     *int
+	Selection  []string
+	Slug       string
+	TitleQuery string
+	Tags       []*ProblemTag
+	Offset     *int
+	Limit      *int
 }
 
 func buildGetProblemsTXByOptions(tx *gorm.DB, options GetProblemOptions, isCount bool) *gorm.DB {
@@ -54,11 +54,11 @@ func buildGetProblemsTXByOptions(tx *gorm.DB, options GetProblemOptions, isCount
 			Joins("JOIN problem_problem_tags ON problem_problem_tags.problem_slug = problems.slug").
 			Where("problem_problem_tags.problem_tag_name in ?", tagsList)
 	}
-	if options.Slug != nil {
-		tx = tx.Where("slug = ?", *options.Slug)
+	if len(options.Slug) > 0 {
+		tx = tx.Where("slug = ?", options.Slug)
 	}
-	if options.Title != nil {
-		tx = tx.Where("title = ?", *options.Title)
+	if len(options.TitleQuery) > 0 {
+		tx = tx.Where("title LIKE ?", options.TitleQuery)
 	}
 	tx = tx.Distinct().
 		Preload("Tags")

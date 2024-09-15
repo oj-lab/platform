@@ -99,10 +99,11 @@ func getProblemInfoList(ginCtx *gin.Context) {
 		gin_utils.NewInvalidParamError(ginCtx, "offset", err.Error())
 		return
 	}
+	titleQuery := gin_utils.QueryString(ginCtx, "title", "")
 
 	problemInfoList, total, err := problem_service.GetProblemInfoList(
 		ginCtx,
-		nil,
+		"", "%"+titleQuery+"%",
 		&limit, &offset,
 	)
 	if err != nil {

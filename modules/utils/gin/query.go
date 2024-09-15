@@ -13,3 +13,11 @@ func QueryInt(ginCtx *gin.Context, key string, defaultValue int) (int, error) {
 	}
 	return strconv.Atoi(ValueStr)
 }
+
+func QueryString(ginCtx *gin.Context, key string, defaultValue string) string {
+	ValueStr := ginCtx.Query(key)
+	if ValueStr == "" {
+		return defaultValue
+	}
+	return ValueStr
+}
