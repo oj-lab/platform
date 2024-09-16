@@ -5,7 +5,12 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+const DefaultProblemDifficulty = ProblemDifficultyEasy
+
 func CreateProblem(tx *gorm.DB, problem Problem) error {
+	if !problem.Difficulty.IsValid() {
+		problem.Difficulty = DefaultProblemDifficulty
+	}
 	return tx.Create(&problem).Error
 }
 
@@ -35,6 +40,7 @@ type GetProblemOptions struct {
 	Selection  []string
 	Slug       string
 	TitleQuery string
+	Difficulty ProblemDifficulty
 	Tags       []*ProblemTag
 	Offset     *int
 	Limit      *int
@@ -59,6 +65,9 @@ func buildGetProblemsTXByOptions(tx *gorm.DB, options GetProblemOptions, isCount
 	}
 	if len(options.TitleQuery) > 0 {
 		tx = tx.Where("title LIKE ?", options.TitleQuery)
+	}
+	if options.Difficulty.IsValid() {
+		tx = tx.Where("difficulty = ?", options.Difficulty)
 	}
 	tx = tx.Distinct().
 		Preload("Tags")

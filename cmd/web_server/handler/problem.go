@@ -100,11 +100,18 @@ func getProblemInfoList(ginCtx *gin.Context) {
 		return
 	}
 	titleQuery := gin_utils.QueryString(ginCtx, "title", "")
+	difficultyStr := gin_utils.QueryString(ginCtx, "difficulty", "all")
+	difficulty := problem_model.ProblemDifficulty(difficultyStr)
+
+	options := problem_model.GetProblemOptions{
+		TitleQuery: "%" + titleQuery + "%",
+		Difficulty: difficulty,
+		Offset:     &offset,
+		Limit:      &limit,
+	}
 
 	problemInfoList, total, err := problem_service.GetProblemInfoList(
-		ginCtx,
-		"", "%"+titleQuery+"%",
-		&limit, &offset,
+		ginCtx, options, "",
 	)
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, err.Error())

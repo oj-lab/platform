@@ -9,24 +9,17 @@ import (
 )
 
 func GetProblemInfoList(
-	_ context.Context,
+	ctx context.Context,
+	options problem_model.GetProblemOptions,
 	account string,
-	titleQuery string,
-	limit, offset *int,
 ) ([]problem_model.Problem, int64, error) {
 	db := gorm_agent.GetDefaultDB()
-	getOptions := problem_model.GetProblemOptions{
-		Selection:  problem_model.ProblemInfoSelection,
-		TitleQuery: titleQuery,
-		Limit:      limit,
-		Offset:     offset,
-	}
 
-	total, err := problem_model.CountProblemByOptions(db, getOptions)
+	total, err := problem_model.CountProblemByOptions(db, options)
 	if err != nil {
 		return nil, 0, err
 	}
-	problemList, err := problem_model.GetProblemListByOptions(db, getOptions)
+	problemList, err := problem_model.GetProblemListByOptions(db, options)
 	if err != nil {
 		return nil, 0, err
 	}
