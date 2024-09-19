@@ -10,11 +10,12 @@ import (
 
 func GetProblemInfoList(
 	ctx context.Context,
-	options problem_model.GetProblemOptions,
 	account string,
-) ([]problem_model.Problem, int64, error) {
-	db := gorm_agent.GetDefaultDB()
+	options problem_model.GetProblemOptions,
+) ([]problem_model.ProblemInfoView, int64, error) {
+	options.Selection = problem_model.ProblemInfoSelection
 
+	db := gorm_agent.GetDefaultDB()
 	total, err := problem_model.CountProblemByOptions(db, options)
 	if err != nil {
 		return nil, 0, err
@@ -44,10 +45,14 @@ func GetProblemInfoList(
 		}
 		for i, problem := range problemList {
 			if _, ok := acceptedProblemSlugs[problem.Slug]; ok {
-				problemList[i].IsAccepted = true
+				problemList[i].Solved = func() *bool { b := true; return &b }()
+			} else {
+				problemList[i].Solved = func() *bool { b := false; return &b }()
 			}
 		}
 	}
 
-	return problemList, total, nil
+	problemInfoList := problem_model.GetProblemInfoViewList(problemList)
+
+	return problemInfoList, total, nil
 }

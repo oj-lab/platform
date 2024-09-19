@@ -8,8 +8,6 @@ type MetaFields struct {
 	DeletedAt *time.Time `gorm:"index" json:"deletedAt,omitempty"`
 }
 
-var MetaFieldsSelection = []string{"create_at", "update_at", "deleted_at"}
-
 type OrderByColumnOption struct {
 	Column string
 	Desc   bool
@@ -22,3 +20,5 @@ func NewMetaFields() MetaFields {
 		UpdateAt: &now,
 	}
 }
+
+var MetaFieldsSelection = []string{"create_at", "update_at", "deleted_at"}

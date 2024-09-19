@@ -7,9 +7,9 @@ type Problem struct {
 	Slug        string            `json:"slug" gorm:"primaryKey"`
 	Title       string            `json:"title" gorm:"not null"`
 	Description *string           `json:"description,omitempty"`
-	Difficulty  ProblemDifficulty `json:"difficult,omitempty"`
+	Difficulty  ProblemDifficulty `json:"difficulty,omitempty"`
 	Tags        []*ProblemTag     `json:"tags" gorm:"many2many:problem_problem_tags;"`
-	IsAccepted  bool              `json:"solved,omitempty" gorm:"-"`
+	Solved      *bool             `json:"solved,omitempty" gorm:"-"`
 }
 
 type ProblemDifficulty string
@@ -33,5 +33,3 @@ type ProblemTag struct {
 	Name     string     `json:"name" gorm:"primaryKey"`
 	Problems []*Problem `json:"problems,omitempty" gorm:"many2many:problem_problem_tags;"`
 }
-
-var ProblemInfoSelection = append([]string{"slug", "title"}, models.MetaFieldsSelection...)

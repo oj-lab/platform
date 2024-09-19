@@ -80,6 +80,11 @@ func deleteProblem(ginCtx *gin.Context) {
 	}
 }
 
+type getProblemInfoListResponse struct {
+	Total int64                           `json:"total"`
+	List  []problem_model.ProblemInfoView `json:"list"`
+}
+
 // getProblemInfoList
 //
 //	@Router			/problem [get]
@@ -87,7 +92,11 @@ func deleteProblem(ginCtx *gin.Context) {
 //	@Description	Get problem list
 //	@Tags			problem
 //	@Accept			json
-//	@Success		200
+//	@Param			limit		query		int		false	"limit"
+//	@Param			offset		query		int		false	"offset"
+//	@Param			title		query		string	false	"title"
+//	@Param			difficulty	query		string	false	"difficulty"
+//	@Success		200			{object}	getProblemInfoListResponse
 func getProblemInfoList(ginCtx *gin.Context) {
 	limit, err := gin_utils.QueryInt(ginCtx, "limit", 10)
 	if err != nil {
@@ -111,16 +120,16 @@ func getProblemInfoList(ginCtx *gin.Context) {
 	}
 
 	problemInfoList, total, err := problem_service.GetProblemInfoList(
-		ginCtx, options, "",
+		ginCtx, "", options,
 	)
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, err.Error())
 		return
 	}
 
-	ginCtx.JSON(200, gin.H{
-		"total": total,
-		"list":  problemInfoList,
+	ginCtx.JSON(200, getProblemInfoListResponse{
+		Total: total,
+		List:  problemInfoList,
 	})
 }
 
