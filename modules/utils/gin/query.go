@@ -21,3 +21,15 @@ func QueryString(ginCtx *gin.Context, key string, defaultValue string) string {
 	}
 	return ValueStr
 }
+
+func QueryBool(ginCtx *gin.Context, key string, defaultValue bool) bool {
+	ValueStr := ginCtx.Query(key)
+	switch ValueStr {
+	case "true":
+		return true
+	case "false":
+		return false
+	default:
+		return defaultValue
+	}
+}

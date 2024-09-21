@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/oj-lab/platform/cmd/web_server/middleware"
 	judge_model "github.com/oj-lab/platform/models/judge"
 	problem_model "github.com/oj-lab/platform/models/problem"
 	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
@@ -18,7 +19,7 @@ func SetupProblemRouter(baseRoute *gin.RouterGroup) {
 		g.DELETE("/:slug", deleteProblem)
 		g.GET("/:slug/check", checkProblemSlug)
 		g.PUT("/:slug/package", putProblemPackage)
-		g.POST("/:slug/judge", postJudge)
+		g.POST("/:slug/judge", middleware.HandleRequireLogin, postJudge)
 	}
 }
 

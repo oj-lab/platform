@@ -2,21 +2,22 @@ package handler
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/oj-lab/platform/cmd/web_server/middleware"
 	"github.com/oj-lab/platform/models"
 	judge_model "github.com/oj-lab/platform/models/judge"
 	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
 	judge_service "github.com/oj-lab/platform/services/judge"
+	user_service "github.com/oj-lab/platform/services/user"
 )
 
 func SetupJudgeRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/judge")
 	{
-		g.GET("", getJudgeList)
-		g.GET("/:uid", getJudge)
+		g.GET("", middleware.HandleRequireLogin, getJudgeList)
+		g.GET("/:uid", middleware.HandleRequireLogin, getJudge)
 	}
 }
 
@@ -52,30 +53,35 @@ type getJudgeListResponse struct {
 //	@Param			offset	query	int	false	"offset"
 //	@Router			/judge [get] getJudgeListResponse
 func getJudgeList(ginCtx *gin.Context) {
-	limitQuery, _ := ginCtx.GetQuery("limit")
-	offsetQuery, _ := ginCtx.GetQuery("offset")
-	if limitQuery == "" {
-		limitQuery = "10"
-	}
-	if offsetQuery == "" {
-		offsetQuery = "0"
-	}
-
-	limit, err := strconv.Atoi(limitQuery)
+	limit, err := gin_utils.QueryInt(ginCtx, "limit", 10)
 	if err != nil {
-		gin_utils.NewInvalidParamError(ginCtx, "limit", "invalid limit")
+		gin_utils.NewInvalidParamError(ginCtx, "limit", err.Error())
 		return
 	}
-	offset, err := strconv.Atoi(offsetQuery)
+	offset, err := gin_utils.QueryInt(ginCtx, "offset", 0)
 	if err != nil {
-		gin_utils.NewInvalidParamError(ginCtx, "offset", "invalid offset")
+		gin_utils.NewInvalidParamError(ginCtx, "offset", err.Error())
 		return
 	}
+	selfOnly := gin_utils.QueryBool(ginCtx, "self_only", false)
 
 	options := judge_model.GetJudgeOptions{
 		Limit:          &limit,
 		Offset:         &offset,
 		OrderByColumns: []models.OrderByColumnOption{{Column: "create_at", Desc: true}},
+	}
+	if selfOnly {
+		ls, err := middleware.GetLoginSessionFromGinCtx(ginCtx)
+		if err != nil {
+			gin_utils.NewUnauthorizedError(ginCtx, "cannot load login session from cookie")
+			return
+		}
+		user, err := user_service.GetUser(ginCtx, ls.Key.Account)
+		if err != nil {
+			gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get user: %v", err))
+			return
+		}
+		options.UserAccount = user.Account
 	}
 
 	judges, total, err := judge_service.GetJudgeList(ginCtx, options)
