@@ -63,6 +63,7 @@ func main() {
 			log_module.AppLogger().Info("Serving frontend...")
 			r.LoadHTMLFiles(frontendDist + "/index.html")
 			handler.SetupFrontendRoute(baseRouter, frontendDist)
+			r.NoRoute(handler.RenderHTML)
 		}
 	}
 
