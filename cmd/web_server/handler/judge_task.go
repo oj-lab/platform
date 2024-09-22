@@ -61,9 +61,16 @@ func putReportJudgeTask(ginCtx *gin.Context) {
 		return
 	}
 
-	judgeUID, err := judge_service.ReportJudgeTask(ginCtx, body.Consumer, body.RedisStreamID, verdict)
-	if err != nil {
+	if err := judge_service.ReportJudgeTask(
+		ginCtx, body.Consumer, body.RedisStreamID, verdict,
+	); err != nil {
 		_ = ginCtx.Error(err)
+		return
+	}
+
+	judgeUID, err := judge_service.GetJudgeUIDFromStreamid(body.RedisStreamID)
+	if err != nil {
+		gin_utils.NewInternalError(ginCtx, err.Error())
 		return
 	}
 
