@@ -12,13 +12,20 @@ import (
 	log_module "github.com/oj-lab/platform/modules/log"
 )
 
-func CreateUser(ctx context.Context, user user_model.User) (*user_model.User, error) {
+func CreateUser(ctx context.Context, request user_model.User) (*user_model.User, error) {
 	db := gorm_agent.GetDefaultDB()
-	_, err := judge_model.CreateJudgeRankCache(db, judge_model.NewJudgeRankCache(user.Account))
+
+	user, err := user_model.CreateUser(db, request)
 	if err != nil {
 		return nil, err
 	}
-	return user_model.CreateUser(db, user)
+
+	_, err = judge_model.CreateJudgeRankCache(db, judge_model.NewJudgeRankCache(request.Account))
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func GetUser(ctx context.Context, account string) (*user_model.User, error) {

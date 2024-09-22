@@ -74,7 +74,7 @@ func githubCallback(ginCtx *gin.Context) {
 	}
 	middleware.SetLoginSessionKeyCookie(ginCtx, ls.Key)
 
-	ginCtx.JSON(200, nil)
+	ginCtx.Redirect(http.StatusFound, "/")
 }
 
 func loginGithub(ginCtx *gin.Context) {

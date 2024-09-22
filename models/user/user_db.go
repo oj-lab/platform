@@ -16,11 +16,12 @@ import (
 // Account, Password, Roles will be used to create a new user.
 func CreateUser(tx *gorm.DB, request User) (*User, error) {
 	user := User{
-		MetaFields: models.NewMetaFields(),
-		Name:       request.Name,
-		Account:    request.Account,
-		Email:      request.Email,
-		AvatarURL:  request.AvatarURL,
+		MetaFields:  models.NewMetaFields(),
+		Name:        request.Name,
+		Account:     request.Account,
+		Email:       request.Email,
+		AvatarURL:   request.AvatarURL,
+		GithubLogin: request.GithubLogin,
 	}
 
 	_, err := url.Parse(user.AvatarURL)

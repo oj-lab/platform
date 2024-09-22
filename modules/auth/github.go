@@ -17,6 +17,9 @@ const (
 	servicePortProp       = "service.port"
 	serviceHostProp       = "service.host"
 	serviceSSLEnabledProp = "service.ssl_enabled"
+
+	githubClientIDProp     = "auth.github_client_id"
+	githubClientSecretProp = "auth.github_client_secret"
 )
 
 var (
@@ -29,8 +32,8 @@ var (
 )
 
 func init() {
-	githubClientID = config_module.AppConfig().GetString("auth_modulegithub.client_id")
-	githubClientSecret = config_module.AppConfig().GetString("auth_modulegithub.client_secret")
+	githubClientID = config_module.AppConfig().GetString(githubClientIDProp)
+	githubClientSecret = config_module.AppConfig().GetString(githubClientSecretProp)
 	servicePort = config_module.AppConfig().GetUint(servicePortProp)
 	serviceHost = config_module.AppConfig().GetString(serviceHostProp)
 	serviceSSLEnabled = config_module.AppConfig().GetBool(serviceSSLEnabledProp)
