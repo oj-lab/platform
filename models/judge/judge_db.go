@@ -55,7 +55,7 @@ func GetJudge(tx *gorm.DB, uid uuid.UUID) (*Judge, error) {
 	return &judge, nil
 }
 
-func GetJudgeUIDByStreamID(tx *gorm.DB, RedisStreamID string) (*uuid.UUID, error) {
+func GetJudgeUIDFromStreamID(tx *gorm.DB, RedisStreamID string) (*uuid.UUID, error) {
 	judge := Judge{}
 	err := tx.Model(&Judge{}).Select("uid").
 		Where("redis_stream_id = ?", RedisStreamID).First(&judge).Error

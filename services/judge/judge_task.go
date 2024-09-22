@@ -48,9 +48,9 @@ func ReportJudgeTask(
 	return nil
 }
 
-func GetJudgeUIDFromStreamid(streamID string) (*uuid.UUID, error) {
+func GetJudgeUIDFromStreamID(streamID string) (*uuid.UUID, error) {
 	db := gorm_agent.GetDefaultDB()
-	judgeUID, err := judge_model.GetJudgeUIDByStreamID(db, streamID)
+	judgeUID, err := judge_model.GetJudgeUIDFromStreamID(db, streamID)
 	if err != nil {
 		return nil, err
 	}
