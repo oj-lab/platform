@@ -20,7 +20,9 @@ dist.zip
 bin/
 __debug_bin**
 
-override.toml
+# Ignore override config files
+override.*
+!override.example.toml
 
 frontend/
 

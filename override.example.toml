@@ -8,3 +8,8 @@
 
 [log]
 level = "info"
+
+[service]
+# When you need to work with the lastest frontend code,
+# set the frontend_dist to the path of the frontend repository.
+frontend_dist = "../frontend/dist" 
