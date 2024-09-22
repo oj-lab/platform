@@ -76,7 +76,7 @@ func TestGetJudgeUIDFromStreamid(t *testing.T) {
 	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
 	judge := &judge_model.Judge{
 		Language:    judge_model.ProgrammingLanguageCpp,
-		ProblemSlug: "test-GetJudgeUIDFromStreamid-judge",
+		ProblemSlug: "test-judge-service",
 	}
 	judge, err := CreateJudge(ctx, *judge)
 	if err != nil {
