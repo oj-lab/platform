@@ -31,5 +31,5 @@ port = 50051
 endpoint = "localhost:9000"
 access_key_id = "minio-root-user"
 secret_access_key = "minio-root-password"
-useSSL = false
+use_ssl = false
 bucket_name = "oj-lab-problem-package"
