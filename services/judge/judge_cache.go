@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	judge_model "github.com/oj-lab/platform/models/judge"
+	problem_model "github.com/oj-lab/platform/models/problem"
 	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 )
 
@@ -15,6 +16,12 @@ func UpsertJudgeCache(ctx context.Context, uid uuid.UUID, verdict judge_model.Ju
 		return err
 	}
 	// log_module.AppLogger().WithField("judge", judge).Debug("getjudge")
+	var problem *problem_model.Problem
+	problem, err = problem_model.GetProblem(db, judge.ProblemSlug)
+	if err != nil {
+		return err
+	}
+
 	var scoreCache *judge_model.JudgeScoreCache
 	var rankCache *judge_model.JudgeRankCache
 	for {
@@ -59,13 +66,19 @@ func UpsertJudgeCache(ctx context.Context, uid uuid.UUID, verdict judge_model.Ju
 			}
 			scoreCache.IsAccepted = true
 			rankCache.Points = rankCache.Points + extraPoint
+			problem.AcceptCount += extraPoint
 			scoreCache.SolveTime = judge.CreateAt
 		} else {
 			scoreCache.SubmissionCount += 1
 		}
 		rankCache.TotalSubmissions += scoreCache.SubmissionCount - preSubmissionCount
+		problem.SubmitCount += scoreCache.SubmissionCount - preSubmissionCount
 		// log_module.AppLogger().WithField("scoreCache", scoreCache).Debug("update scoreCache")
 
+		err = problem_model.UpdateProblem(db, *problem)
+		if err != nil {
+			return err
+		}
 		err = judge_model.UpdateJudgeScoreCache(db, *scoreCache)
 		if err != nil {
 			return err

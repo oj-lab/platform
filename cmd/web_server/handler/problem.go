@@ -120,8 +120,14 @@ func getProblemInfoList(ginCtx *gin.Context) {
 		Limit:      &limit,
 	}
 
+	account := ""
+	ls, err := middleware.GetLoginSessionFromGinCtx(ginCtx)
+	if err == nil {
+		account = ls.Key.Account
+	}
+
 	problemInfoList, total, err := problem_service.GetProblemInfoList(
-		ginCtx, "", options,
+		ginCtx, account, options,
 	)
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, err.Error())

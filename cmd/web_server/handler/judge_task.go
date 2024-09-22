@@ -55,17 +55,21 @@ func putReportJudgeTask(ginCtx *gin.Context) {
 		_ = ginCtx.Error(err)
 		return
 	}
-
 	verdict := judge_model.JudgeVerdict(body.VerdictString)
 	if !verdict.IsValid() {
 		gin_utils.NewInvalidParamError(ginCtx, "verdict", "invalid verdict")
 		return
 	}
 
-	if err := judge_service.ReportJudgeTask(
-		ginCtx, body.Consumer, body.RedisStreamID, verdict,
-	); err != nil {
+	judgeUID, err := judge_service.ReportJudgeTask(ginCtx, body.Consumer, body.RedisStreamID, verdict)
+	if err != nil {
 		_ = ginCtx.Error(err)
+		return
+	}
+
+	err = judge_service.UpsertJudgeCache(ginCtx, *judgeUID, verdict)
+	if err != nil {
+		gin_utils.NewInternalError(ginCtx, err.Error())
 		return
 	}
 

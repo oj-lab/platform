@@ -10,6 +10,8 @@ type Problem struct {
 	Difficulty  ProblemDifficulty `json:"difficulty,omitempty"`
 	Tags        []*ProblemTag     `json:"tags" gorm:"many2many:problem_problem_tags;"`
 	Solved      *bool             `json:"solved,omitempty" gorm:"-"`
+	AcceptCount int               `json:"acceptCount"`
+	SubmitCount int               `json:"submitCount"`
 }
 
 type ProblemDifficulty string

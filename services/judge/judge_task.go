@@ -29,7 +29,7 @@ func PickJudgeTask(ctx context.Context, consumer string) (*judge_model.JudgeTask
 func ReportJudgeTask(
 	ctx context.Context,
 	consumer string, streamID string, verdict judge_model.JudgeVerdict,
-) error {
+) (*uuid.UUID, error) {
 	db := gorm_agent.GetDefaultDB()
 
 	err := judge_model.UpdateJudge(db, judge_model.Judge{
@@ -38,15 +38,16 @@ func ReportJudgeTask(
 		Verdict:       verdict,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = judge_model.AckTaskFromStream(ctx, streamID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	judgeUID, err := judge_model.GetJudgeUIDByStreamID(db, streamID)
+	return judgeUID, nil
 }
 
 type VerdictJson struct {
