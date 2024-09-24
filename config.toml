@@ -2,7 +2,7 @@
 level = "debug"
 pretty_json = true
 time_on = true
-time_format = "2006-01-02 15:04:05"
+time_format = "2000-01-01 00:00:00"
 
 [database]
 dsn = "user=postgres password=postgres host=localhost port=5432 dbname=oj_lab sslmode=disable TimeZone=Asia/Shanghai"

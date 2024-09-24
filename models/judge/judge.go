@@ -32,7 +32,7 @@ const (
 type Judge struct {
 	models.MetaFields
 	UID           uuid.UUID             `json:"UID" gorm:"primaryKey"`
-	RedisStreamID string                `json:"redisStreamID"`
+	RedisStreamID string                `json:"redisStreamID" gorm:"index:idx_redis_stream_id"`
 	UserAccount   string                `json:"userAccount" gorm:"not null"`
 	User          user_model.User       `json:"user"`
 	ProblemSlug   string                `json:"problemSlug" gorm:"not null"`

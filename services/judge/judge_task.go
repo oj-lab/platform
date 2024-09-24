@@ -45,8 +45,16 @@ func ReportJudgeTask(
 	if err != nil {
 		return err
 	}
-
 	return nil
+}
+
+func GetJudgeUIDFromStreamID(streamID string) (*uuid.UUID, error) {
+	db := gorm_agent.GetDefaultDB()
+	judgeUID, err := judge_model.GetJudgeUIDFromStreamID(db, streamID)
+	if err != nil {
+		return nil, err
+	}
+	return judgeUID, nil
 }
 
 type VerdictJson struct {

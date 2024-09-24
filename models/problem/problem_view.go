@@ -22,7 +22,7 @@ func GetProblemTagViewList(tags []*ProblemTag) []ProblemTagView {
 	return tagView
 }
 
-var ProblemInfoSelection = append([]string{"slug", "title", "difficulty"}, models.MetaFieldsSelection...)
+var ProblemInfoSelection = append([]string{"slug", "title", "difficulty", "accept_count", "submit_count"}, models.MetaFieldsSelection...)
 
 type ProblemInfoView struct {
 	Slug       string            `json:"slug"`
@@ -30,15 +30,22 @@ type ProblemInfoView struct {
 	Difficulty ProblemDifficulty `json:"difficulty"`
 	Tags       []ProblemTagView  `json:"tags"`
 	Solved     *bool             `json:"solved,omitempty"`
+	PassRate   float32           `json:"passRate"`
 }
 
 func (p Problem) ToProblemInfo() ProblemInfoView {
+	PassRate := float32(0)
+	if p.SubmitCount != 0 {
+		PassRate = float32(p.AcceptCount) / float32(p.SubmitCount)
+	}
+
 	return ProblemInfoView{
 		Slug:       p.Slug,
 		Title:      p.Title,
 		Difficulty: p.Difficulty,
 		Tags:       GetProblemTagViewList(p.Tags),
 		Solved:     p.Solved,
+		PassRate:   PassRate,
 	}
 }
 

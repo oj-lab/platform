@@ -80,10 +80,4 @@ func postReportJudgeResult(ginCtx *gin.Context) {
 		gin_utils.NewInternalError(ginCtx, err.Error())
 		return
 	}
-
-	err = judge_service.UpsertJudgeCache(ginCtx, judgeUID, verdict)
-	if err != nil {
-		gin_utils.NewInternalError(ginCtx, err.Error())
-		return
-	}
 }

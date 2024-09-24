@@ -72,6 +72,25 @@ func TestCreateJudge(t *testing.T) {
 	asserts.Equal(judge.Language, insert_judge.Language)
 }
 
+func TestGetJudgeUIDFromStreamid(t *testing.T) {
+	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+	judge := &judge_model.Judge{
+		Language:    judge_model.ProgrammingLanguageCpp,
+		ProblemSlug: "test-judge-service",
+	}
+	judge, err := CreateJudge(ctx, *judge)
+	if err != nil {
+		t.Error(err)
+	}
+
+	judgeUID, err := GetJudgeUIDFromStreamID(judge.RedisStreamID)
+	if err != nil {
+		t.Error(err)
+	}
+	asserts := assert.New(t)
+	asserts.Equal(judge.UID, *judgeUID)
+}
+
 func TestUpsertJudgeCache(t *testing.T) {
 	// previous WA || later WA ||  previous AC || later AC || GetBeforeSubmission
 	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())

@@ -25,8 +25,11 @@ func CreateJudge(tx *gorm.DB, judge Judge) (*Judge, error) {
 func GetBeforeSubmission(tx *gorm.DB, judge Judge) (int, error) {
 	var count int64
 	err := tx.Model(&Judge{}).
+		Where("user_account = ?", judge.UserAccount).
+		Where("problem_slug = ?", judge.ProblemSlug).
 		Where("create_at < ?", judge.CreateAt).
 		Where("status = ?", JudgeStatusFinished).
+		Where("verdict != ?", JudgeVerdictCompileError).
 		Count(&count).Error
 
 	if err != nil {
@@ -50,6 +53,16 @@ func GetJudge(tx *gorm.DB, uid uuid.UUID) (*Judge, error) {
 		return nil, err
 	}
 	return &judge, nil
+}
+
+func GetJudgeUIDFromStreamID(tx *gorm.DB, RedisStreamID string) (*uuid.UUID, error) {
+	judge := Judge{}
+	err := tx.Model(&Judge{}).Select("uid").
+		Where("redis_stream_id = ?", RedisStreamID).First(&judge).Error
+	if err != nil {
+		return nil, err
+	}
+	return &judge.UID, nil
 }
 
 type GetJudgeOptions struct {
