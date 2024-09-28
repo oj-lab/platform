@@ -5,7 +5,7 @@
   },
   "markdownlint.config": {
     "no-inline-html": {
-      "allowed_elements": ["img", "u", "br"]
+      "allowed_elements": ["img", "u", "br", "center"]
     },
     "first-line-h1": false
   },

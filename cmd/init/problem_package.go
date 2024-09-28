@@ -7,6 +7,8 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/minio/minio-go/v7"
@@ -47,6 +49,7 @@ func loadProblemPackages(ctx context.Context) {
 			slug                string
 			testCaseID          = 1
 			description         string
+			limitDescription    string
 			testCaseDescription = "## Examples\n"
 		)
 
@@ -79,6 +82,7 @@ func loadProblemPackages(ctx context.Context) {
 				if err != nil {
 					log_module.AppLogger().WithError(err).Error("Unmarshal problem.yaml failed")
 				}
+				log_module.AppLogger().WithField("resultMap", reflect.TypeOf(resultMap["limits"])).Debug("Read problem.yaml")
 				if resultMap["name"] == nil {
 					log_module.AppLogger().Error("Problem name is nil")
 					return nil
@@ -89,6 +93,11 @@ func loadProblemPackages(ctx context.Context) {
 				}
 				slug = strings.Split(relativePath, "/")[1]
 				log_module.AppLogger().WithField("title", title).WithField("slug", slug).Debug("Read problem.yaml")
+				if limits, ok := resultMap["limits"].(map[interface{}]interface{}); ok {
+					if memoryLimit, ok := limits["memory"].(int); ok {
+						limitDescription += fmt.Sprintf("<center>Memory Limit: %d MB</center>\n", memoryLimit)
+					}
+				}
 			}
 			if filepath.Base(relativePath) == "problem.md" {
 				content, err := os.ReadFile(path)
@@ -98,7 +107,19 @@ func loadProblemPackages(ctx context.Context) {
 				description = string(content)
 				log_module.AppLogger().WithField("description", description).Debug("Read problem.md")
 			}
-
+			if filepath.Base(relativePath) == ".timelimit" {
+				timeLimitStr, err := os.ReadFile(path)
+				if err != nil {
+					log_module.AppLogger().WithError(err).Error("Read time limit file failed")
+					return nil
+				}
+				timeLimit, err := strconv.Atoi(strings.Trim(string(timeLimitStr), "\n"))
+				if err != nil {
+					log_module.AppLogger().WithError(err).Error("Parse time limit failed")
+					return nil
+				}
+				limitDescription += fmt.Sprintf("<center>Time Limit: %d s</center>\n", timeLimit)
+			}
 			if filepath.Ext(relativePath) == ".in" && strings.HasSuffix(filepath.Dir(relativePath), "sample") {
 				ansPath := strings.Replace(path, ".in", ".ans", 1)
 				if _, err := os.Stat(ansPath); err != nil {
@@ -117,7 +138,7 @@ func loadProblemPackages(ctx context.Context) {
 					return nil
 				}
 				outputStr := strings.Trim(string(output), "\n")
-				testCaseDescription += fmt.Sprintf("\n### Example %d\n", testCaseID)
+				testCaseDescription += fmt.Sprintf("### Example %d\n", testCaseID)
 				testCaseDescription += fmt.Sprintf("Input\n```text\n%s\n```\n", string(inputStr))
 				testCaseDescription += fmt.Sprintf("Output\n```text\n%s\n```\n", string(outputStr))
 				testCaseID++
@@ -135,7 +156,10 @@ func loadProblemPackages(ctx context.Context) {
 		if err != nil {
 			panic(err)
 		}
-		description += testCaseDescription
+		if len(limitDescription) > 0 {
+			limitDescription += "\n---\n"
+		}
+		description = limitDescription + "\n" + description + "\n" + testCaseDescription
 		err = problem_model.CreateProblem(db, problem_model.Problem{
 			Slug:        slug,
 			Title:       title,
