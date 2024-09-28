@@ -71,7 +71,7 @@ func main() {
 		log_module.AppLogger().Info("Serving swagger Doc...")
 		handler.SetupSwaggoRouter(baseRouter)
 	}
-	handler.SetupOauthRouter(baseRouter)
+	handler.SetupAuthRouter(baseRouter)
 
 	apiRouter := r.Group("/api/v1")
 	handler.SetupUserRouter(apiRouter)

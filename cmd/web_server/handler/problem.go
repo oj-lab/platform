@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/oj-lab/platform/cmd/web_server/middleware"
 	judge_model "github.com/oj-lab/platform/models/judge"
@@ -19,7 +21,10 @@ func SetupProblemRouter(baseRoute *gin.RouterGroup) {
 		g.DELETE("/:slug", deleteProblem)
 		g.GET("/:slug/check", checkProblemSlug)
 		g.PUT("/:slug/package", putProblemPackage)
-		g.POST("/:slug/judge", middleware.HandleRequireLogin, postJudge)
+		g.POST("/:slug/judge",
+			middleware.HandleRequireLogin,
+			middleware.BuildHandleRateLimitWithDuration(2*time.Second),
+			postJudge)
 	}
 }
 

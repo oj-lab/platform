@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -17,13 +18,16 @@ import (
 
 const callbackURL = "/auth/github/callback"
 
-func SetupOauthRouter(baseRoute *gin.RouterGroup) {
+func SetupAuthRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/auth")
 	{
 		g.GET("/github/callback", githubCallback)
 		g.Any("/github", loginGithub)
 
-		g.POST("/password", loginByPassword)
+		g.POST("/password",
+			middleware.BuildHandleRateLimitWithDuration(time.Second*2),
+			loginByPassword,
+		)
 	}
 }
 
