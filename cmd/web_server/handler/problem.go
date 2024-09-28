@@ -225,7 +225,13 @@ func postJudge(ginCtx *gin.Context) {
 		return
 	}
 
-	judge := judge_model.NewJudge("", slug, body.Code, body.Language)
+	ls, err := middleware.GetLoginSessionFromGinCtx(ginCtx)
+	if err != nil {
+		gin_utils.NewInternalError(ginCtx, err.Error())
+		return
+	}
+
+	judge := judge_model.NewJudge(ls.Key.Account, slug, body.Code, body.Language)
 	result, err := judge_service.CreateJudge(ginCtx, judge)
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, err.Error())
