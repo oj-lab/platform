@@ -3,6 +3,12 @@
     "problem-packages": "packages",
     "modules/agent": "client"
   },
+  "markdownlint.config": {
+    "no-inline-html": {
+      "allowed_elements": ["img", "u", "br"]
+    },
+    "first-line-h1": false
+  },
   "go.testFlags": [
     "-v",
     "-count=1"
