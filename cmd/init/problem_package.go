@@ -48,6 +48,8 @@ func loadProblemPackages(ctx context.Context) {
 			title               string
 			slug                string
 			testCaseID          = 1
+			difficulty          = problem_model.DefaultProblemDifficulty
+			tags                = []*problem_model.ProblemTag{}
 			description         string
 			limitDescription    string
 			testCaseDescription = "## Examples\n"
@@ -96,6 +98,21 @@ func loadProblemPackages(ctx context.Context) {
 				if limits, ok := resultMap["limits"].(map[interface{}]interface{}); ok {
 					if memoryLimit, ok := limits["memory"].(int); ok {
 						limitDescription += fmt.Sprintf("<center>Memory Limit: %d MB</center>\n", memoryLimit)
+					}
+				}
+
+				if ojLabConfig, ok := resultMap["oj_lab_config"].(map[interface{}]interface{}); ok {
+					if difficultyStr, ok := ojLabConfig["difficulty"].(string); ok {
+						if problem_model.ProblemDifficulty(difficultyStr).IsValid() {
+							difficulty = problem_model.ProblemDifficulty(difficultyStr)
+						}
+					}
+					if tagsStr, ok := ojLabConfig["tags"].([]interface{}); ok {
+						for _, tagStr := range tagsStr {
+							tags = append(tags, &problem_model.ProblemTag{
+								Name: tagStr.(string),
+							})
+						}
 					}
 				}
 			}
@@ -164,6 +181,8 @@ func loadProblemPackages(ctx context.Context) {
 			Slug:        slug,
 			Title:       title,
 			Description: &description,
+			Difficulty:  difficulty,
+			Tags:        tags,
 		})
 		if err != nil {
 			panic(err)
