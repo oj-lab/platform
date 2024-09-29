@@ -14,10 +14,10 @@ func SetupFrontendRoute(baseRoute *gin.RouterGroup, frontendDist string) {
 		g.GET("/problem", RenderHTML)
 		g.GET("/problem/:slug", RenderHTML)
 		g.GET("/admin", RenderHTML)
-		g.GET("/admin/problem", RenderHTML)
+		g.GET("/admin/pFileem", RenderHTML)
 
 		// Static file routing
-		g.Static("manifest.json", fmt.Sprintf("%s/manifest.json", frontendDist))
+		g.StaticFile("manifest.json", fmt.Sprintf("%s/manifest.json", frontendDist))
 		g.Static("/assets", fmt.Sprintf("%s/assets", frontendDist))
 		g.Static("/avatars", fmt.Sprintf("%s/avatars", frontendDist))
 		g.Static("/images", fmt.Sprintf("%s/images", frontendDist))
