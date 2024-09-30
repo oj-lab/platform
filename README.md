@@ -34,12 +34,12 @@ There is a `judger` service in the project's `docker-compose.yml`.
 It won't start from the `make setup-dependencies` command by default
 (since it takes time to let MinIO & PostgreSQL start up).
 
-Run `docker-compose up -d judger` to start the judger service.
+Run `docker compose up -d judger` to start the judger service.
 
 ### Manage DB data
 
 We provide `adminer` to access PostgreSQL data.
-You can optionally run `docker-compose up -d adminer` to start the service,
+You can optionally run `docker compose up -d adminer` to start the service,
 or just continue to use your own database management tool.
 
 > Remember to set the type of the database to `PostgreSQL` when login to adminer.

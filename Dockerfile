@@ -13,7 +13,7 @@ FROM ubuntu:latest
 
 WORKDIR /platform
 
-COPY --from=build /workdir/bin/web_server /usr/local/bin/web_server
+COPY --from=build /workdir/bin/ /usr/local/bin/
 COPY --from=build /workdir/frontend/dist ./frontend_dist
 
 COPY config.toml ./config.toml

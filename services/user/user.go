@@ -34,8 +34,52 @@ func GetUser(ctx context.Context, account string) (*user_model.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	enforcer := casbin_agent.GetDefaultCasbinEnforcer()
+	if enforcer != nil {
+		user.Roles = enforcer.GetRolesForUserInDomain(casbin_agent.UserSubjectPrefix+account, "system")
+		for i, role := range user.Roles {
+			user.Roles[i] = role[len(casbin_agent.RoleSubjectPrefix):]
+		}
+	}
 
 	return user, nil
+}
+
+// TODO: Tidy this function
+func DeleteUser(ctx context.Context, account string) error {
+	db := gorm_agent.GetDefaultDB()
+
+	judges, err := judge_model.GetJudgeListByOptions(db, judge_model.GetJudgeOptions{
+		UserAccount: account,
+	})
+	if err != nil {
+		return err
+	}
+	for _, judge := range judges {
+		err = judge_model.DeleteJudgeResultByJudgeUID(db, judge.UID)
+		if err != nil {
+			log_module.AppLogger().WithField("judge", judge).Errorf("delete judge result failed: %v", err)
+		}
+	}
+	err = judge_model.DeleteJudgesByAccount(db, account)
+	if err != nil {
+		log_module.AppLogger().WithField("account", account).Errorf("delete judges failed: %v", err)
+	}
+	err = judge_model.DeleteJudgeRankCache(db, account)
+	if err != nil {
+		log_module.AppLogger().WithField("account", account).Errorf("delete judge rank cache failed: %v", err)
+	}
+	err = judge_model.DeleteJudgeScoreCacheByUserAccount(db, account)
+	if err != nil {
+		log_module.AppLogger().WithField("account", account).Errorf("delete judge score cache failed: %v", err)
+	}
+
+	err = user_model.DeleteUser(db, account)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func GetUserList(
@@ -49,6 +93,16 @@ func GetUserList(
 	users, err := user_model.GetUsersByOptions(db, options)
 	if err != nil {
 		return nil, 0, err
+	}
+	for i := range users {
+		enforcer := casbin_agent.GetDefaultCasbinEnforcer()
+		if enforcer != nil {
+			users[i].Roles = enforcer.GetRolesForUserInDomain(
+				casbin_agent.UserSubjectPrefix+users[i].Account, "system")
+			for j, role := range users[i].Roles {
+				users[i].Roles[j] = role[len(casbin_agent.RoleSubjectPrefix):]
+			}
+		}
 	}
 
 	return users, total, nil

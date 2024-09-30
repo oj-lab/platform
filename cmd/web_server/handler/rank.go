@@ -10,21 +10,8 @@ func SetupRankRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/rank")
 	{
 		g.GET("", getRankList)
-		// g.GET("/:account", getUserRank)
 	}
 }
-
-// getUserRank
-//
-//	@Router			/rank/{account} [get]
-//	@Summary		Get a user rank
-//	@Description	Get a rank for user
-//	@Tags			problem
-//	@Accept			json
-//	@Success		200
-// func getUserRank(ginCtx *gin.Context) {
-
-// }
 
 // getRankList
 //

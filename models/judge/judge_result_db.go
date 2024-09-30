@@ -15,3 +15,7 @@ func CreateJudgeResult(tx *gorm.DB, result JudgeResult) (*JudgeResult, error) {
 
 	return &result, tx.Create(&result).Error
 }
+
+func DeleteJudgeResultByJudgeUID(tx *gorm.DB, judgeUID uuid.UUID) error {
+	return tx.Where("judge_uid = ?", judgeUID).Delete(&JudgeResult{}).Error
+}

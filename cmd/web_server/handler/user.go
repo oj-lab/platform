@@ -21,7 +21,15 @@ func SetupUserRouter(baseRoute *gin.RouterGroup) {
 			middleware.BuildCasbinEnforceHandlerWithDomain("system"),
 			getUserList,
 		)
-		g.GET("/current", middleware.HandleRequireLogin, getCurrentUser)
+		g.DELETE("/:account",
+			middleware.HandleRequireLogin,
+			middleware.BuildCasbinEnforceHandlerWithDomain("system"),
+			deleteUser,
+		)
+		g.GET("/current",
+			middleware.HandleRequireLogin,
+			getCurrentUser,
+		)
 		g.POST("/:account/role",
 			middleware.HandleRequireLogin,
 			middleware.BuildCasbinEnforceHandlerWithDomain("system"),
@@ -73,9 +81,21 @@ func getUserList(ginCtx *gin.Context) {
 	}
 
 	ginCtx.JSON(http.StatusOK, gin.H{
-		"users": users,
+		"list":  users,
 		"total": total,
 	})
+}
+
+func deleteUser(ginCtx *gin.Context) {
+	account := ginCtx.Param("account")
+
+	err := user_service.DeleteUser(ginCtx, account)
+	if err != nil {
+		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to delete user: %v", err))
+		return
+	}
+
+	ginCtx.Status(http.StatusOK)
 }
 
 // Me
@@ -135,6 +155,10 @@ func revokeUserRole(ginCtx *gin.Context) {
 	err := ginCtx.BindJSON(body)
 	if err != nil {
 		gin_utils.NewInvalidParamError(ginCtx, "body", "invalid body")
+		return
+	}
+	if body.Role == "super" {
+		gin_utils.NewInvalidParamError(ginCtx, "role", "cannot revoke super role")
 		return
 	}
 

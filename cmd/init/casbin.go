@@ -19,6 +19,14 @@ func loadCasbinPolicies() {
 	if err != nil {
 		panic(err)
 	}
+	err = handler.AddProblemCasbinPolicies()
+	if err != nil {
+		panic(err)
+	}
+	err = handler.AddFrontendPagePolicies()
+	if err != nil {
+		panic(err)
+	}
 
 	err = enforcer.SavePolicy()
 	if err != nil {

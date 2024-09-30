@@ -11,12 +11,25 @@ import (
 	user_model "github.com/oj-lab/platform/models/user"
 	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 	auth_module "github.com/oj-lab/platform/modules/auth"
+	config_module "github.com/oj-lab/platform/modules/config"
 	log_module "github.com/oj-lab/platform/modules/log"
 	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
 	user_service "github.com/oj-lab/platform/services/user"
 )
 
-const callbackURL = "/auth/github/callback"
+const (
+	emailBacklistProp = "auth.email_backlist"
+	callbackURL       = "/auth/github/callback"
+)
+
+var emailBacklist = map[string]bool{}
+
+func init() {
+	emailBacklistSlice := config_module.AppConfig().GetStringSlice(emailBacklistProp)
+	for _, email := range emailBacklistSlice {
+		emailBacklist[email] = true
+	}
+}
 
 func SetupAuthRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/auth")
@@ -43,6 +56,11 @@ func githubCallback(ginCtx *gin.Context) {
 	githubUser, err := auth_module.GetGithubUser(tokenResponse.AccessToken)
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get github user: %v", err))
+		return
+	}
+
+	if emailBacklist[githubUser.Email] {
+		gin_utils.NewUnauthorizedError(ginCtx, "email is not allowed")
 		return
 	}
 

@@ -1,12 +1,15 @@
 package handler
 
 import (
+	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/oj-lab/platform/cmd/web_server/middleware"
 	judge_model "github.com/oj-lab/platform/models/judge"
 	problem_model "github.com/oj-lab/platform/models/problem"
+	casbin_agent "github.com/oj-lab/platform/modules/agent/casbin"
 	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
 	judge_service "github.com/oj-lab/platform/services/judge"
 	problem_service "github.com/oj-lab/platform/services/problem"
@@ -16,16 +19,44 @@ func SetupProblemRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/problem")
 	{
 		g.GET("", getProblemInfoList)
-		g.PUT("", putProblem)
 		g.GET("/:slug", getProblem)
-		g.DELETE("/:slug", deleteProblem)
+		g.PUT("",
+			middleware.HandleRequireLogin,
+			middleware.BuildCasbinEnforceHandlerWithDomain("system"),
+			putProblem,
+		)
+		g.DELETE("/:slug",
+			middleware.HandleRequireLogin,
+			middleware.BuildCasbinEnforceHandlerWithDomain("system"),
+			deleteProblem,
+		)
 		g.GET("/:slug/check", checkProblemSlug)
-		g.PUT("/:slug/package", putProblemPackage)
+		g.PUT("/:slug/package",
+			middleware.HandleRequireLogin,
+			middleware.BuildCasbinEnforceHandlerWithDomain("system"),
+			putProblemPackage,
+		)
 		g.POST("/:slug/judge",
 			middleware.HandleRequireLogin,
 			middleware.BuildHandleRateLimitWithDuration(2*time.Second),
-			postJudge)
+			postJudge,
+		)
 	}
+}
+
+func AddProblemCasbinPolicies() error {
+	enforcer := casbin_agent.GetDefaultCasbinEnforcer()
+	_, err := enforcer.AddPolicies([][]string{
+		{
+			casbin_agent.RoleSubjectPrefix + `admin`, `true`, `system`,
+			`/api/v1/problem/*any`, strings.Join([]string{http.MethodGet, http.MethodPost, http.MethodDelete}, "|"),
+			"allow",
+		},
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // getProblem

@@ -25,3 +25,7 @@ func GetJudgeScoreCache(tx *gorm.DB, userAccount string, problemSlug string) (*J
 func UpdateJudgeScoreCache(tx *gorm.DB, scoreCache JudgeScoreCache) error {
 	return tx.Model(&scoreCache).Updates(scoreCache).Error
 }
+
+func DeleteJudgeScoreCacheByUserAccount(tx *gorm.DB, userAccount string) error {
+	return tx.Where("user_account = ?", userAccount).Delete(&JudgeScoreCache{}).Error
+}

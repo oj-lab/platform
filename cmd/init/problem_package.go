@@ -24,13 +24,6 @@ func loadProblemPackages(ctx context.Context) {
 	db := gorm_agent.GetDefaultDB()
 	minioClient := minio_agent.GetMinioClient()
 
-	// Read package files
-	// Search Problem under packagePath
-	// 1. parse problem path as `slug`,
-	//    parse problem.yaml's name as `title`,
-	//    parse problem.md as description.
-	// 2. insert object into minio storage.
-
 	packagePath := path.Join(config_module.ProjectRoot(), "problem-packages/icpc")
 
 	// Load Dirs under `packagePath`
@@ -177,15 +170,29 @@ func loadProblemPackages(ctx context.Context) {
 			limitDescription += "\n---\n"
 		}
 		description = limitDescription + "\n" + description + "\n" + testCaseDescription
-		err = problem_model.CreateProblem(db, problem_model.Problem{
-			Slug:        slug,
-			Title:       title,
-			Description: &description,
-			Difficulty:  difficulty,
-			Tags:        tags,
-		})
-		if err != nil {
-			panic(err)
+		_, err = problem_model.GetProblem(db, slug)
+		if err == nil {
+			err = problem_model.UpdateProblem(db, problem_model.Problem{
+				Slug:        slug,
+				Title:       title,
+				Description: &description,
+				Difficulty:  difficulty,
+				Tags:        tags,
+			})
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			err = problem_model.CreateProblem(db, problem_model.Problem{
+				Slug:        slug,
+				Title:       title,
+				Description: &description,
+				Difficulty:  difficulty,
+				Tags:        tags,
+			})
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 

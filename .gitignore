@@ -11,6 +11,10 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+*.key
+*.pem
+*Zone.Identifier
+
 dist.zip
 
 # Ignore generated files

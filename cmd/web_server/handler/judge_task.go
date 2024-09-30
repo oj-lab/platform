@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/oj-lab/platform/cmd/web_server/middleware"
 	judge_model "github.com/oj-lab/platform/models/judge"
 	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
 	judge_service "github.com/oj-lab/platform/services/judge"
@@ -11,8 +12,14 @@ import (
 func SetupJudgeTaskRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/judge")
 	{
-		g.POST("/task/pick", postPickJudgeTask)
-		g.PUT("/task/report", putReportJudgeTask)
+		g.POST("/task/pick",
+			middleware.HandleRequireInternalToken,
+			postPickJudgeTask,
+		)
+		g.PUT("/task/report",
+			middleware.HandleRequireInternalToken,
+			putReportJudgeTask,
+		)
 	}
 }
 

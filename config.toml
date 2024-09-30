@@ -17,12 +17,12 @@ duration = "24h"
 [service]
 force_console_color = true
 auth_on = true
-host = "localhost"
+base_url = "http://localhost:8080"
 port = 8080
-ssl_enabled = false
 mode = "debug"
 swagger_on = true
 frontend_dist = "frontend/dist"
+internal_token = "internal_token"
 
 [rpc-server]
 port = 50051

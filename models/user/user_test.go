@@ -40,7 +40,7 @@ func TestUserDB(t *testing.T) {
 	}
 	fmt.Printf("%+v\n", string(publicUserJson))
 
-	err = DeleteUser(db, user)
+	err = DeleteUser(db, user.Account)
 	if err != nil {
 		t.Error(err)
 	}

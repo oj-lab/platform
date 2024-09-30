@@ -7,10 +7,14 @@ import (
 	problem_model "github.com/oj-lab/platform/models/problem"
 	user_model "github.com/oj-lab/platform/models/user"
 	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
+	config_module "github.com/oj-lab/platform/modules/config"
 	log_module "github.com/oj-lab/platform/modules/log"
 )
 
+const rootPasswordProp = "auth.root_password"
+
 func initDB() {
+	rootPassword := config_module.AppConfig().GetString(rootPasswordProp)
 	db := gorm_agent.GetDefaultDB()
 	err := db.AutoMigrate(
 		&user_model.User{},
@@ -27,7 +31,7 @@ func initDB() {
 	_, err = user_model.CreateUser(db, user_model.User{
 		Name:     "root",
 		Account:  "root",
-		Password: func() *string { s := ""; return &s }(),
+		Password: func() *string { s := rootPassword; return &s }(),
 	})
 	if err != nil {
 		panic(fmt.Sprintf("failed to create root user: %v", err))

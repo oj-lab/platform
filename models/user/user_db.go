@@ -70,8 +70,8 @@ func GetPublicUser(tx *gorm.DB, account string) (*User, error) {
 	return &db_user, err
 }
 
-func DeleteUser(tx *gorm.DB, user User) error {
-	return tx.Select(clause.Associations).Delete(&User{Account: user.Account}).Error
+func DeleteUser(tx *gorm.DB, account string) error {
+	return tx.Select(clause.Associations).Delete(&User{Account: account}).Error
 }
 
 func UpdateUser(tx *gorm.DB, update User) error {

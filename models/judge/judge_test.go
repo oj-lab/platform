@@ -207,7 +207,7 @@ func TestJudgeRank(t *testing.T) {
 	}
 
 	for i := 0; i < 4; i++ {
-		err = user_model.DeleteUser(db, users[i])
+		err = user_model.DeleteUser(db, users[i].Account)
 		if err != nil {
 			t.Error(err)
 		}

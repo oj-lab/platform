@@ -14,10 +14,7 @@ const (
 	githubAccessTokenURL = "https://github.com/login/oauth/access_token"
 	githubApiUserURL     = "https://api.github.com/user"
 
-	servicePortProp       = "service.port"
-	serviceHostProp       = "service.host"
-	serviceSSLEnabledProp = "service.ssl_enabled"
-
+	serviceBaseURLProp     = "service.base_url"
 	githubClientIDProp     = "auth.github_client_id"
 	githubClientSecretProp = "auth.github_client_secret"
 )
@@ -26,17 +23,18 @@ var (
 	githubClientID     string
 	githubClientSecret string
 
-	servicePort       uint
-	serviceHost       string
-	serviceSSLEnabled bool
+	serviceBaseURL *url.URL
 )
 
 func init() {
 	githubClientID = config_module.AppConfig().GetString(githubClientIDProp)
 	githubClientSecret = config_module.AppConfig().GetString(githubClientSecretProp)
-	servicePort = config_module.AppConfig().GetUint(servicePortProp)
-	serviceHost = config_module.AppConfig().GetString(serviceHostProp)
-	serviceSSLEnabled = config_module.AppConfig().GetBool(serviceSSLEnabledProp)
+	serviceBaseURLStr := config_module.AppConfig().GetString(serviceBaseURLProp)
+	var err error
+	serviceBaseURL, err = url.Parse(serviceBaseURLStr)
+	if err != nil {
+		panic(fmt.Sprintf("failed to parse service base url: %v", err))
+	}
 }
 
 func isGithubAuthEnabled() bool {
@@ -48,12 +46,7 @@ func GetGithubOauthEntryURL(callbackURL string) (*url.URL, error) {
 		return nil, fmt.Errorf("github auth is not enabled")
 	}
 
-	redirectUrl := fmt.Sprintf("%s:%d%s", serviceHost, servicePort, callbackURL)
-	if serviceSSLEnabled {
-		redirectUrl = "https://" + redirectUrl
-	} else {
-		redirectUrl = "http://" + redirectUrl
-	}
+	redirectUrl := serviceBaseURL.JoinPath(callbackURL)
 
 	u, err := url.Parse(githubOauthEntryURL)
 	if err != nil {
@@ -62,7 +55,7 @@ func GetGithubOauthEntryURL(callbackURL string) (*url.URL, error) {
 
 	query := u.Query()
 	query.Add("client_id", githubClientID)
-	query.Add("redirect_uri", redirectUrl)
+	query.Add("redirect_uri", redirectUrl.String())
 	u.RawQuery = query.Encode()
 
 	return u, nil

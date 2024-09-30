@@ -16,7 +16,7 @@ import (
 func SetupJudgeRouter(baseRoute *gin.RouterGroup) {
 	g := baseRoute.Group("/judge")
 	{
-		g.GET("", middleware.HandleRequireLogin, getJudgeList)
+		g.GET("", getJudgeList)
 		g.GET("/:uid", middleware.HandleRequireLogin, getJudge)
 	}
 }
@@ -32,6 +32,22 @@ func getJudge(ginCtx *gin.Context) {
 	judge, err := judge_service.GetJudge(ginCtx, uid)
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get judge: %v", err))
+		return
+	}
+
+	ls, err := middleware.GetLoginSessionFromGinCtx(ginCtx)
+	if err != nil {
+		gin_utils.NewUnauthorizedError(ginCtx, "cannot load login session from cookie")
+		return
+	}
+	user, err := user_service.GetUser(ginCtx, ls.Key.Account)
+	if err != nil {
+		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get user: %v", err))
+		return
+	}
+
+	if judge.UserAccount != user.Account && !user.IsAdmin() {
+		gin_utils.NewUnauthorizedError(ginCtx, "permission denied")
 		return
 	}
 

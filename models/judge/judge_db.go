@@ -173,3 +173,7 @@ func UpdateJudge(tx *gorm.DB, judge Judge) error {
 
 	return tx.Model(&updatingJudge).Updates(updatingJudge).Error
 }
+
+func DeleteJudgesByAccount(tx *gorm.DB, account string) error {
+	return tx.Where("user_account = ?", account).Delete(&Judge{}).Error
+}
