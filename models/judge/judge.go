@@ -28,6 +28,14 @@ const (
 	ProgrammingLanguagePython ProgrammingLanguage = "Python"
 )
 
+func (sl ProgrammingLanguage) IsValid() bool {
+	switch sl {
+	case ProgrammingLanguageCpp, ProgrammingLanguageRust, ProgrammingLanguagePython:
+		return true
+	}
+	return false
+}
+
 // Using relationship according to https://gorm.io/docs/belongs_to.html
 type Judge struct {
 	models.MetaFields

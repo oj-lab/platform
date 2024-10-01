@@ -40,6 +40,10 @@ func GetJudgeList(
 func CreateJudge(
 	ctx context.Context, judge judge_model.Judge,
 ) (*judge_model.Judge, error) {
+	if !judge.Language.IsValid() {
+		return nil, fmt.Errorf("invalid language")
+	}
+
 	db := gorm_agent.GetDefaultDB()
 	newJudge, err := judge_model.CreateJudge(db, judge)
 	if err != nil {
