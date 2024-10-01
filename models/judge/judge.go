@@ -23,9 +23,9 @@ func (sl ProgrammingLanguage) String() string {
 }
 
 const (
-	ProgrammingLanguageCpp    ProgrammingLanguage = "Cpp"
-	ProgrammingLanguageRust   ProgrammingLanguage = "Rust"
-	ProgrammingLanguagePython ProgrammingLanguage = "Python"
+	ProgrammingLanguageCpp    ProgrammingLanguage = "cpp"
+	ProgrammingLanguageRust   ProgrammingLanguage = "rust"
+	ProgrammingLanguagePython ProgrammingLanguage = "python"
 )
 
 func (sl ProgrammingLanguage) IsValid() bool {
