@@ -1,4 +1,4 @@
-oj-lab.online {
-	tls oj-lab.online.pem oj-lab.online.key
+www.oj-lab.online {
+	tls www.oj-lab.online.pem www.oj-lab.online.key
 	reverse_proxy localhost:8080
 }

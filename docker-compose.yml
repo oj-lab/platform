@@ -57,5 +57,17 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - ENABLE_RCLONE=true
+      - INTERNAL_TOKEN=internal_token
     ports:
       - 8000:8000
+  
+  platform:
+    image: ghcr.io/oj-lab/platform:main
+    pull_policy: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 8080:8080
+    volumes:
+      - ./frontend:/platform/frontend
+      - ./override.docker.toml:/platform/override.toml
