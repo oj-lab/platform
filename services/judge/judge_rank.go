@@ -32,6 +32,9 @@ func GetRankList(
 	var rankList []judge_model.JudgeRank
 
 	for i, rankCache := range rankCacheList {
+		if rankCache.TotalSubmissions == 0 {
+			continue
+		}
 		rankList = append(rankList, judge_model.JudgeRank{
 			Rank:             i + *offset + 1,
 			User:             rankCache.User,

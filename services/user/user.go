@@ -20,11 +20,6 @@ func CreateUser(ctx context.Context, request user_model.User) (*user_model.User,
 		return nil, err
 	}
 
-	_, err = judge_model.CreateJudgeRankCache(db, judge_model.NewJudgeRankCache(request.Account))
-	if err != nil {
-		return nil, err
-	}
-
 	return user, nil
 }
 
