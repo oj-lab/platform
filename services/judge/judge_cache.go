@@ -10,6 +10,10 @@ import (
 )
 
 func UpsertJudgeCache(ctx context.Context, uid uuid.UUID, verdict judge_model.JudgeVerdict) error {
+	if verdict == judge_model.JudgeVerdictCompileError {
+		return nil
+	}
+
 	db := gorm_agent.GetDefaultDB()
 	judge, err := judge_model.GetJudge(db, uid)
 	if err != nil {
