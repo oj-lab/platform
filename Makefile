@@ -56,8 +56,8 @@ gen-proto: install-proto
 
 .PHONY: unset-dependencies
 unset-dependencies:
-	docker compose stop postgres redis minio clickhouse
-	docker compose rm -f postgres redis minio clickhouse
+	docker compose stop postgres redis minio
+	docker compose rm -f postgres redis minio
 
 .PHONY: unset-data
 unset-data: build
@@ -65,11 +65,11 @@ unset-data: build
 
 .PHONY: setup-dependencies
 setup-dependencies: build get-front get-problem-packages
-	@if [ "$(shell docker ps -f status=running | grep -E "postgres|redis|minio|clickhouse" | wc -l)" -eq 4 ]; then \
+	@if [ "$(shell docker ps -f status=running | grep -E "postgres|redis|minio" | wc -l)" -eq 4 ]; then \
 		echo "Containers already up"; \
 		./bin/clean; \
 	else \
-		docker compose up -d postgres redis minio clickhouse; \
+		docker compose up -d postgres redis minio; \
 		@echo "Wait 10 seconds for db setup"; \
 		sleep 10s; \
 	fi
