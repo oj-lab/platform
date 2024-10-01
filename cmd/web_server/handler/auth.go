@@ -73,14 +73,16 @@ func githubCallback(ginCtx *gin.Context) {
 	}
 	var user *user_model.User
 	if total <= 0 {
-		uuid := uuid.New()
-		user, err = user_service.CreateUser(ginCtx, user_model.User{
-			Account:     uuid.String(),
+		creatingUser := user_model.User{
+			Account:     uuid.New().String(),
 			Name:        githubUser.Name,
-			Email:       &githubUser.Email,
 			AvatarURL:   githubUser.AvatarURL,
 			GithubLogin: &githubUser.Login,
-		})
+		}
+		if len(githubUser.Email) > 0 {
+			creatingUser.Email = &githubUser.Email
+		}
+		user, err = user_service.CreateUser(ginCtx, creatingUser)
 		if err != nil {
 			gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to create user: %v", err))
 			return
