@@ -13,10 +13,7 @@ require (
 	gorm.io/gorm v1.25.12
 )
 
-require (
-	github.com/stretchr/testify v1.9.0
-	github.com/swaggo/swag v1.16.3
-)
+require github.com/stretchr/testify v1.9.0
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
@@ -51,6 +48,7 @@ require (
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
+	github.com/swaggo/swag v1.16.3 // indirect
 	go.opentelemetry.io/otel v1.30.0 // indirect
 	go.opentelemetry.io/otel/trace v1.30.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
@@ -105,7 +103,7 @@ require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.28.3
 	github.com/alexedwards/argon2id v1.0.0
 	github.com/casbin/casbin v1.9.1
-	github.com/casbin/casbin/v2 v2.99.0
+	github.com/casbin/casbin/v2 v2.100.0
 	github.com/casbin/gorm-adapter/v3 v3.28.0
 	github.com/casbin/redis-watcher/v2 v2.5.0
 	github.com/gin-contrib/sse v0.1.0 // indirect
