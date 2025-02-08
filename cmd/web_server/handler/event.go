@@ -3,10 +3,10 @@ package handler
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 func SetupEventRouter(baseRoute *gin.RouterGroup) {
@@ -33,7 +33,7 @@ func Stream(ginCtx *gin.Context) {
 	ginCtx.Stream(func(w io.Writer) bool {
 		// With event type
 		message := fmt.Sprintf("event: %s\ndata: %s\n\n", "eventType", time.Now().String())
-		log_module.AppLogger().Infof("Send message:\n%s", message)
+		slog.Info(fmt.Sprintf("Send message:\n%s", message))
 		fmt.Fprint(w, message)
 		time.Sleep(1 * time.Second)
 		counter++

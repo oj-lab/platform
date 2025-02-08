@@ -2,11 +2,11 @@ package minio_agent
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	config_module "github.com/oj-lab/platform/modules/config"
-	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 const (
@@ -56,16 +56,15 @@ func GetMinioClient() *minio.Client {
 
 		exists, err := minioClient.BucketExists(ctx, bucketName)
 		if err == nil && exists {
-			log_module.AppLogger().WithField("bucket", bucketName).Info("Bucket already exists")
+			slog.With("bucket", bucketName).Info("Bucket already exists")
 			return minioClient
 		}
 
 		err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 		if err != nil {
-			log_module.AppLogger().WithError(err).
-				WithField("bucket", bucketName).Error("Failed to create bucket")
+			slog.With("err", err, "bucket", bucketName).Error("Failed to create bucket")
 		} else {
-			log_module.AppLogger().WithField("bucket", bucketName).Info("Successfully created bucket")
+			slog.With("bucket", bucketName).Info("Successfully created bucket")
 		}
 	}
 

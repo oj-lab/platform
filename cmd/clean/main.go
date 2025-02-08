@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/minio/minio-go/v7"
 	judge_model "github.com/oj-lab/platform/models/judge"
@@ -11,14 +12,12 @@ import (
 	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 	minio_agent "github.com/oj-lab/platform/modules/agent/minio"
 	redis_agent "github.com/oj-lab/platform/modules/agent/redis"
-
-	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 func clearCasbin() {
 	enforcer := casbin_agent.GetDefaultCasbinEnforcer()
 	enforcer.ClearPolicy() // no err return
-	log_module.AppLogger().Info("Clear Casbin success")
+	slog.Info("Clear Casbin success")
 }
 
 func removeMinioObjects() {
@@ -30,7 +29,7 @@ func removeMinioObjects() {
 		opts := minio.ListObjectsOptions{Recursive: true}
 		for object := range minioClient.ListObjects(context.Background(), minio_agent.GetBucketName(), opts) {
 			if object.Err != nil {
-				log_module.AppLogger().WithError(object.Err).Error("Get object error")
+				slog.With("err", object.Err).Error("Get object error")
 			}
 			objectsCh <- object
 		}
@@ -38,10 +37,10 @@ func removeMinioObjects() {
 
 	errorCh := minioClient.RemoveObjects(context.Background(), minio_agent.GetBucketName(), objectsCh, minio.RemoveObjectsOptions{})
 	for e := range errorCh {
-		log_module.AppLogger().WithError(e.Err).Error("Failed to remove " + e.ObjectName)
+		slog.With("err", e.Err).Error("Failed to remove " + e.ObjectName)
 	}
 
-	log_module.AppLogger().Info("Remove Minio Objects success")
+	slog.Info("Remove Minio Objects success")
 }
 
 func clearRedis() {
@@ -49,10 +48,10 @@ func clearRedis() {
 	redis_agent := redis_agent.GetDefaultRedisClient()
 	err := redis_agent.FlushDB(ctx).Err()
 	if err != nil {
-		log_module.AppLogger().WithError(err).Error("Failed to clear redis")
+		slog.With("err", err).Error("Failed to clear redis")
 	}
 
-	log_module.AppLogger().Info("Clear Redis success")
+	slog.Info("Clear Redis success")
 }
 func clearDB() {
 	db := gorm_agent.GetDefaultDB()
@@ -73,7 +72,7 @@ func clearDB() {
 		panic("failed to drop tables")
 	}
 
-	log_module.AppLogger().Info("Clear DB success")
+	slog.Info("Clear DB success")
 }
 
 func main() {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -11,8 +12,6 @@ import (
 	"github.com/oj-lab/platform/cmd/web_server/middleware"
 
 	config_module "github.com/oj-lab/platform/modules/config"
-
-	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 const (
@@ -58,9 +57,9 @@ func main() {
 	if frontendDist != "" {
 		// If dist folder is not empty, serve frontend
 		if _, err := os.Stat(frontendDist); os.IsNotExist(err) {
-			log_module.AppLogger().Warn("Frontend dist is set but folder not found")
+			slog.Warn("Frontend dist is set but folder not found")
 		} else {
-			log_module.AppLogger().Info("Serving frontend...")
+			slog.Info("Serving frontend...")
 			r.LoadHTMLFiles(frontendDist + "/index.html")
 			handler.SetupFrontendRoute(baseRouter, frontendDist)
 			r.NoRoute(handler.RenderHTML)
@@ -68,7 +67,7 @@ func main() {
 	}
 
 	if swaggerOn {
-		log_module.AppLogger().Info("Serving swagger Doc...")
+		slog.Info("Serving swagger Doc...")
 		handler.SetupSwaggoRouter(baseRouter)
 	}
 	handler.SetupAuthRouter(baseRouter)

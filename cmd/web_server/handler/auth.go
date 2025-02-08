@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -12,7 +13,6 @@ import (
 	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 	auth_module "github.com/oj-lab/platform/modules/auth"
 	config_module "github.com/oj-lab/platform/modules/config"
-	log_module "github.com/oj-lab/platform/modules/log"
 	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
 	user_service "github.com/oj-lab/platform/services/user"
 )
@@ -52,7 +52,7 @@ func githubCallback(ginCtx *gin.Context) {
 		return
 	}
 
-	log_module.AppLogger().WithField("tokenResponse", tokenResponse).Info("github callback")
+	slog.With("tokenResponse", tokenResponse).Info("github callback")
 	githubUser, err := auth_module.GetGithubUser(tokenResponse.AccessToken)
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get github user: %v", err))

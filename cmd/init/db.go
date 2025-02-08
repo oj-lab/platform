@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 
 	judge_model "github.com/oj-lab/platform/models/judge"
 	problem_model "github.com/oj-lab/platform/models/problem"
 	user_model "github.com/oj-lab/platform/models/user"
 	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 	config_module "github.com/oj-lab/platform/modules/config"
-	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 const rootPasswordProp = "auth.root_password"
@@ -47,5 +47,5 @@ func initDB() {
 		panic(fmt.Sprintf("failed to create anonymous user: %v", err))
 	}
 
-	log_module.AppLogger().Info("migrate tables ans users success")
+	slog.Info("migrate tables ans users success")
 }
