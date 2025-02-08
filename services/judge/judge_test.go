@@ -111,6 +111,7 @@ func TestUpsertJudgeCache(t *testing.T) {
 		Problem:     problem,
 		Verdict:     judge_model.JudgeVerdictAccepted,
 		Status:      judge_model.JudgeStatusFinished,
+		Language:    judge_model.ProgrammingLanguageCpp,
 	}
 	baseACJudge.UID = uuid.New()
 	baseACJudge, err := CreateJudge(ctx, *baseACJudge)
@@ -135,6 +136,7 @@ func TestUpsertJudgeCache(t *testing.T) {
 		Problem:     problem,
 		Verdict:     judge_model.JudgeVerdictWrongAnswer,
 		Status:      judge_model.JudgeStatusFinished,
+		Language:    judge_model.ProgrammingLanguageCpp,
 	}
 	preWAJudge, err = CreateJudge(ctx, *preWAJudge)
 	if err != nil {
