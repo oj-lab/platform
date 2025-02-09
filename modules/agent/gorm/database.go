@@ -13,9 +13,10 @@ const (
 	loggerIgnoreRunLogConfigKey = "gorm.logger.ignore_run_log"
 )
 
-var db *gorm.DB
-
-var dsn string
+var (
+	db  *gorm.DB
+	dsn string
+)
 
 func init() {
 	dsn = core_module.Config.GetString(dsnConfigKey)
