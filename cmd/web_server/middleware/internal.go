@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	config_module "github.com/oj-lab/platform/modules/config"
+	core_module "github.com/oj-lab/platform/modules/core"
 	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
 )
 
 const (
-	internalTokenProp = "service.internal_token"
+	internalTokenConfigKey = "service.internal_token"
 )
 
 var (
@@ -17,7 +17,7 @@ var (
 )
 
 func init() {
-	internalToken = config_module.AppConfig().GetString(internalTokenProp)
+	internalToken = core_module.Config.GetString(internalTokenConfigKey)
 }
 
 func HandleRequireInternalToken(ginCtx *gin.Context) {

@@ -1,4 +1,4 @@
-package config_module
+package core_module
 
 import (
 	"fmt"
@@ -9,42 +9,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-const serviceEnvEnvKey = "OJ_LAB_SERVICE_ENV"
-
 const defaultConfigName = "config"
 const defaultOverrideConfigName = "override"
 const defaultProjectRootName = "platform"
 
-type ServiceEnv string
+var Config *viper.Viper
 
-const (
-	serviceEnvDev ServiceEnv = "development"
-	serviceEnvPrd ServiceEnv = "production"
-)
-
-var serviceEnv ServiceEnv
 var projectRoot string
-var appConfig *viper.Viper
-
-func (se ServiceEnv) isValid() bool {
-	if se == serviceEnvDev || se == serviceEnvPrd {
-		return true
-	}
-	return false
-}
-
-func IsDevEnv() bool {
-	return serviceEnv == serviceEnvDev
-}
-
-func loadServiceEnv() {
-	serviceEnv = serviceEnvDev
-	env := os.Getenv(serviceEnvEnvKey)
-	if ServiceEnv(env).isValid() {
-		serviceEnv = ServiceEnv(env)
-	}
-	println("Env:", serviceEnv)
-}
 
 func loadConfig() error {
 	viper.AddConfigPath(projectRoot)
@@ -64,12 +35,8 @@ func loadConfig() error {
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	appConfig = viper.GetViper()
+	Config = viper.GetViper()
 	return nil
-}
-
-func AppConfig() *viper.Viper {
-	return appConfig
 }
 
 func loadProjectRoot() {
@@ -95,7 +62,6 @@ func ProjectRoot() string {
 }
 
 func init() {
-	loadServiceEnv()
 	loadProjectRoot()
 	if _, err := os.Stat(projectRoot); err != nil {
 		panic(fmt.Sprintf("Project root not found: %v", projectRoot))
@@ -104,4 +70,5 @@ func init() {
 	if err := loadConfig(); err != nil {
 		panic(fmt.Sprintf("Load config with error: %v", err))
 	}
+	setupLog()
 }

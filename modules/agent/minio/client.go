@@ -6,16 +6,16 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	config_module "github.com/oj-lab/platform/modules/config"
+	core_module "github.com/oj-lab/platform/modules/core"
 )
 
 const (
-	minioEndpointProp        = "minio.endpoint"
-	minioAccessKeyProp       = "minio.access_key_id"
-	minioSecretAccessKeyProp = "minio.secret_access_key"
-	minioUseSSLProp          = "minio.use_ssl"
-	minioRegionProp          = "minio.region"
-	minioBucketNameProp      = "minio.bucket_name"
+	minioEndpointConfigKey        = "minio.endpoint"
+	minioAccessKeyConfigKey       = "minio.access_key_id"
+	minioSecretAccessKeyConfigKey = "minio.secret_access_key"
+	minioUseSSLConfigKey          = "minio.use_ssl"
+	minioRegionConfigKey          = "minio.region"
+	minioBucketNameConfigKey      = "minio.bucket_name"
 )
 
 var (
@@ -29,12 +29,12 @@ var (
 )
 
 func init() {
-	endpoint = config_module.AppConfig().GetString(minioEndpointProp)
-	accessKeyID = config_module.AppConfig().GetString(minioAccessKeyProp)
-	secretAccessKey = config_module.AppConfig().GetString(minioSecretAccessKeyProp)
-	useSSL = config_module.AppConfig().GetBool(minioUseSSLProp)
-	region = config_module.AppConfig().GetString(minioRegionProp)
-	bucketName = config_module.AppConfig().GetString(minioBucketNameProp)
+	endpoint = core_module.Config.GetString(minioEndpointConfigKey)
+	accessKeyID = core_module.Config.GetString(minioAccessKeyConfigKey)
+	secretAccessKey = core_module.Config.GetString(minioSecretAccessKeyConfigKey)
+	useSSL = core_module.Config.GetBool(minioUseSSLConfigKey)
+	region = core_module.Config.GetString(minioRegionConfigKey)
+	bucketName = core_module.Config.GetString(minioBucketNameConfigKey)
 }
 
 func GetBucketName() string {

@@ -8,13 +8,13 @@ import (
 	problem_model "github.com/oj-lab/platform/models/problem"
 	user_model "github.com/oj-lab/platform/models/user"
 	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
-	config_module "github.com/oj-lab/platform/modules/config"
+	core_module "github.com/oj-lab/platform/modules/core"
 )
 
-const rootPasswordProp = "auth.root_password"
+const rootPasswordConfigKey = "auth.root_password"
 
 func initDB() {
-	rootPassword := config_module.AppConfig().GetString(rootPasswordProp)
+	rootPassword := core_module.Config.GetString(rootPasswordConfigKey)
 	db := gorm_agent.GetDefaultDB()
 	err := db.AutoMigrate(
 		&user_model.User{},

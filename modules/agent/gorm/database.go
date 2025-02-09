@@ -1,19 +1,24 @@
 package gorm_agent
 
 import (
-	config_module "github.com/oj-lab/platform/modules/config"
+	"log/slog"
+
+	core_module "github.com/oj-lab/platform/modules/core"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-const dsnProp = "database.dsn"
+const (
+	dsnConfigKey                = "gorm.dsn"
+	loggerIgnoreRunLogConfigKey = "gorm.logger.ignore_run_log"
+)
 
 var db *gorm.DB
 
 var dsn string
 
 func init() {
-	dsn = config_module.AppConfig().GetString(dsnProp)
+	dsn = core_module.Config.GetString(dsnConfigKey)
 	if dsn == "" {
 		panic("database dsn is not set")
 	}
@@ -23,10 +28,12 @@ func GetDefaultDB() *gorm.DB {
 	if db == nil {
 		var err error
 		db, err = gorm.Open(postgres.New(postgres.Config{
-			DSN:                  dsn,
-			PreferSimpleProtocol: true, // disables implicit prepared statement usage
+			DSN: dsn,
 		}), &gorm.Config{
-			Logger: getLogger(),
+			Logger: NewSlogLogger(slog.Default().With("module", "gorm"),
+				slogLoggerConfig{
+					IngoreRunLog: core_module.Config.GetBool(loggerIgnoreRunLogConfigKey),
+				}),
 		})
 		if err != nil {
 			panic("failed to connect database")

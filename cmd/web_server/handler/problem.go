@@ -232,8 +232,8 @@ func checkProblemSlug(ginCtx *gin.Context) {
 // PostJudgeBody
 //
 //	@Description	The body of a judge request, containing the code and the language used for the judge.
-//	@Property		code (string) required "The source code of the judge" minlength(1)
-//	@Property		language (ProgrammingLanguage) required "The programming language used for the judge"
+//	@ConfigKeyerty	code (string) required "The source code of the judge" minlength(1)
+//	@ConfigKeyerty	language (ProgrammingLanguage) required "The programming language used for the judge"
 type PostJudgeBody struct {
 	Code     string                          `json:"code" binding:"required"`
 	Language judge_model.ProgrammingLanguage `json:"language" binding:"required"`

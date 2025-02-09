@@ -16,7 +16,7 @@ import (
 	problem_model "github.com/oj-lab/platform/models/problem"
 	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 	minio_agent "github.com/oj-lab/platform/modules/agent/minio"
-	config_module "github.com/oj-lab/platform/modules/config"
+	core_module "github.com/oj-lab/platform/modules/core"
 	"gopkg.in/yaml.v2"
 )
 
@@ -24,7 +24,7 @@ func loadProblemPackages(ctx context.Context) {
 	db := gorm_agent.GetDefaultDB()
 	minioClient := minio_agent.GetMinioClient()
 
-	packagePath := path.Join(config_module.ProjectRoot(), "problem-packages/icpc")
+	packagePath := path.Join(core_module.ProjectRoot(), "problem-packages/icpc")
 
 	// Load Dirs under `packagePath`
 	problemPackageDirs, err := os.ReadDir(packagePath)

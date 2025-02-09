@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
-	config_module "github.com/oj-lab/platform/modules/config"
+	core_module "github.com/oj-lab/platform/modules/core"
 )
 
 const (
@@ -14,9 +14,9 @@ const (
 	githubAccessTokenURL = "https://github.com/login/oauth/access_token"
 	githubApiUserURL     = "https://api.github.com/user"
 
-	serviceBaseURLProp     = "service.base_url"
-	githubClientIDProp     = "auth.github_client_id"
-	githubClientSecretProp = "auth.github_client_secret"
+	serviceBaseURLConfigKey     = "service.base_url"
+	githubClientIDConfigKey     = "auth.github_client_id"
+	githubClientSecretConfigKey = "auth.github_client_secret"
 )
 
 var (
@@ -27,9 +27,9 @@ var (
 )
 
 func init() {
-	githubClientID = config_module.AppConfig().GetString(githubClientIDProp)
-	githubClientSecret = config_module.AppConfig().GetString(githubClientSecretProp)
-	serviceBaseURLStr := config_module.AppConfig().GetString(serviceBaseURLProp)
+	githubClientID = core_module.Config.GetString(githubClientIDConfigKey)
+	githubClientSecret = core_module.Config.GetString(githubClientSecretConfigKey)
+	serviceBaseURLStr := core_module.Config.GetString(serviceBaseURLConfigKey)
 	var err error
 	serviceBaseURL, err = url.Parse(serviceBaseURLStr)
 	if err != nil {

@@ -70,7 +70,7 @@ setup-dependencies: build get-front get-problem-packages
 		./bin/clean; \
 	else \
 		docker compose up -d postgres redis minio; \
-		@echo "Wait 10 seconds for db setup"; \
+		echo "Wait 10 seconds for db setup"; \
 		sleep 10s; \
 	fi
 	./bin/init;

@@ -9,18 +9,18 @@ import (
 	"net"
 
 	"github.com/oj-lab/platform/cmd/rpc_server/impls"
-	config_module "github.com/oj-lab/platform/modules/config"
+	core_module "github.com/oj-lab/platform/modules/core"
 	"github.com/oj-lab/platform/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
 const (
-	portProp = "rpc-server.port"
+	portConfigKey = "rpc-server.port"
 )
 
 var (
-	port = config_module.AppConfig().GetInt(portProp)
+	port = core_module.Config.GetInt(portConfigKey)
 )
 
 func main() {
