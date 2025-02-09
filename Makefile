@@ -49,7 +49,7 @@ gen-swagger: install-swaggo
 gen-proto: install-proto
 	protoc --go_out=. --go_opt=paths=source_relative \
 		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
-		proto/*.proto	
+		proto/*.proto
 
 
 # Targets for development
@@ -70,7 +70,7 @@ setup-dependencies: build get-front get-problem-packages
 		./bin/clean; \
 	else \
 		docker compose up -d postgres redis minio; \
-		@echo "Wait 10 seconds for db setup"; \
+		echo "Wait 10 seconds for db setup"; \
 		sleep 10s; \
 	fi
 	./bin/init;

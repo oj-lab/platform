@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -11,21 +12,20 @@ import (
 	user_model "github.com/oj-lab/platform/models/user"
 	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 	auth_module "github.com/oj-lab/platform/modules/auth"
-	config_module "github.com/oj-lab/platform/modules/config"
-	log_module "github.com/oj-lab/platform/modules/log"
+	core_module "github.com/oj-lab/platform/modules/core"
 	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
 	user_service "github.com/oj-lab/platform/services/user"
 )
 
 const (
-	emailBacklistProp = "auth.email_backlist"
-	callbackURL       = "/auth/github/callback"
+	emailBacklistConfigKey = "auth.email_backlist"
+	callbackURL            = "/auth/github/callback"
 )
 
 var emailBacklist = map[string]bool{}
 
 func init() {
-	emailBacklistSlice := config_module.AppConfig().GetStringSlice(emailBacklistProp)
+	emailBacklistSlice := core_module.Config.GetStringSlice(emailBacklistConfigKey)
 	for _, email := range emailBacklistSlice {
 		emailBacklist[email] = true
 	}
@@ -52,7 +52,7 @@ func githubCallback(ginCtx *gin.Context) {
 		return
 	}
 
-	log_module.AppLogger().WithField("tokenResponse", tokenResponse).Info("github callback")
+	slog.With("tokenResponse", tokenResponse).Info("github callback")
 	githubUser, err := auth_module.GetGithubUser(tokenResponse.AccessToken)
 	if err != nil {
 		gin_utils.NewInternalError(ginCtx, fmt.Sprintf("failed to get github user: %v", err))

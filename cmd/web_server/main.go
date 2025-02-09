@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -9,34 +10,27 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/oj-lab/platform/cmd/web_server/handler"
 	"github.com/oj-lab/platform/cmd/web_server/middleware"
+	sloggin "github.com/samber/slog-gin"
 
-	config_module "github.com/oj-lab/platform/modules/config"
-
-	log_module "github.com/oj-lab/platform/modules/log"
+	core_module "github.com/oj-lab/platform/modules/core"
 )
 
 const (
-	serviceForceConsoleColorProp = "service.force_console_color"
-	servicePortProp              = "service.port"
-	serviceModeProp              = "service.mode"
-	swaggerOnProp                = "service.swagger_on"
-	frontendDistProp             = "service.frontend_dist"
+	servicePortConfigKey  = "service.port"
+	swaggerOnConfigKey    = "service.swagger_on"
+	frontendDistConfigKey = "service.frontend_dist"
 )
 
 var (
-	serviceForceConsoleColor bool
-	servicePort              uint
-	serviceMode              string
-	swaggerOn                bool
-	frontendDist             string
+	servicePort  uint
+	swaggerOn    bool
+	frontendDist string
 )
 
 func init() {
-	serviceForceConsoleColor = config_module.AppConfig().GetBool(serviceForceConsoleColorProp)
-	servicePort = config_module.AppConfig().GetUint(servicePortProp)
-	serviceMode = config_module.AppConfig().GetString(serviceModeProp)
-	swaggerOn = config_module.AppConfig().GetBool(swaggerOnProp)
-	frontendDist = config_module.AppConfig().GetString(frontendDistProp)
+	servicePort = core_module.Config.GetUint(servicePortConfigKey)
+	swaggerOn = core_module.Config.GetBool(swaggerOnConfigKey)
+	frontendDist = core_module.Config.GetString(frontendDistConfigKey)
 }
 
 func GetProjectDir() string {
@@ -47,20 +41,19 @@ func GetProjectDir() string {
 }
 
 func main() {
-	if serviceForceConsoleColor {
-		gin.ForceConsoleColor()
-	}
-	r := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.New()
+	r.Use(sloggin.New(slog.Default().With("module", "gin")))
+	r.Use(gin.Recovery())
 	r.Use(middleware.HandleError)
-	gin.SetMode(serviceMode)
 
 	baseRouter := r.Group("/")
 	if frontendDist != "" {
 		// If dist folder is not empty, serve frontend
 		if _, err := os.Stat(frontendDist); os.IsNotExist(err) {
-			log_module.AppLogger().Warn("Frontend dist is set but folder not found")
+			slog.Warn("Frontend dist is set but folder not found")
 		} else {
-			log_module.AppLogger().Info("Serving frontend...")
+			slog.Info("Serving frontend...")
 			r.LoadHTMLFiles(frontendDist + "/index.html")
 			handler.SetupFrontendRoute(baseRouter, frontendDist)
 			r.NoRoute(handler.RenderHTML)
@@ -68,7 +61,7 @@ func main() {
 	}
 
 	if swaggerOn {
-		log_module.AppLogger().Info("Serving swagger Doc...")
+		slog.Info("Serving swagger Doc...")
 		handler.SetupSwaggoRouter(baseRouter)
 	}
 	handler.SetupAuthRouter(baseRouter)

@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	servicePortProp = "service.port"
-	serviceHostProp = "service.host"
+	servicePortConfigKey = "service.port"
+	serviceHostConfigKey = "service.host"
 )
 
 var (
@@ -24,8 +24,8 @@ func SetupSwaggoRouter(r *gin.RouterGroup) {
 }
 
 func init() {
-	sevicePort := viper.GetUint(servicePortProp)
-	seviceHost := viper.GetString(serviceHostProp)
+	sevicePort := viper.GetUint(servicePortConfigKey)
+	seviceHost := viper.GetString(serviceHostConfigKey)
 	swaggerHost = fmt.Sprintf("%s:%d", seviceHost, sevicePort)
 	println("Swagger host is set to: " + swaggerHost)
 	// programmatically set swagger info

@@ -2,10 +2,10 @@ package middleware
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	log_module "github.com/oj-lab/platform/modules/log"
 	gin_utils "github.com/oj-lab/platform/modules/utils/gin"
 )
 
@@ -27,7 +27,8 @@ func HandleError(ginCtx *gin.Context) {
 
 	errCount := len(ginCtx.Errors)
 	if errCount > 0 {
-		log_module.AppLogger().Errorf("Last error from GIN middleware: %+v", ginCtx.Errors[errCount-1].Err)
+		slog.With("err", ginCtx.Errors[errCount-1].Err).
+			Error("Last error from GIN middleware")
 		err := GetServiceError(*ginCtx.Errors[errCount-1])
 		ginCtx.JSON(err.Code, gin.H{
 			"code": err.Code,

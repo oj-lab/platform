@@ -3,13 +3,13 @@ package user_service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	judge_model "github.com/oj-lab/platform/models/judge"
 	user_model "github.com/oj-lab/platform/models/user"
 	casbin_agent "github.com/oj-lab/platform/modules/agent/casbin"
 	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 	auth_module "github.com/oj-lab/platform/modules/auth"
-	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 func CreateUser(ctx context.Context, request user_model.User) (*user_model.User, error) {
@@ -53,20 +53,20 @@ func DeleteUser(ctx context.Context, account string) error {
 	for _, judge := range judges {
 		err = judge_model.DeleteJudgeResultByJudgeUID(db, judge.UID)
 		if err != nil {
-			log_module.AppLogger().WithField("judge", judge).Errorf("delete judge result failed: %v", err)
+			slog.With("judge", judge, "error", err).Error("delete judge result failed")
 		}
 	}
 	err = judge_model.DeleteJudgesByAccount(db, account)
 	if err != nil {
-		log_module.AppLogger().WithField("account", account).Errorf("delete judges failed: %v", err)
+		slog.With("account", account, "error", err).Error("delete judges failed")
 	}
 	err = judge_model.DeleteJudgeRankCache(db, account)
 	if err != nil {
-		log_module.AppLogger().WithField("account", account).Errorf("delete judge rank cache failed: %v", err)
+		slog.With("account", account, "error", err).Error("delete judge rank cache failed")
 	}
 	err = judge_model.DeleteJudgeScoreCacheByUserAccount(db, account)
 	if err != nil {
-		log_module.AppLogger().WithField("account", account).Errorf("delete judge score cache failed: %v", err)
+		slog.With("account", account, "error", err).Error("delete judge score cache failed")
 	}
 
 	err = user_model.DeleteUser(db, account)
@@ -180,10 +180,7 @@ func CheckUserExist(ctx context.Context, account string) (bool, error) {
 	}
 
 	if count > 1 {
-		log_module.AppLogger().
-			WithField("account", account).
-			WithField("count", count).
-			Warn("user account is not unique")
+		slog.With("account", account, "count", count).Warn("user account is not unique")
 	}
 
 	return count > 0, nil

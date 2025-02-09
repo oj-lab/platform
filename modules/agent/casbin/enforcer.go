@@ -1,6 +1,7 @@
 package casbin_agent
 
 import (
+	"log/slog"
 	"strings"
 
 	"github.com/casbin/casbin/persist"
@@ -10,7 +11,6 @@ import (
 	rediswatcher "github.com/casbin/redis-watcher/v2"
 	gorm_agent "github.com/oj-lab/platform/modules/agent/gorm"
 	redis_agent "github.com/oj-lab/platform/modules/agent/redis"
-	log_module "github.com/oj-lab/platform/modules/log"
 )
 
 var casbinEnforcer *casbin.SyncedCachedEnforcer
@@ -53,10 +53,10 @@ func GetDefaultCasbinEnforcer() *casbin.SyncedCachedEnforcer {
 			if err != nil {
 				panic(err)
 			}
-			log_module.AppLogger().Info("Casbin enforcer watcher initialized")
+			slog.Info("Casbin enforcer watcher initialized")
 		}
 		casbinEnforcer.AddFunction("keyMatchGin", keyMatchGinFunc)
-		log_module.AppLogger().Info("Casbin enforcer initialized")
+		slog.Info("Casbin enforcer initialized")
 	}
 
 	return casbinEnforcer

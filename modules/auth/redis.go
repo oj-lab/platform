@@ -3,9 +3,9 @@ package auth_module
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	redis_agent "github.com/oj-lab/platform/modules/agent/redis"
-	log_module "github.com/oj-lab/platform/modules/log"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -76,7 +76,8 @@ func UpdateLoginSessionByAccount(ctx context.Context, account string, data Login
 		// TODO: KeepTTL only works in redis v6+
 		err = redisClient.Set(ctx, redisKey, val, redis.KeepTTL).Err()
 		if err != nil {
-			log_module.AppLogger().Errorf("failed to update login session: %v", err)
+			slog.With("err", err).
+				Error("failed to update login session")
 		}
 	}
 

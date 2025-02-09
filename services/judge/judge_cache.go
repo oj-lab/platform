@@ -19,7 +19,7 @@ func UpsertJudgeCache(ctx context.Context, uid uuid.UUID, verdict judge_model.Ju
 	if err != nil {
 		return err
 	}
-	// log_module.AppLogger().WithField("judge", judge).Debug("getjudge")
+	// slog.With("judge", judge).Debug("getjudge")
 	var problem *problem_model.Problem
 	problem, err = problem_model.GetProblem(db, judge.ProblemSlug)
 	if err != nil {
@@ -53,7 +53,7 @@ func UpsertJudgeCache(ctx context.Context, uid uuid.UUID, verdict judge_model.Ju
 		}
 	}
 
-	// log_module.AppLogger().WithField("scoreCache", scoreCache).Debug("get scoreCache")
+	// slog.With("scoreCache", scoreCache).Debug("get scoreCache")
 
 	// previous no ac || current more early
 	// need to update
@@ -77,7 +77,7 @@ func UpsertJudgeCache(ctx context.Context, uid uuid.UUID, verdict judge_model.Ju
 		}
 		rankCache.TotalSubmissions += scoreCache.SubmissionCount - preSubmissionCount
 		problem.SubmitCount += scoreCache.SubmissionCount - preSubmissionCount
-		// log_module.AppLogger().WithField("scoreCache", scoreCache).Debug("update scoreCache")
+		// slog.With("scoreCache", scoreCache).Debug("update scoreCache")
 
 		err = problem_model.UpdateProblem(db, *problem)
 		if err != nil {

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	config_module "github.com/oj-lab/platform/modules/config"
+	core_module "github.com/oj-lab/platform/modules/core"
 )
 
 var (
@@ -14,8 +14,8 @@ var (
 )
 
 func init() {
-	jwtSecret = config_module.AppConfig().GetString("jwt.secret")
-	jwtDuration = config_module.AppConfig().GetDuration("jwt.duration")
+	jwtSecret = core_module.Config.GetString("jwt.secret")
+	jwtDuration = core_module.Config.GetDuration("jwt.duration")
 }
 
 type AuthToken struct {

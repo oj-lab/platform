@@ -1,12 +1,12 @@
 package redis_agent
 
 import (
-	config_module "github.com/oj-lab/platform/modules/config"
+	core_module "github.com/oj-lab/platform/modules/core"
 	"github.com/redis/go-redis/v9"
 )
 
 const (
-	redisHostsProp = "redis.hosts"
+	redisHostsConfigKey = "redis.hosts"
 )
 
 var (
@@ -14,7 +14,7 @@ var (
 )
 
 func init() {
-	RedisHosts = config_module.AppConfig().GetStringSlice(redisHostsProp)
+	RedisHosts = core_module.Config.GetStringSlice(redisHostsConfigKey)
 }
 
 type RedisClientInterface interface {
